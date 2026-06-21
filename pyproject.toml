@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "my-ime"
+version = "0.1.0"
+description = "Local Emacs input transformation server using deterministic kkc conversion"
+requires-python = ">=3.10"
+dependencies = []
+license = { text = "MIT" }
+
+[project.scripts]
+my-ime-server = "server.app:main"
+
+[tool.setuptools]
+packages = ["server"]
+
+[tool.ruff]
+line-length = 100

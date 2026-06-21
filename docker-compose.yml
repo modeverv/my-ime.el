@@ -1,0 +1,28 @@
+name: my-ime
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: my-ime-server:kkc-bookworm
+    environment:
+      MY_IME_BACKEND: kkc
+      MY_IME_KKC_COMMAND: /usr/bin/kkc
+      MY_IME_KKC_MODEL: sorted3
+      MY_IME_HOST: 0.0.0.0
+      MY_IME_PORT: "8765"
+      MY_IME_LOG_REQUESTS: "${MY_IME_LOG_REQUESTS:-0}"
+    ports:
+      - "${MY_IME_BIND:-127.0.0.1}:${PORT:-8765}:8765"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          python -c "import urllib.request;
+          urllib.request.urlopen('http://127.0.0.1:8765/health', timeout=2).read()"
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    restart: unless-stopped
