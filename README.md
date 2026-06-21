@@ -3,8 +3,13 @@
 `my-ime` は、Emacs でローマ字入力した文章をローカルで日本語に変換する IME 補助ツールです。外部 API は使わず、Emacs Lisp からローカル HTTP サーバーを呼び、サーバー側で SKK 形式の辞書、ローマ字かな変換、`kkc` によるかな漢字変換を組み合わせます。
 
 いまの中心機能は `my-ime-eager-mode` です。空白では入力中のローマ字を読みやすいひらがなやカタカナに変え、文末の `.` `,` `?` `!` や `RET` では文を確定変換します。
+## demo
 
+### demo1
 ![my-ime-eager-mode demo](demo.gif)
+
+### 候補選択
+![select-demo](demo2.png)
 
 ## 使い心地
 
@@ -55,7 +60,7 @@ serverwo cachede   -> サーバーをキャッシュで
   保護語と辞書語を復元
 
 /candidates
-  M-j の候補選択用
+  C-o の候補選択用
   辞書語に複数候補がある場合は単語ごとに 2-3 個取り出す
   それらをデカルト積で文候補にして返す
   Emacs 側で company または minibuffer から選択
@@ -130,13 +135,14 @@ export MY_IME_KKC_NBEST=3
 SPC       preedit 変換
 . , ? !   確定変換
 RET       現在行を確定変換して改行
-M-j       候補一覧から選んで変換
+C-o       候補一覧から選んで変換
 C-c j e   eager-mode の切り替え
 ```
 
-`M-j` は `my-ime-select-candidate-dwim` を呼び、複数候補がある場合は候補一覧から選んで置換します。`company` が利用可能な環境では company の候補 UI を使い、なければ minibuffer 選択にフォールバックします。company は任意依存で、`company-backends` は変更しません。
+`C-o` は `my-ime-select-candidate-dwim` を呼び、複数候補がある場合は候補一覧から選んで置換します。`company` が利用可能な環境では company の候補 UI を使い、なければ minibuffer 選択にフォールバックします。company は任意依存で、`company-backends` は変更しません。
+候補はkkc の n-best から取ってきます。辞書語に複数候補がある場合は、単語ごとに 2-3 個取り出してデカルト積で文候補を作ります。候補数は `MY_IME_CANDIDATE_PER_WORD_LIMIT` と `MY_IME_CANDIDATE_MAX` で調整できます。
 
-`M-j` で候補を確定した直後の次の `RET` は、eager-mode の再変換を抑止して改行だけを入れます。選んだ候補を確定してすぐ改行したい時に、同じ行がもう一度変換されないようにするためです。
+`C-o` で候補を確定した直後の次の `RET` は、eager-mode の再変換を抑止して改行だけを入れます。選んだ候補を確定してすぐ改行したい時に、同じ行がもう一度変換されないようにするためです。
 
 トリガー文字は変更できます。
 
@@ -148,6 +154,12 @@ C-c j e   eager-mode の切り替え
 
 ```elisp
 (setq my-ime-eager-space-preedit nil)
+```
+
+デフォルトでは、入力中のローマ字を 1 文字ごとにはかな変換しません。`SPC` で空白を入れた時に `/preedit` を呼んで、そこではじめて読みやすいひらがなやカタカナにします。文字ごとのローカルかな変換を試したい場合だけ、明示的に有効化できます。
+
+```elisp
+(setq my-ime-eager-local-kana t)
 ```
 
 手動コマンドも使えます。
@@ -181,7 +193,7 @@ deploysuru /デプロイする/
 
 辞書の ASCII 項目は、単純な部分一致ではなく ASCII の塊を辞書項目と助詞で分解できる場合だけ適用します。そのため `serverwo` は `サーバーを` になりますが、`kyoushi` の中の `kyou` は勝手に `今日` になりません。
 
-SKK の複数候補や JSON の配列値は、`M-j` の候補選択で使えます。
+SKK の複数候補や JSON の配列値は、`C-o` の候補選択で使えます。
 
 ```text
 kanji /漢字/感じ/幹事/
