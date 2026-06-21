@@ -16,6 +16,9 @@
 (require 'url-http)
 (require 'thingatpt)
 
+(declare-function company-begin-backend "company")
+(declare-function company-mode "company")
+
 (defgroup my-ime nil
   "IME conversion commands."
   :group 'editing)
@@ -60,6 +63,16 @@
   :type 'boolean
   :group 'my-ime)
 
+(defcustom my-ime-eager-local-kana t
+  "When non-nil, convert completed romaji syllables locally while typing."
+  :type 'boolean
+  :group 'my-ime)
+
+(defcustom my-ime-eager-org-syntax-guard t
+  "When non-nil, skip eager conversion on org syntax lines."
+  :type 'boolean
+  :group 'my-ime)
+
 (defcustom my-ime-eager-min-chars 4
   "Minimum source length before eager conversion is attempted."
   :type 'integer
@@ -72,6 +85,27 @@ buffer name, time, and metadata.")
 
 (defvar my-ime--pending-preview nil
   "Pending preview state for accept/reject/retry commands.")
+
+(defvar-local my-ime--company-candidates nil
+  "Current my-ime company candidates.")
+
+(defvar-local my-ime--company-original nil
+  "Original source text for current my-ime company completion.")
+
+(defvar-local my-ime--company-label nil
+  "Label for current my-ime company completion.")
+
+(defvar-local my-ime--company-metadata nil
+  "Metadata for current my-ime company completion.")
+
+(defvar-local my-ime--company-beg-marker nil
+  "Beginning marker for current my-ime company completion.")
+
+(defvar-local my-ime--company-end-marker nil
+  "End marker for current my-ime company completion.")
+
+(defvar-local my-ime--suppress-next-ret-conversion nil
+  "When non-nil, the next eager RET only inserts a newline.")
 
 (defvar my-ime-preview-mode-map
   (let ((map (make-sparse-keymap)))
@@ -90,6 +124,8 @@ buffer name, time, and metadata.")
     (define-key map (kbd "C-c j r") #'my-ime-convert-region-async)
     (define-key map (kbd "C-c j s") #'my-ime-convert-last-sentence-async)
     (define-key map (kbd "C-c j p") #'my-ime-convert-paragraph-async)
+    (define-key map (kbd "M-j") #'my-ime-select-candidate-dwim)
+    (define-key map (kbd "C-c j c") #'my-ime-select-candidate-dwim)
     (define-key map (kbd "C-c j v") #'my-ime-preview-dwim-async)
     (define-key map (kbd "C-c j h") #'my-ime-show-history)
     (define-key map (kbd "C-c j e") #'my-ime-eager-mode)
@@ -98,6 +134,7 @@ buffer name, time, and metadata.")
 
 (defvar my-ime-eager-mode-map
   (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "M-j") #'my-ime-select-candidate-dwim)
     (define-key map (kbd "RET") #'my-ime-convert-line-and-newline)
     (define-key map (kbd "C-c j e") #'my-ime-eager-mode)
     map)
@@ -129,6 +166,14 @@ buffer name, time, and metadata.")
 
 (defun my-ime--request (text &optional extra-metadata endpoint-path)
   "Synchronously convert TEXT using the local server."
+  (let* ((payload (my-ime--request-payload text extra-metadata endpoint-path))
+         (converted (alist-get 'text payload)))
+    (unless (stringp converted)
+      (error "my-ime: response did not contain text"))
+    converted))
+
+(defun my-ime--request-payload (text &optional extra-metadata endpoint-path)
+  "Synchronously request TEXT and return the decoded response payload."
   (let* ((url-request-method "POST")
          (url-request-extra-headers '(("Content-Type" . "application/json; charset=utf-8")))
          (metadata (append (my-ime--metadata) extra-metadata))
@@ -143,7 +188,7 @@ buffer name, time, and metadata.")
       (error "my-ime: request timed out after %ss" my-ime-timeout))
     (unwind-protect
         (with-current-buffer buffer
-          (my-ime--parse-response-current-buffer))
+          (my-ime--parse-response-payload-current-buffer))
       (kill-buffer buffer))))
 
 (defun my-ime--request-async (text callback errback &optional extra-metadata endpoint-path)
@@ -196,6 +241,14 @@ CALLBACK receives converted text.  ERRBACK receives an error string."
 
 (defun my-ime--parse-response-current-buffer ()
   "Parse the current url response buffer and return converted text."
+  (let* ((payload (my-ime--parse-response-payload-current-buffer))
+         (converted (alist-get 'text payload)))
+    (unless (stringp converted)
+      (error "my-ime: response did not contain text"))
+    converted))
+
+(defun my-ime--parse-response-payload-current-buffer ()
+  "Parse the current url response buffer and return its JSON payload."
   (goto-char (point-min))
   (let ((status (my-ime--response-status)))
     (goto-char (point-min))
@@ -212,10 +265,7 @@ CALLBACK receives converted text.  ERRBACK receives an error string."
                       (json-read))))
       (unless (= status 200)
         (error "my-ime: %s" (or (alist-get 'error payload) status)))
-      (let ((converted (alist-get 'text payload)))
-        (unless (stringp converted)
-          (error "my-ime: response did not contain text"))
-        converted))))
+      payload)))
 
 (defun my-ime--response-status ()
   "Return the HTTP status code for the current url response buffer."
@@ -279,6 +329,134 @@ LABEL is used for minibuffer status messages."
       (my-ime--replace-region-preserve-point beg end converted)
       (my-ime--record-history original converted label metadata)
       (message "my-ime: converted %s" label))))
+
+(defun my-ime--replace-bounds-with-selected-candidate
+    (beg end label &optional extra-metadata allow-unsafe)
+  "Convert BEG END, let the user select a candidate, then replace it."
+  (my-ime--ensure-safe-region beg end allow-unsafe)
+  (let ((original (buffer-substring-no-properties beg end)))
+    (when (string-empty-p original)
+      (error "my-ime: empty %s" label))
+    (message "my-ime: collecting %s candidates..." label)
+    (let* ((metadata extra-metadata)
+           (payload (my-ime--request-payload original metadata "/candidates"))
+           (candidates (my-ime--payload-candidates payload))
+           (candidates (delete-dups (copy-sequence candidates))))
+      (cond
+       ((null candidates)
+        (error "my-ime: no candidates returned"))
+       ((null (cdr candidates))
+        (let ((converted (car candidates)))
+          (my-ime--replace-region-preserve-point beg end converted)
+          (my-ime--record-history original converted label metadata)
+          (setq my-ime--suppress-next-ret-conversion t)
+          (message "my-ime: selected %s" label)))
+       ((my-ime--select-candidate-with-company
+         beg end label metadata original candidates)
+        nil)
+       (t
+       (let ((converted (my-ime--select-candidate candidates label)))
+          (my-ime--replace-region-preserve-point beg end converted)
+          (my-ime--record-history original converted label metadata)
+          (setq my-ime--suppress-next-ret-conversion t)
+          (message "my-ime: selected %s" label)))))))
+
+(defun my-ime--payload-candidates (payload)
+  "Return string candidates from a /candidates response PAYLOAD."
+  (let* ((raw-candidates (alist-get 'candidates payload))
+         (fallback (alist-get 'text payload))
+         (candidates (if (listp raw-candidates)
+                         (cl-remove-if-not #'stringp raw-candidates)
+                       nil)))
+    (cond
+     (candidates candidates)
+     ((stringp fallback) (list fallback))
+     (t (error "my-ime: response did not contain candidates")))))
+
+(defun my-ime--select-candidate (candidates label)
+  "Select one string from CANDIDATES for LABEL."
+  (let ((candidates (delete-dups (copy-sequence candidates))))
+    (cond
+     ((null candidates)
+      (error "my-ime: no candidates returned"))
+     ((null (cdr candidates))
+      (car candidates))
+     (t
+      (completing-read
+       (format "my-ime %s: " label)
+       candidates nil t nil nil (car candidates))))))
+
+(defun my-ime--select-candidate-with-company
+    (beg end label metadata original candidates)
+  "Use company to select one of CANDIDATES for ORIGINAL between BEG and END."
+  (when (and (require 'company nil t)
+             (fboundp 'company-begin-backend))
+    (condition-case err
+        (progn
+          (my-ime--company-clear-state)
+          (setq my-ime--company-candidates candidates
+                my-ime--company-original original
+                my-ime--company-label label
+                my-ime--company-metadata metadata
+                my-ime--company-beg-marker (copy-marker beg)
+                my-ime--company-end-marker (copy-marker end t))
+          (add-hook 'company-completion-cancelled-hook
+                    #'my-ime--company-clear-state nil t)
+          (unless (bound-and-true-p company-mode)
+            (company-mode 1))
+          (goto-char end)
+          (company-begin-backend #'my-ime--company-backend)
+          t)
+      (error
+       (my-ime--company-clear-state)
+       (message "my-ime: company unavailable, falling back: %s"
+                (error-message-string err))
+       nil))))
+
+(defun my-ime--company-backend (command &optional arg &rest _ignored)
+  "Company backend for the current my-ime candidate set."
+  (pcase command
+    (`prefix
+     (when (and my-ime--company-original
+                (markerp my-ime--company-end-marker)
+                (= (point) (marker-position my-ime--company-end-marker)))
+       (list my-ime--company-original "" t)))
+    (`candidates
+     (ignore arg)
+     my-ime--company-candidates)
+    (`sorted t)
+    (`duplicates t)
+    (`no-cache t)
+    (`annotation " my-ime")
+    (`post-completion
+     (my-ime--company-finish arg))))
+
+(defun my-ime--company-finish (candidate)
+  "Record a company-selected my-ime CANDIDATE and clear transient state."
+  (let ((original my-ime--company-original)
+        (label my-ime--company-label)
+        (metadata my-ime--company-metadata))
+    (when (and original label)
+      (my-ime--record-history original candidate label metadata)
+      (setq my-ime--suppress-next-ret-conversion t)
+      (message "my-ime: selected %s" label)))
+  (my-ime--company-clear-state))
+
+(defun my-ime--company-clear-state (&rest _ignored)
+  "Clear transient company state for my-ime candidate selection."
+  (when (boundp 'company-completion-cancelled-hook)
+    (remove-hook 'company-completion-cancelled-hook
+                 #'my-ime--company-clear-state t))
+  (when (markerp my-ime--company-beg-marker)
+    (set-marker my-ime--company-beg-marker nil))
+  (when (markerp my-ime--company-end-marker)
+    (set-marker my-ime--company-end-marker nil))
+  (setq my-ime--company-candidates nil
+        my-ime--company-original nil
+        my-ime--company-label nil
+        my-ime--company-metadata nil
+        my-ime--company-beg-marker nil
+        my-ime--company-end-marker nil))
 
 (defun my-ime--replace-bounds-async
     (beg end label &optional extra-metadata allow-unsafe keep-end-before-insert endpoint-path)
@@ -486,11 +664,234 @@ LABEL is used for minibuffer status messages."
       (setq end (1- end)))
     (cons beg end)))
 
+(defconst my-ime--romaji-kana-table
+  '(("a" . "あ") ("i" . "い") ("u" . "う") ("e" . "え") ("o" . "お")
+    ("ka" . "か") ("ki" . "き") ("ku" . "く") ("ke" . "け") ("ko" . "こ")
+    ("kya" . "きゃ") ("kyu" . "きゅ") ("kyo" . "きょ")
+    ("ga" . "が") ("gi" . "ぎ") ("gu" . "ぐ") ("ge" . "げ") ("go" . "ご")
+    ("gya" . "ぎゃ") ("gyu" . "ぎゅ") ("gyo" . "ぎょ")
+    ("sa" . "さ") ("si" . "し") ("shi" . "し") ("su" . "す") ("se" . "せ") ("so" . "そ")
+    ("sya" . "しゃ") ("sha" . "しゃ") ("syu" . "しゅ") ("shu" . "しゅ") ("syo" . "しょ") ("sho" . "しょ")
+    ("za" . "ざ") ("zi" . "じ") ("ji" . "じ") ("zu" . "ず") ("ze" . "ぜ") ("zo" . "ぞ")
+    ("zya" . "じゃ") ("ja" . "じゃ") ("zyu" . "じゅ") ("ju" . "じゅ") ("zyo" . "じょ") ("jo" . "じょ")
+    ("ta" . "た") ("ti" . "ち") ("chi" . "ち") ("tu" . "つ") ("tsu" . "つ") ("te" . "て") ("to" . "と")
+    ("tya" . "ちゃ") ("cha" . "ちゃ") ("tyu" . "ちゅ") ("chu" . "ちゅ") ("tyo" . "ちょ") ("cho" . "ちょ")
+    ("da" . "だ") ("di" . "ぢ") ("du" . "づ") ("de" . "で") ("do" . "ど")
+    ("dya" . "ぢゃ") ("dyu" . "ぢゅ") ("dyo" . "ぢょ")
+    ("na" . "な") ("ni" . "に") ("nu" . "ぬ") ("ne" . "ね") ("no" . "の")
+    ("nya" . "にゃ") ("nyu" . "にゅ") ("nyo" . "にょ")
+    ("ha" . "は") ("hi" . "ひ") ("hu" . "ふ") ("fu" . "ふ") ("he" . "へ") ("ho" . "ほ")
+    ("hya" . "ひゃ") ("hyu" . "ひゅ") ("hyo" . "ひょ")
+    ("ba" . "ば") ("bi" . "び") ("bu" . "ぶ") ("be" . "べ") ("bo" . "ぼ")
+    ("bya" . "びゃ") ("byu" . "びゅ") ("byo" . "びょ")
+    ("pa" . "ぱ") ("pi" . "ぴ") ("pu" . "ぷ") ("pe" . "ぺ") ("po" . "ぽ")
+    ("pya" . "ぴゃ") ("pyu" . "ぴゅ") ("pyo" . "ぴょ")
+    ("ma" . "ま") ("mi" . "み") ("mu" . "む") ("me" . "め") ("mo" . "も")
+    ("mya" . "みゃ") ("myu" . "みゅ") ("myo" . "みょ")
+    ("ya" . "や") ("yu" . "ゆ") ("yo" . "よ")
+    ("ra" . "ら") ("ri" . "り") ("ru" . "る") ("re" . "れ") ("ro" . "ろ")
+    ("rya" . "りゃ") ("ryu" . "りゅ") ("ryo" . "りょ")
+    ("wa" . "わ") ("wi" . "うぃ") ("we" . "うぇ") ("wo" . "を")
+    ("va" . "ゔぁ") ("vi" . "ゔぃ") ("vu" . "ゔ") ("ve" . "ゔぇ") ("vo" . "ゔぉ")
+    ("la" . "ぁ") ("li" . "ぃ") ("lu" . "ぅ") ("le" . "ぇ") ("lo" . "ぉ")
+    ("xa" . "ぁ") ("xi" . "ぃ") ("xu" . "ぅ") ("xe" . "ぇ") ("xo" . "ぉ")
+    ("ltu" . "っ") ("xtu" . "っ"))
+  "Romaji to hiragana table used by local eager kana conversion.")
+
+(defun my-ime--local-kana-post-self-insert ()
+  "Convert a completed romaji suffix before point to kana."
+  (when (and my-ime-eager-local-kana
+             (characterp last-command-event)
+             (not (minibufferp))
+             (not buffer-read-only)
+             (not (my-ime--inside-manual-term-marker-p)))
+    (if (eq last-command-event ?-)
+        (my-ime--restore-local-kana-before-hyphen)
+      (let ((bounds (my-ime--romaji-suffix-bounds)))
+        (when bounds
+          (let* ((beg (car bounds))
+                 (end (cdr bounds))
+                 (source (buffer-substring-no-properties beg end))
+                 (replacement (my-ime--romaji-suffix-to-kana source)))
+            (when replacement
+              (my-ime--replace-local-kana-region beg end source replacement))))))))
+
+(defun my-ime--replace-local-kana-region (beg end source replacement)
+  "Replace BEG END with local kana REPLACEMENT tagged with SOURCE."
+  (my-ime--replace-region-preserve-point
+   beg end
+   (propertize replacement 'my-ime-romaji-source source)))
+
+(defun my-ime--restore-local-kana-before-hyphen ()
+  "Restore locally converted kana before an inserted hyphen."
+  (let* ((hyphen-pos (1- (point)))
+         (kana-pos (1- hyphen-pos))
+         (source (and (>= kana-pos (point-min))
+                      (get-text-property kana-pos 'my-ime-romaji-source))))
+    (when source
+      (let ((beg kana-pos))
+        (while (and (> beg (point-min))
+                    (equal (get-text-property (1- beg) 'my-ime-romaji-source)
+                           source))
+          (setq beg (1- beg)))
+        (delete-region beg hyphen-pos)
+        (goto-char beg)
+        (insert source)
+        (goto-char (+ beg (length source) 1))))))
+
+(defun my-ime--inside-manual-term-marker-p ()
+  "Return non-nil when point is inside an unclosed ;; manual term marker."
+  (= 1 (% (my-ime--count-substring
+           (buffer-substring-no-properties (line-beginning-position) (point))
+           ";;")
+          2)))
+
+(defun my-ime--romaji-suffix-bounds ()
+  "Return the romaji suffix bounds before point, capped to a small IME window."
+  (let ((end (point))
+        (beg (point)))
+    (while (and (> beg (line-beginning-position))
+                (let ((char (char-before beg)))
+                  (or (and (>= char ?A) (<= char ?Z))
+                      (and (>= char ?a) (<= char ?z))
+                      (= char ?-)
+                      (= char ?'))))
+      (setq beg (1- beg)))
+    (when (< beg end)
+      (cons (max beg (- end 12)) end))))
+
+(defun my-ime--romaji-suffix-to-kana (source)
+  "Return kana replacement for completed romaji SOURCE, or nil to wait."
+  (let* ((lower (downcase source))
+         (len (length lower)))
+    (cond
+     ((string= lower "n'")
+      "ん")
+     ((and (>= len 3)
+           (string-prefix-p "nn" lower)
+           (cdr (assoc (substring lower 1) my-ime--romaji-kana-table)))
+      (concat "ん" (cdr (assoc (substring lower 1) my-ime--romaji-kana-table))))
+     ((and (= len 2)
+           (string= (substring lower 0 1) "n")
+           (not (string= (substring lower 1 2) "n"))
+           (not (string-match-p "[aeiouy]" (substring lower 1 2))))
+      (concat "ん" (substring source 1 2)))
+     ((and (= len 2)
+           (string= (substring lower 0 1) (substring lower 1 2))
+           (not (string-match-p "[aeioun]" (substring lower 0 1))))
+      (concat "っ" (substring source 1 2)))
+     ((and (string-search "-" lower)
+           (my-ime--hyphenated-romaji-p lower))
+      (my-ime--hyphenated-romaji-to-kana lower))
+     ((cdr (assoc lower my-ime--romaji-kana-table))))))
+
+(defun my-ime--hyphenated-romaji-p (source)
+  "Return non-nil when SOURCE is a small hyphenated romaji word."
+  (and (string-match-p "\\`[a-z]+\\(?:-[a-z]+\\)+\\'" source)
+       (<= (length source) 12)))
+
+(defun my-ime--hyphenated-romaji-to-kana (source)
+  "Convert hyphenated romaji SOURCE to kana, treating hyphen as long mark."
+  (let ((parts (split-string source "-"))
+        (converted nil))
+    (catch 'failed
+      (setq converted
+            (mapcar (lambda (part)
+                      (or (my-ime--plain-romaji-to-kana part)
+                          (throw 'failed nil)))
+                    parts))
+      (mapconcat #'identity converted "ー"))))
+
+(defun my-ime--plain-romaji-to-kana (source)
+  "Convert a complete non-hyphenated romaji SOURCE to kana, or nil."
+  (let ((cursor 0)
+        (lower (downcase source))
+        (result '()))
+    (catch 'failed
+      (while (< cursor (length lower))
+        (let ((converted nil))
+          (catch 'matched
+            (dolist (width '(3 2 1))
+              (let* ((end (min (length lower) (+ cursor width)))
+                     (chunk (substring lower cursor end))
+                     (kana (cdr (assoc chunk my-ime--romaji-kana-table))))
+                (when (and (= (- end cursor) width) kana)
+                  (push kana result)
+                  (setq cursor end
+                        converted t)
+                  (throw 'matched t)))))
+          (unless converted
+            (throw 'failed nil))))
+      (mapconcat #'identity (nreverse result) ""))))
+
 (defun my-ime--auto-convertible-text-p (text)
   "Return non-nil when TEXT looks worth auto-converting."
   (and (>= (length (string-trim text)) my-ime-eager-min-chars)
        (string-match-p "[[:alpha:]ぁ-んァ-ン一-龯々〆〤]" text)
        (my-ime--manual-term-markers-balanced-p text)))
+
+(defun my-ime--auto-conversion-bounds (beg end)
+  "Return adjusted bounds for eager conversion, or nil when suppressed."
+  (let* ((bounds (if (and my-ime-org-aware
+                          my-ime-eager-org-syntax-guard
+                          (derived-mode-p 'org-mode))
+                     (my-ime--org-adjust-auto-conversion-bounds beg end)
+                   (cons beg end)))
+         (bounds (and bounds
+                      (my-ime--space-preedit-after-manual-term-bounds
+                       (car bounds) (cdr bounds)))))
+    (when (and bounds
+               (< (car bounds) (cdr bounds))
+               (not (my-ime--auto-conversion-suppressed-p (car bounds) (cdr bounds))))
+      bounds)))
+
+(defun my-ime--auto-conversion-suppressed-p (beg end)
+  "Return non-nil when auto-conversion should not touch BEG to END."
+  (and my-ime-org-aware
+       my-ime-eager-org-syntax-guard
+       (derived-mode-p 'org-mode)
+       (my-ime--org-auto-conversion-suppressed-p beg end)))
+
+(defun my-ime--org-auto-conversion-suppressed-p (beg end)
+  "Return non-nil when org syntax in BEG to END should block eager conversion."
+  (or (my-ime--region-has-line-p beg end "\\s-*\\(?:CLOSED:\\|DEADLINE:\\|SCHEDULED:\\)")
+      (my-ime--org-unsafe-region-p beg end)))
+
+(defun my-ime--org-adjust-auto-conversion-bounds (beg end)
+  "Trim org headline prefix from BEG to END for eager conversion."
+  (save-excursion
+    (goto-char beg)
+    (if (looking-at "\\s-*\\*+\\s-+")
+        (let ((adjusted-beg (match-end 0)))
+          (goto-char adjusted-beg)
+          (when (looking-at "\\([^ \t\n]+\\)\\([ \t]+\\|\\'\\)")
+            (let ((token (match-string-no-properties 1)))
+              (when (my-ime--org-todo-keyword-p token)
+                (setq adjusted-beg (match-end 0)))))
+          (cons adjusted-beg end))
+      (cons beg end))))
+
+(defun my-ime--org-todo-keyword-p (token)
+  "Return non-nil when TOKEN is an org TODO keyword."
+  (let ((keywords (or (bound-and-true-p org-todo-keywords-1)
+                      '("TODO" "DONE"))))
+    (or (member token keywords)
+        (member (upcase token) keywords))))
+
+(defun my-ime--space-preedit-after-manual-term-bounds (beg end)
+  "Trim manual-term prefix from BEG to END during space preedit."
+  (if (not (and my-ime-eager-space-preedit
+                (eq last-command-event ?\s)))
+      (cons beg end)
+    (let* ((text (buffer-substring-no-properties beg end))
+           (start 0)
+           (last-end nil))
+      (while (string-match ";;[^;\n]+;;[ \t]*" text start)
+        (setq last-end (match-end 0)
+              start (match-end 0)))
+      (if last-end
+          (cons (+ beg last-end) end)
+        (cons beg end)))))
 
 (defun my-ime--eager-endpoint-path ()
   "Return the server endpoint path for the current eager trigger."
@@ -523,25 +924,27 @@ LABEL is used for minibuffer status messages."
   "Convert the previous sentence after eager trigger punctuation."
   (when (and my-ime-eager-mode
              (characterp last-command-event)
-             (memq last-command-event my-ime-eager-trigger-chars)
              (not (minibufferp))
              (not buffer-read-only))
-    (let* ((bounds (my-ime--last-sentence-bounds))
-           (beg (car bounds))
-           (end (cdr bounds))
-           (text (buffer-substring-no-properties beg end)))
-      (when (and (< beg end)
-                 (my-ime--auto-convertible-text-p text))
-        (condition-case err
-            (my-ime--replace-bounds-async
-             beg end (my-ime--eager-label)
-             `((trigger . ,(if (eq last-command-event ?\s)
-                               "eager-space"
-                             "eager-punctuation")))
-             nil nil
-             (my-ime--eager-endpoint-path))
-          (error (message "my-ime: eager conversion skipped: %s"
-                          (error-message-string err))))))))
+    (my-ime--local-kana-post-self-insert)
+    (when (memq last-command-event my-ime-eager-trigger-chars)
+      (let* ((raw-bounds (my-ime--last-sentence-bounds))
+             (bounds (my-ime--auto-conversion-bounds (car raw-bounds) (cdr raw-bounds))))
+        (when bounds
+          (let* ((beg (car bounds))
+                 (end (cdr bounds))
+                 (text (buffer-substring-no-properties beg end)))
+            (when (my-ime--auto-convertible-text-p text)
+              (condition-case err
+                  (my-ime--replace-bounds-async
+                   beg end (my-ime--eager-label)
+                   `((trigger . ,(if (eq last-command-event ?\s)
+                                     "eager-space"
+                                   "eager-punctuation")))
+                   nil nil
+                   (my-ime--eager-endpoint-path))
+                (error (message "my-ime: eager conversion skipped: %s"
+                                (error-message-string err)))))))))))
 
 (defun my-ime--paragraph-bounds ()
   "Return paragraph bounds around point."
@@ -704,6 +1107,30 @@ LABEL is used for minibuffer status messages."
     (my-ime-convert-last-sentence)))
 
 ;;;###autoload
+(defun my-ime-select-region-candidate (beg end)
+  "Convert the selected region and choose from sentence candidates."
+  (interactive "r")
+  (unless (use-region-p)
+    (error "my-ime: no active region"))
+  (my-ime--replace-bounds-with-selected-candidate beg end "region" nil t))
+
+;;;###autoload
+(defun my-ime-select-last-sentence-candidate ()
+  "Convert the sentence ending at point and choose from candidates."
+  (interactive)
+  (let ((bounds (my-ime--last-sentence-bounds)))
+    (my-ime--replace-bounds-with-selected-candidate
+     (car bounds) (cdr bounds) "sentence")))
+
+;;;###autoload
+(defun my-ime-select-candidate-dwim ()
+  "Convert active region, or sentence at point, with candidate selection."
+  (interactive)
+  (if (use-region-p)
+      (my-ime-select-region-candidate (region-beginning) (region-end))
+    (my-ime-select-last-sentence-candidate)))
+
+;;;###autoload
 (defun my-ime-convert-region-async (beg end)
   "Asynchronously convert the selected region."
   (interactive "r")
@@ -739,21 +1166,26 @@ LABEL is used for minibuffer status messages."
 When `my-ime-c-j-org-only' is non-nil, non-org buffers only insert a
 normal newline."
   (interactive)
-  (if (and my-ime-c-j-org-only
-           (not (derived-mode-p 'org-mode)))
+  (if my-ime--suppress-next-ret-conversion
+      (progn
+        (setq my-ime--suppress-next-ret-conversion nil)
+        (newline-and-indent))
+    (if (and my-ime-c-j-org-only
+             (not (derived-mode-p 'org-mode)))
       (newline-and-indent)
-    (let* ((bounds (my-ime--current-line-before-point-bounds))
-           (beg (car bounds))
-           (end (cdr bounds))
-           (text (buffer-substring-no-properties beg end)))
-      (when (and (< beg end)
-                 (my-ime--auto-convertible-text-p text))
-        (condition-case err
-            (my-ime--replace-bounds-async
-             beg end "line" '((trigger . "line-newline")) nil t)
-          (error (message "my-ime: line conversion skipped: %s"
-                          (error-message-string err)))))
-      (newline-and-indent))))
+      (let* ((raw-bounds (my-ime--current-line-before-point-bounds))
+             (bounds (my-ime--auto-conversion-bounds (car raw-bounds) (cdr raw-bounds))))
+        (when bounds
+          (let* ((beg (car bounds))
+                 (end (cdr bounds))
+                 (text (buffer-substring-no-properties beg end)))
+            (when (my-ime--auto-convertible-text-p text)
+              (condition-case err
+                  (my-ime--replace-bounds-async
+                   beg end "line" '((trigger . "line-newline")) nil t)
+                (error (message "my-ime: line conversion skipped: %s"
+                                (error-message-string err)))))))
+        (newline-and-indent)))))
 
 ;;;###autoload
 (defun my-ime-preview-region (beg end)

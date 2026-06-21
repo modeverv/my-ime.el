@@ -9,7 +9,7 @@ import json
 from typing import Any
 
 from .config import env
-from .converter import ConvertError, convert, preedit
+from .converter import CandidateResult, ConvertError, convert, convert_candidates, preedit
 
 
 DEFAULT_HOST = "127.0.0.1"
@@ -26,7 +26,7 @@ class ImeHandler(BaseHTTPRequestHandler):
         self._send_json({"error": "not found"}, HTTPStatus.NOT_FOUND)
 
     def do_POST(self) -> None:
-        if self.path not in {"/convert", "/preedit"}:
+        if self.path not in {"/convert", "/preedit", "/candidates"}:
             self._send_json({"error": "not found"}, HTTPStatus.NOT_FOUND)
             return
         try:
@@ -41,6 +41,8 @@ class ImeHandler(BaseHTTPRequestHandler):
                 return
             if self.path == "/preedit":
                 result = preedit(text, metadata=metadata)
+            elif self.path == "/candidates":
+                result = convert_candidates(text, metadata=metadata)
             else:
                 result = convert(text, metadata=metadata)
         except ConvertError as exc:
@@ -50,22 +52,23 @@ class ImeHandler(BaseHTTPRequestHandler):
             self._send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
             return
 
-        self._send_json(
-            {
-                "text": result.text,
-                "protected_text": result.protected_text,
-                "protected": [
-                    {
-                        "placeholder": span.placeholder,
-                        "original": span.original,
-                        "kind": span.kind,
-                    }
-                    for span in result.protected_spans
-                ],
-                "backend": result.backend,
-                "elapsed_ms": result.elapsed_ms,
-            }
-        )
+        payload = {
+            "text": result.text,
+            "protected_text": result.protected_text,
+            "protected": [
+                {
+                    "placeholder": span.placeholder,
+                    "original": span.original,
+                    "kind": span.kind,
+                }
+                for span in result.protected_spans
+            ],
+            "backend": result.backend,
+            "elapsed_ms": result.elapsed_ms,
+        }
+        if isinstance(result, CandidateResult):
+            payload["candidates"] = list(result.candidates)
+        self._send_json(payload)
 
     def log_message(self, format: str, *args: Any) -> None:
         if env("LOG_REQUESTS") == "1":

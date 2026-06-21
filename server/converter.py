@@ -11,6 +11,7 @@ from .config import env
 from .dictionary import (
     DictionaryError,
     apply_dictionary,
+    apply_dictionary_candidate_sets_with_placeholders,
     apply_dictionary_with_placeholders,
     configured_dictionary,
 )
@@ -26,6 +27,11 @@ class ConvertResult:
     protected_spans: tuple[ProtectedSpan, ...]
     backend: str
     elapsed_ms: int
+
+
+@dataclass(frozen=True)
+class CandidateResult(ConvertResult):
+    candidates: tuple[str, ...]
 
 
 class ConvertError(RuntimeError):
@@ -388,6 +394,60 @@ def convert(text: str, metadata: dict[str, Any] | None = None) -> ConvertResult:
     )
 
 
+def convert_candidates(text: str, metadata: dict[str, Any] | None = None) -> CandidateResult:
+    """Return selectable sentence candidates built from per-word alternatives."""
+
+    started = time.monotonic()
+    metadata = metadata or {}
+    backend = env("BACKEND", "kkc").lower()
+    per_word_limit = _metadata_int(
+        metadata,
+        "candidate_per_word_limit",
+        _candidate_per_word_limit(),
+    )
+    max_candidates = _metadata_int(metadata, "candidate_max", _candidate_max())
+    leading_ws, core_text, trailing_ws = _split_outer_whitespace(text)
+    protected = protect_text(core_text)
+    if _manual_term_confirmation_only(protected):
+        leading_ws = ""
+    try:
+        dictionary_variants = apply_dictionary_candidate_sets_with_placeholders(
+            protected.text,
+            placeholder_start=len(protected.spans),
+            per_word_limit=per_word_limit,
+            max_candidates=max_candidates,
+        )
+        restored_candidates: list[str] = []
+        first_protected_text = dictionary_variants[0][0] if dictionary_variants else protected.text
+        for dictionary_text, dictionary_spans in dictionary_variants:
+            for converted_protected in _backend_convert_candidates(backend, dictionary_text):
+                converted_protected = _restore_transient_kkc_spans(
+                    converted_protected,
+                    dictionary_spans,
+                )
+                restored = restore_text(converted_protected, protected)
+                restored_candidates.append(leading_ws + restored + trailing_ws)
+                if len(restored_candidates) >= max_candidates:
+                    break
+            if len(restored_candidates) >= max_candidates:
+                break
+    except (ProtectionError, DictionaryError, KkcError) as exc:
+        raise ConvertError(str(exc)) from exc
+
+    candidates = tuple(_dedupe_texts(restored_candidates))
+    if not candidates:
+        candidates = (text,)
+    elapsed_ms = int((time.monotonic() - started) * 1000)
+    return CandidateResult(
+        text=candidates[0],
+        candidates=candidates,
+        protected_text=first_protected_text,
+        protected_spans=protected.spans,
+        backend=backend,
+        elapsed_ms=elapsed_ms,
+    )
+
+
 def preedit(text: str, metadata: dict[str, Any] | None = None) -> ConvertResult:
     """Convert romanized text to readable kana/katakana without kanji commit."""
 
@@ -450,6 +510,34 @@ def kkc_convert(text: str) -> str:
     return re.sub(r"(<TECH_\d+>)\s+([をでにのがはと])", r"\1\2", converted)
 
 
+def _backend_convert_candidates(backend: str, text: str) -> tuple[str, ...]:
+    if backend == "dummy":
+        return (dummy_convert(text),)
+    if backend in {"kkc", "libkkc", "deterministic"}:
+        return tuple(kkc_convert_candidates(text))
+    raise ConvertError(f"unsupported backend: {backend}")
+
+
+def kkc_convert_candidates(text: str) -> list[str]:
+    """Return ranked protected-text candidates through kkc."""
+
+    hiragana = romaji_to_hiragana(text)
+    if not _kkc_needs_decoder(hiragana):
+        return [_postprocess_kkc_output(hiragana)]
+    candidates = convert_hiragana_candidates_with_kkc(hiragana, nbest=_kkc_nbest())
+    ranked = sorted(
+        enumerate(candidates),
+        key=lambda item: (_kkc_candidate_score(item[1]), -item[0]),
+        reverse=True,
+    )
+    converted: list[str] = []
+    for _index, candidate in ranked:
+        candidate = _postprocess_kkc_output(candidate)
+        candidate = re.sub(r"(<TECH_\d+>)\s+([をでにのがはと])", r"\1\2", candidate)
+        converted.append(candidate)
+    return _dedupe_texts(converted)
+
+
 def _restore_transient_kkc_spans(text: str, spans: tuple[tuple[str, str], ...]) -> str:
     for placeholder, original in spans:
         if text.count(placeholder) != 1:
@@ -470,6 +558,47 @@ def _kkc_nbest() -> int:
         return max(1, min(20, int(raw)))
     except ValueError:
         return 3
+
+
+def _candidate_per_word_limit() -> int:
+    raw = env("CANDIDATE_PER_WORD_LIMIT", "3")
+    try:
+        return max(1, min(5, int(raw)))
+    except ValueError:
+        return 3
+
+
+def _candidate_max() -> int:
+    raw = env("CANDIDATE_MAX", "30")
+    try:
+        return max(1, min(200, int(raw)))
+    except ValueError:
+        return 30
+
+
+def _metadata_int(metadata: dict[str, Any], key: str, default: int) -> int:
+    value = metadata.get(key)
+    if isinstance(value, bool):
+        return default
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        try:
+            return int(value)
+        except ValueError:
+            return default
+    return default
+
+
+def _dedupe_texts(texts: list[str]) -> list[str]:
+    seen: set[str] = set()
+    deduped: list[str] = []
+    for text in texts:
+        if text in seen:
+            continue
+        seen.add(text)
+        deduped.append(text)
+    return deduped
 
 
 def _select_kkc_candidate(candidates: list[str]) -> str:

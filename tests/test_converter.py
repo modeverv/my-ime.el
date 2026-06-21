@@ -3,12 +3,27 @@ from __future__ import annotations
 import os
 import unittest
 
-from server.converter import _drops_technical_terms, _unsafe_model_drift, convert, dummy_convert
+from server.converter import (
+    _drops_technical_terms,
+    _unsafe_model_drift,
+    convert,
+    convert_candidates,
+    dummy_convert,
+)
+from server.dictionary import load_dictionary, load_dictionary_candidates
 
 
 class ConverterTests(unittest.TestCase):
     def setUp(self) -> None:
         os.environ["MY_IME_BACKEND"] = "dummy"
+
+    def tearDown(self) -> None:
+        os.environ.pop("MY_IME_DICTIONARY", None)
+        os.environ.pop("MY_IME_DICTIONARY_PATH", None)
+        os.environ.pop("LLM_IME_DICTIONARY", None)
+        os.environ.pop("LLM_IME_DICTIONARY_PATH", None)
+        load_dictionary.cache_clear()
+        load_dictionary_candidates.cache_clear()
 
     def test_dummy_keeps_placeholders(self) -> None:
         self.assertEqual(dummy_convert("<TECH_0>wo<TECH_1>deyobu"), "<TECH_0>を<TECH_1>で呼ぶ")
@@ -102,6 +117,21 @@ class ConverterTests(unittest.TestCase):
             result.text,
             "ターゲットをEmacsに限定するなら、英字・日本語関係なく、とりあえずalphabet入力した"
             "ものをLLMで英語日本語混じりのoutputに切り替えることは可能。",
+        )
+
+    def test_convert_candidates_expands_dictionary_cartesian_product(self) -> None:
+        os.environ["MY_IME_DICTIONARY"] = (
+            '{"kanji": ["漢字", "感じ"], "henkan": ["変換", "返還"], "dekiru": "できる"}'
+        )
+        result = convert_candidates("kanjihenkandekiru")
+        self.assertEqual(
+            result.candidates,
+            (
+                "漢字変換できる",
+                "漢字返還できる",
+                "感じ変換できる",
+                "感じ返還できる",
+            ),
         )
 
 
