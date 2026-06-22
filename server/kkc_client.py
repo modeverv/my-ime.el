@@ -7,6 +7,7 @@ from pathlib import Path
 import re
 import shutil
 import subprocess
+import sys
 import threading
 
 from .config import env
@@ -176,12 +177,13 @@ def find_kkc_command() -> str:
     configured = env("KKC_COMMAND")
     if configured:
         return configured
-    bundled_probe = _bundled_runtime_dir() / "bin" / "kkc"
-    if bundled_probe.exists():
+    bundled_probe = _bundled_kkc_command()
+    if bundled_probe is not None:
         return str(bundled_probe)
-    local_probe = Path("/tmp/libkkc-install/bin/kkc")
-    if local_probe.exists():
-        return str(local_probe)
+    if os.name != "nt":
+        local_probe = Path("/tmp/libkkc-install/bin/kkc")
+        if local_probe.exists():
+            return str(local_probe)
     found = shutil.which("kkc")
     if found:
         return found
@@ -228,22 +230,38 @@ def _kkc_env(command: str) -> dict[str, str]:
         bundled_data_path = _bundled_kkc_data_path()
         if bundled_data_path:
             process_env["KKC_DATA_PATH"] = bundled_data_path
-    configured = env("KKC_DYLD_LIBRARY_PATH")
+    library_env_name = _library_env_name()
+    configured = env("KKC_LIBRARY_PATH") or env("KKC_DYLD_LIBRARY_PATH")
     if configured:
-        process_env["DYLD_LIBRARY_PATH"] = configured
-    elif command == str(_bundled_runtime_dir() / "bin" / "kkc"):
-        existing = process_env.get("DYLD_LIBRARY_PATH", "")
-        prefix = str(_bundled_runtime_dir() / "lib")
-        process_env["DYLD_LIBRARY_PATH"] = prefix if not existing else prefix + ":" + existing
-    elif command == "/tmp/libkkc-install/bin/kkc":
-        existing = process_env.get("DYLD_LIBRARY_PATH", "")
-        prefix = "/tmp/libkkc-install/lib:/opt/homebrew/lib"
-        process_env["DYLD_LIBRARY_PATH"] = prefix if not existing else prefix + ":" + existing
+        _prepend_path(process_env, library_env_name, configured)
+    else:
+        runtime_dir = _runtime_dir_for_command(command)
+        if runtime_dir is not None:
+            _prepend_runtime_library_path(process_env, runtime_dir)
+        elif command == "/tmp/libkkc-install/bin/kkc":
+            _prepend_path(process_env, library_env_name, "/tmp/libkkc-install/lib")
+            if sys.platform == "darwin":
+                _prepend_path(process_env, library_env_name, "/opt/homebrew/lib")
     return process_env
 
 
 def _bundled_runtime_dir() -> Path:
     return Path(__file__).resolve().parent.parent / ".deps" / "kkc-runtime" / "current"
+
+
+def _bundled_kkc_command() -> Path | None:
+    runtime_dir = _bundled_runtime_dir()
+    for name in _kkc_command_names():
+        candidate = runtime_dir / "bin" / name
+        if candidate.exists():
+            return candidate
+    return None
+
+
+def _kkc_command_names() -> tuple[str, ...]:
+    if os.name == "nt":
+        return ("kkc.exe",)
+    return ("kkc",)
 
 
 def _bundled_kkc_data_path() -> str:
@@ -257,3 +275,44 @@ def _bundled_kkc_data_path() -> str:
             str(runtime_dir / "share" / "libkkc"),
         ]
     )
+
+
+def _runtime_dir_for_command(command: str) -> Path | None:
+    command_path = Path(command)
+    if command_path.name.lower() not in {"kkc", "kkc.exe"}:
+        return None
+    if command_path.parent.name != "bin":
+        return None
+    return command_path.parent.parent
+
+
+def _prepend_runtime_library_path(process_env: dict[str, str], runtime_dir: Path) -> None:
+    if os.name == "nt":
+        _prepend_path(
+            process_env,
+            "PATH",
+            _join_paths([runtime_dir / "bin", runtime_dir / "lib"]),
+        )
+    else:
+        _prepend_path(process_env, _library_env_name(), str(runtime_dir / "lib"))
+
+
+def _library_env_name() -> str:
+    if os.name == "nt":
+        return "PATH"
+    if sys.platform == "darwin":
+        return "DYLD_LIBRARY_PATH"
+    return "LD_LIBRARY_PATH"
+
+
+def _prepend_path(process_env: dict[str, str], name: str, prefix: str) -> None:
+    existing = process_env.get(name, "")
+    process_env[name] = prefix if not existing else prefix + _path_separator() + existing
+
+
+def _join_paths(paths: list[Path]) -> str:
+    return _path_separator().join(str(path) for path in paths)
+
+
+def _path_separator() -> str:
+    return ";" if os.name == "nt" else os.pathsep
