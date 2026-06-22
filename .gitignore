@@ -1,7 +1,9 @@
 __pycache__/
 *.py[cod]
+.DS_Store
 .pytest_cache/
 .venv/
+.deps/
 data/generated/
 data/teacher/
 data/sft/
@@ -9,4 +11,3 @@ reports/
 runs/
 *.elc
 .idea
-

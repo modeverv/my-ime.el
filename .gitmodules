@@ -1,0 +1,3 @@
+[submodule "runtime/my-ime-kkc-runtime"]
+	path = runtime/my-ime-kkc-runtime
+	url = https://github.com/modeverv/my-ime-kkc-runtime.git

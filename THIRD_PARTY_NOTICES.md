@@ -6,6 +6,12 @@ dictionary are licensed under the MIT License. See `LICENSE`.
 The repository does not include a prebuilt Docker image and does not vendor
 `libkkc`, `kkc`, or upstream SKK dictionaries.
 
+The optional `runtime/my-ime-kkc-runtime` submodule is a separate GPL runtime
+distribution repository. It may contain prebuilt GPL runtime bundles for users
+who want to run my-ime without Docker or local libkkc builds. Those bundles are
+not MIT-licensed my-ime source files; they are distributed under their own GPL
+and third-party notices in that repository.
+
 ## Runtime Components Installed By Dockerfile
 
 The provided `Dockerfile` installs the following Debian packages at image build

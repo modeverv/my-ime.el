@@ -5,7 +5,7 @@
 ;;; Commentary:
 
 ;; Convert romanized/alphabet Japanese technical prose through a local
-;; HTTP server.  The server is expected to expose /convert and /preedit.
+;; stdio worker or HTTP server.
 
 ;;; Code:
 
@@ -24,12 +24,46 @@
   :group 'editing)
 
 (defcustom my-ime-server-url "http://127.0.0.1:8765"
-  "Base URL for the local ime server."
+  "Base URL for the legacy local HTTP ime server.
+This is used only when `my-ime-transport' is `http'."
   :type 'string
   :group 'my-ime)
 
+(defcustom my-ime-transport 'stdio
+  "Transport used for conversion requests.
+The standard transport is `stdio', where Emacs owns one local worker process
+and communicates with it over standard input and output.  `http' is kept for
+the legacy server mode."
+  :type '(choice (const :tag "stdio worker" stdio)
+                 (const :tag "legacy HTTP server" http))
+  :group 'my-ime)
+
+(defcustom my-ime-stdio-command nil
+  "Command list used to start the my-ime stdio worker.
+When nil, use `my-ime-stdio' from PATH, falling back to the project-local
+Python module."
+  :type '(choice (const :tag "Auto" nil)
+                 (repeat :tag "Command argv" string))
+  :group 'my-ime)
+
+(defconst my-ime--load-directory
+  (file-name-directory (or load-file-name buffer-file-name default-directory))
+  "Directory where my-ime.el was loaded from.")
+
+(defcustom my-ime-project-root
+  (file-name-as-directory (expand-file-name ".." my-ime--load-directory))
+  "Project root used when starting the project-local stdio worker."
+  :type 'directory
+  :group 'my-ime)
+
+(defcustom my-ime-runtime-directory
+  (expand-file-name ".deps/kkc-runtime/current" my-ime-project-root)
+  "Directory containing the downloaded kkc runtime."
+  :type 'directory
+  :group 'my-ime)
+
 (defcustom my-ime-timeout 10
-  "Seconds to wait for the local ime server."
+  "Seconds to wait for the local ime worker."
   :type 'number
   :group 'my-ime)
 
@@ -63,9 +97,17 @@
   :type 'boolean
   :group 'my-ime)
 
-(defcustom my-ime-eager-local-kana t
-  "When non-nil, convert completed romaji syllables locally while typing."
+(defcustom my-ime-eager-local-kana nil
+  "When non-nil, convert completed romaji syllables locally while typing.
+By default, eager-mode waits for SPC and uses the worker preedit path
+instead of converting romaji after each character."
   :type 'boolean
+  :group 'my-ime)
+
+(defcustom my-ime-eager-short-kana-chars 4
+  "Number of lowercase romaji chars to kana-convert without waiting for SPC.
+Set this to nil or 0 to disable short-window kana conversion."
+  :type '(choice (const :tag "Disabled" nil) integer)
   :group 'my-ime)
 
 (defcustom my-ime-eager-org-syntax-guard t
@@ -107,6 +149,24 @@ buffer name, time, and metadata.")
 (defvar-local my-ime--suppress-next-ret-conversion nil
   "When non-nil, the next eager RET only inserts a newline.")
 
+(defvar my-ime--stdio-process nil
+  "Live my-ime stdio worker process.")
+
+(defvar my-ime--stdio-buffer " *my-ime-stdio*"
+  "Process buffer for the my-ime stdio worker.")
+
+(defvar my-ime--stdio-stderr-buffer " *my-ime-stdio-stderr*"
+  "Stderr buffer for the my-ime stdio worker.")
+
+(defvar my-ime--stdio-next-id 0
+  "Next stdio request id.")
+
+(defvar my-ime--stdio-pending (make-hash-table :test 'equal)
+  "Pending stdio requests keyed by request id.")
+
+(defvar my-ime--stdio-partial ""
+  "Partial stdio response line.")
+
 (defvar my-ime-preview-mode-map
   (let ((map (make-sparse-keymap)))
     (define-key map (kbd "a") #'my-ime-accept-preview)
@@ -124,7 +184,7 @@ buffer name, time, and metadata.")
     (define-key map (kbd "C-c j r") #'my-ime-convert-region-async)
     (define-key map (kbd "C-c j s") #'my-ime-convert-last-sentence-async)
     (define-key map (kbd "C-c j p") #'my-ime-convert-paragraph-async)
-    (define-key map (kbd "M-j") #'my-ime-select-candidate-dwim)
+    (define-key map (kbd "C-o") #'my-ime-select-candidate-dwim)
     (define-key map (kbd "C-c j c") #'my-ime-select-candidate-dwim)
     (define-key map (kbd "C-c j v") #'my-ime-preview-dwim-async)
     (define-key map (kbd "C-c j h") #'my-ime-show-history)
@@ -134,7 +194,7 @@ buffer name, time, and metadata.")
 
 (defvar my-ime-eager-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "M-j") #'my-ime-select-candidate-dwim)
+    (define-key map (kbd "C-o") #'my-ime-select-candidate-dwim)
     (define-key map (kbd "RET") #'my-ime-convert-line-and-newline)
     (define-key map (kbd "C-c j e") #'my-ime-eager-mode)
     map)
@@ -164,85 +224,294 @@ buffer name, time, and metadata.")
     (buffer_name . ,(buffer-name))
     (syntax . ,(if (derived-mode-p 'org-mode) "org" "plain"))))
 
+(defun my-ime--endpoint-method (endpoint-path)
+  "Return stdio method name for ENDPOINT-PATH."
+  (cond
+   ((equal endpoint-path "/preedit") "preedit")
+   ((equal endpoint-path "/candidates") "candidates")
+   (t "convert")))
+
+(defun my-ime--stdio-command ()
+  "Return argv for starting the stdio worker."
+  (cond
+   (my-ime-stdio-command my-ime-stdio-command)
+   ((executable-find "my-ime-stdio") (list (executable-find "my-ime-stdio")))
+   (t (list "python3" "-m" "server.stdio_app"))))
+
+(defun my-ime--runtime-env ()
+  "Return process environment entries for the kkc runtime."
+  (let* ((runtime (file-name-as-directory (expand-file-name my-ime-runtime-directory)))
+         (kkc (expand-file-name "bin/kkc" runtime))
+         (data-path (concat (expand-file-name "lib/libkkc" runtime)
+                            path-separator
+                            (expand-file-name "share/libkkc" runtime)))
+         (lib-path (expand-file-name "lib" runtime))
+         (env nil))
+    (when (file-executable-p kkc)
+      (push (concat "MY_IME_KKC_COMMAND=" kkc) env)
+      (push (concat "MY_IME_KKC_DATA_PATH=" data-path) env)
+      (push (concat "MY_IME_KKC_DYLD_LIBRARY_PATH=" lib-path) env))
+    env))
+
+(defun my-ime--ensure-stdio-process ()
+  "Start and return the my-ime stdio worker process."
+  (if (and (process-live-p my-ime--stdio-process)
+           (eq (process-status my-ime--stdio-process) 'run))
+      my-ime--stdio-process
+    (setq my-ime--stdio-partial "")
+    (clrhash my-ime--stdio-pending)
+    (let* ((buffer (get-buffer-create my-ime--stdio-buffer))
+           (stderr-buffer (get-buffer-create my-ime--stdio-stderr-buffer))
+           (default-directory (file-name-as-directory my-ime-project-root))
+           (process-environment (append (my-ime--runtime-env) process-environment))
+           (process
+            (make-process
+             :name "my-ime-stdio"
+             :buffer buffer
+             :stderr stderr-buffer
+             :command (my-ime--stdio-command)
+             :connection-type 'pipe
+             :coding 'utf-8
+             :filter #'my-ime--stdio-filter
+             :sentinel #'my-ime--stdio-sentinel)))
+      (set-process-query-on-exit-flag process nil)
+      (setq my-ime--stdio-process process)
+      process)))
+
+(defun my-ime-stop-stdio-process ()
+  "Stop the current my-ime stdio worker process."
+  (interactive)
+  (when (process-live-p my-ime--stdio-process)
+    (delete-process my-ime--stdio-process))
+  (setq my-ime--stdio-process nil)
+  (clrhash my-ime--stdio-pending)
+  (setq my-ime--stdio-partial ""))
+
+(defun my-ime--stdio-sentinel (process event)
+  "Reject pending stdio requests when PROCESS reports EVENT."
+  (unless (process-live-p process)
+    (let* ((stderr (when (get-buffer my-ime--stdio-stderr-buffer)
+                     (with-current-buffer my-ime--stdio-stderr-buffer
+                       (string-trim (buffer-string)))))
+           (message (string-trim
+                     (if (and stderr (not (string-empty-p stderr)))
+                         (format "stdio process %s: %s" event stderr)
+                       (format "stdio process %s" event)))))
+      (maphash
+       (lambda (_id callbacks)
+         (let ((errback (plist-get callbacks :errback)))
+           (when errback
+             (funcall errback message))))
+       my-ime--stdio-pending)
+      (clrhash my-ime--stdio-pending)
+      (when (eq process my-ime--stdio-process)
+        (setq my-ime--stdio-process nil)))))
+
+(defun my-ime--stdio-filter (_process output)
+  "Handle stdio worker OUTPUT."
+  (setq my-ime--stdio-partial (concat my-ime--stdio-partial output))
+  (let ((lines (split-string my-ime--stdio-partial "\n")))
+    (setq my-ime--stdio-partial (car (last lines)))
+    (dolist (line (butlast lines))
+      (setq line (string-trim line))
+      (unless (string-empty-p line)
+        (my-ime--handle-stdio-line line)))))
+
+(defun my-ime--handle-stdio-line (line)
+  "Dispatch one stdio response LINE."
+  (condition-case err
+      (let* ((json-object-type 'alist)
+             (json-array-type 'list)
+             (json-key-type 'symbol)
+             (payload (json-read-from-string line))
+             (id (alist-get 'id payload))
+             (callbacks (gethash id my-ime--stdio-pending)))
+        (when callbacks
+          (remhash id my-ime--stdio-pending)
+          (let ((error-message (alist-get 'error payload)))
+            (if error-message
+                (funcall (plist-get callbacks :errback) error-message)
+              (funcall (plist-get callbacks :callback) payload)))))
+    (error
+     (message "my-ime: invalid stdio response: %s" (error-message-string err)))))
+
+(defun my-ime--stdio-send-request
+    (text callback errback &optional extra-metadata endpoint-path)
+  "Send TEXT to the stdio worker and return the request id."
+  (let* ((process (my-ime--ensure-stdio-process))
+         (metadata (append (my-ime--metadata) extra-metadata))
+         (id (cl-incf my-ime--stdio-next-id))
+         (payload `((id . ,id)
+                    (method . ,(my-ime--endpoint-method endpoint-path))
+                    (text . ,text)
+                    (metadata . ,metadata))))
+    (puthash id (list :callback callback :errback errback) my-ime--stdio-pending)
+    (condition-case err
+        (process-send-string
+         process
+         (concat (encode-coding-string (json-encode payload) 'utf-8) "\n"))
+      (error
+       (remhash id my-ime--stdio-pending)
+       (funcall errback (error-message-string err))))
+    id))
+
+(defun my-ime--stdio-request-payload (text &optional extra-metadata endpoint-path)
+  "Synchronously request TEXT through the stdio worker."
+  (let ((done nil)
+        (result nil)
+        (error-message nil)
+        (deadline (+ (float-time) my-ime-timeout))
+        (process nil)
+        (request-id nil))
+    (setq process
+          (my-ime--ensure-stdio-process))
+    (setq request-id
+          (my-ime--stdio-send-request
+           text
+           (lambda (payload)
+             (setq result payload
+                   done t))
+           (lambda (message)
+             (setq error-message message
+                   done t))
+           extra-metadata
+           endpoint-path))
+    (while (and (not done) (< (float-time) deadline))
+      (accept-process-output process 0.05))
+    (unless done
+      (remhash request-id my-ime--stdio-pending)
+      (setq error-message (format "request timed out after %ss" my-ime-timeout)))
+    (when error-message
+      (error "my-ime: %s" error-message))
+    result))
+
+(defun my-ime--stdio-request-payload-async
+    (text callback errback &optional extra-metadata endpoint-path)
+  "Asynchronously request TEXT through the stdio worker."
+  (let ((done nil)
+        (request-id nil)
+        (timeout-timer nil))
+    (setq request-id
+          (my-ime--stdio-send-request
+           text
+           (lambda (payload)
+             (unless done
+               (setq done t)
+               (when timeout-timer
+                 (cancel-timer timeout-timer))
+               (funcall callback payload)))
+           (lambda (message)
+             (unless done
+               (setq done t)
+               (when timeout-timer
+                 (cancel-timer timeout-timer))
+               (funcall errback message)))
+           extra-metadata
+           endpoint-path))
+    (setq timeout-timer
+          (run-at-time
+           my-ime-timeout nil
+           (lambda ()
+             (unless done
+               (setq done t)
+               (remhash request-id my-ime--stdio-pending)
+               (funcall errback
+                        (format "request timed out after %ss" my-ime-timeout))))))))
+
 (defun my-ime--request (text &optional extra-metadata endpoint-path)
-  "Synchronously convert TEXT using the local server."
+  "Synchronously convert TEXT using the configured local transport."
   (let* ((payload (my-ime--request-payload text extra-metadata endpoint-path))
-         (converted (alist-get 'text payload)))
-    (unless (stringp converted)
-      (error "my-ime: response did not contain text"))
+         (converted (my-ime--payload-text payload)))
     converted))
 
 (defun my-ime--request-payload (text &optional extra-metadata endpoint-path)
   "Synchronously request TEXT and return the decoded response payload."
-  (let* ((url-request-method "POST")
-         (url-request-extra-headers '(("Content-Type" . "application/json; charset=utf-8")))
-         (metadata (append (my-ime--metadata) extra-metadata))
-         (url-request-data
-          (encode-coding-string
-           (json-encode `((text . ,text) (metadata . ,metadata)))
-           'utf-8))
-         (endpoint (concat (string-remove-suffix "/" my-ime-server-url)
-                           (or endpoint-path "/convert")))
-         (buffer (url-retrieve-synchronously endpoint t t my-ime-timeout)))
-    (unless buffer
-      (error "my-ime: request timed out after %ss" my-ime-timeout))
-    (unwind-protect
-        (with-current-buffer buffer
-          (my-ime--parse-response-payload-current-buffer))
-      (kill-buffer buffer))))
+  (if (eq my-ime-transport 'stdio)
+      (my-ime--stdio-request-payload text extra-metadata endpoint-path)
+    (let* ((url-request-method "POST")
+           (url-request-extra-headers '(("Content-Type" . "application/json; charset=utf-8")))
+           (metadata (append (my-ime--metadata) extra-metadata))
+           (url-request-data
+            (encode-coding-string
+             (json-encode `((text . ,text) (metadata . ,metadata)))
+             'utf-8))
+           (endpoint (concat (string-remove-suffix "/" my-ime-server-url)
+                             (or endpoint-path "/convert")))
+           (buffer (url-retrieve-synchronously endpoint t t my-ime-timeout)))
+      (unless buffer
+        (error "my-ime: request timed out after %ss" my-ime-timeout))
+      (unwind-protect
+          (with-current-buffer buffer
+            (my-ime--parse-response-payload-current-buffer))
+        (kill-buffer buffer)))))
 
 (defun my-ime--request-async (text callback errback &optional extra-metadata endpoint-path)
-  "Asynchronously convert TEXT, then call CALLBACK or ERRBACK.
+  "Asynchronously convert TEXT through the configured transport.
 CALLBACK receives converted text.  ERRBACK receives an error string."
-  (let* ((url-request-method "POST")
-         (url-request-extra-headers '(("Content-Type" . "application/json; charset=utf-8")))
-         (metadata (append (my-ime--metadata) extra-metadata))
-         (url-request-data
-          (encode-coding-string
-           (json-encode `((text . ,text) (metadata . ,metadata)))
-           'utf-8))
-         (endpoint (concat (string-remove-suffix "/" my-ime-server-url)
-                           (or endpoint-path "/convert")))
-         (done nil)
-         (request-buffer nil)
-         (timeout-timer nil))
-    (setq
-     request-buffer
-     (url-retrieve
-      endpoint
-      (lambda (status)
-        (unless done
-          (setq done t)
-          (when timeout-timer
-            (cancel-timer timeout-timer))
-          (unwind-protect
-              (condition-case err
-                  (if-let ((url-error (plist-get status :error)))
-                      (funcall errback (format "%s" url-error))
-                    (funcall callback (my-ime--parse-response-current-buffer)))
-                (error (funcall errback (error-message-string err))))
-            (when (buffer-live-p (current-buffer))
-              (kill-buffer (current-buffer))))))
-      nil
-      t
-      t))
-    (if request-buffer
-        (setq timeout-timer
-              (run-at-time
-               my-ime-timeout nil
-               (lambda ()
-                 (unless done
-                   (setq done t)
-                   (when (buffer-live-p request-buffer)
-                     (kill-buffer request-buffer))
-                   (funcall errback
-                            (format "request timed out after %ss" my-ime-timeout))))))
-      (funcall errback "request could not be started"))))
+  (if (eq my-ime-transport 'stdio)
+      (my-ime--stdio-request-payload-async
+       text
+       (lambda (payload)
+         (condition-case err
+             (funcall callback (my-ime--payload-text payload))
+           (error (funcall errback (error-message-string err)))))
+       errback
+       extra-metadata
+       endpoint-path)
+    (let* ((url-request-method "POST")
+           (url-request-extra-headers '(("Content-Type" . "application/json; charset=utf-8")))
+           (metadata (append (my-ime--metadata) extra-metadata))
+           (url-request-data
+            (encode-coding-string
+             (json-encode `((text . ,text) (metadata . ,metadata)))
+             'utf-8))
+           (endpoint (concat (string-remove-suffix "/" my-ime-server-url)
+                             (or endpoint-path "/convert")))
+           (done nil)
+           (request-buffer nil)
+           (timeout-timer nil))
+      (setq
+       request-buffer
+       (url-retrieve
+        endpoint
+        (lambda (status)
+          (unless done
+            (setq done t)
+            (when timeout-timer
+              (cancel-timer timeout-timer))
+            (unwind-protect
+                (condition-case err
+                    (if-let ((url-error (plist-get status :error)))
+                        (funcall errback (format "%s" url-error))
+                      (funcall callback (my-ime--parse-response-current-buffer)))
+                  (error (funcall errback (error-message-string err))))
+              (when (buffer-live-p (current-buffer))
+                (kill-buffer (current-buffer))))))
+        nil
+        t
+        t))
+      (if request-buffer
+          (setq timeout-timer
+                (run-at-time
+                 my-ime-timeout nil
+                 (lambda ()
+                   (unless done
+                     (setq done t)
+                     (when (buffer-live-p request-buffer)
+                       (kill-buffer request-buffer))
+                     (funcall errback
+                              (format "request timed out after %ss" my-ime-timeout))))))
+        (funcall errback "request could not be started")))))
 
 (defun my-ime--parse-response-current-buffer ()
   "Parse the current url response buffer and return converted text."
   (let* ((payload (my-ime--parse-response-payload-current-buffer))
-         (converted (alist-get 'text payload)))
+         (converted (my-ime--payload-text payload)))
+    converted))
+
+(defun my-ime--payload-text (payload)
+  "Return converted text from response PAYLOAD."
+  (let ((converted (alist-get 'text payload)))
     (unless (stringp converted)
       (error "my-ime: response did not contain text"))
     converted))
@@ -681,6 +950,7 @@ LABEL is used for minibuffer status messages."
     ("na" . "な") ("ni" . "に") ("nu" . "ぬ") ("ne" . "ね") ("no" . "の")
     ("nya" . "にゃ") ("nyu" . "にゅ") ("nyo" . "にょ")
     ("ha" . "は") ("hi" . "ひ") ("hu" . "ふ") ("fu" . "ふ") ("he" . "へ") ("ho" . "ほ")
+    ("fa" . "ふぁ") ("fi" . "ふぃ") ("fe" . "ふぇ") ("fo" . "ふぉ")
     ("hya" . "ひゃ") ("hyu" . "ひゅ") ("hyo" . "ひょ")
     ("ba" . "ば") ("bi" . "び") ("bu" . "ぶ") ("be" . "べ") ("bo" . "ぼ")
     ("bya" . "びゃ") ("byu" . "びゅ") ("byo" . "びょ")
@@ -704,7 +974,8 @@ LABEL is used for minibuffer status messages."
              (characterp last-command-event)
              (not (minibufferp))
              (not buffer-read-only)
-             (not (my-ime--inside-manual-term-marker-p)))
+             (not (my-ime--inside-manual-term-marker-p))
+             (not (my-ime--org-todo-keyword-prefix-at-point-p)))
     (if (eq last-command-event ?-)
         (my-ime--restore-local-kana-before-hyphen)
       (let ((bounds (my-ime--romaji-suffix-bounds)))
@@ -715,6 +986,85 @@ LABEL is used for minibuffer status messages."
                  (replacement (my-ime--romaji-suffix-to-kana source)))
             (when replacement
               (my-ime--replace-local-kana-region beg end source replacement))))))))
+
+(defun my-ime--short-kana-post-self-insert ()
+  "Convert a small lowercase romaji window before point to kana."
+  (when (and (not my-ime-eager-local-kana)
+             (integerp my-ime-eager-short-kana-chars)
+             (> my-ime-eager-short-kana-chars 0)
+             (characterp last-command-event)
+             (not (minibufferp))
+             (not buffer-read-only)
+             (not (memq last-command-event my-ime-eager-trigger-chars))
+             (not (my-ime--inside-manual-term-marker-p))
+             (not (my-ime--org-todo-keyword-prefix-at-point-p)))
+    (if (eq last-command-event ?-)
+        (my-ime--short-kana-finalize-before-hyphen)
+      (let ((bounds (my-ime--short-kana-bounds)))
+        (when bounds
+          (let* ((beg (car bounds))
+                 (end (cdr bounds))
+                 (source (buffer-substring-no-properties beg end))
+                 (replacement (my-ime--plain-romaji-to-kana source)))
+            (when replacement
+              (my-ime--replace-local-kana-region beg end source replacement))))))))
+
+(defun my-ime--short-kana-finalize-before-hyphen ()
+  "Reconvert a partially kanaized romaji word before a trailing hyphen."
+  (let ((word (my-ime--short-kana-word-before-hyphen)))
+    (when word
+      (let* ((beg (car word))
+             (source (cdr word))
+             (replacement (my-ime--romaji-suffix-to-kana (concat source "-"))))
+        (when replacement
+          (delete-region beg (point))
+          (insert (propertize replacement 'my-ime-romaji-source
+                              (concat source "-"))))))))
+
+(defun my-ime--short-kana-word-before-hyphen ()
+  "Return (BEG . SOURCE) for romaji plus local kana before inserted hyphen."
+  (let ((pos (1- (point)))
+        (beg (1- (point)))
+        (source ""))
+    (while (> pos (line-beginning-position))
+      (let* ((prev (1- pos))
+             (romaji-source (get-text-property prev 'my-ime-romaji-source))
+             (char (char-after prev)))
+        (cond
+         (romaji-source
+          (let ((chunk-beg prev))
+            (while (and (> chunk-beg (line-beginning-position))
+                        (equal (get-text-property (1- chunk-beg)
+                                                  'my-ime-romaji-source)
+                               romaji-source))
+              (setq chunk-beg (1- chunk-beg)))
+            (setq source (concat romaji-source source)
+                  beg chunk-beg
+                  pos chunk-beg)))
+         ((and char (>= char ?a) (<= char ?z))
+          (setq source (concat (char-to-string char) source)
+                beg prev
+                pos prev))
+         (t
+          (setq pos (line-beginning-position))))))
+    (when (>= (length source) 3)
+      (cons beg source))))
+
+(defun my-ime--short-kana-bounds ()
+  "Return bounds for the short romaji window before point."
+  (let ((end (point))
+        (beg (point))
+        (line-beg (line-beginning-position))
+        (chars my-ime-eager-short-kana-chars))
+    (when (not (get-text-property (1- end) 'my-ime-romaji-source))
+      (while (and (> beg line-beg)
+                  (< (- end beg) chars)
+                  (let ((char (char-before beg)))
+                    (and (>= char ?a) (<= char ?z))))
+        (setq beg (1- beg)))
+      (when (and (<= 3 (- end beg))
+                 (<= (- end beg) chars))
+        (cons beg end)))))
 
 (defun my-ime--replace-local-kana-region (beg end source replacement)
   "Replace BEG END with local kana REPLACEMENT tagged with SOURCE."
@@ -745,6 +1095,42 @@ LABEL is used for minibuffer status messages."
            (buffer-substring-no-properties (line-beginning-position) (point))
            ";;")
           2)))
+
+(defun my-ime--org-todo-keywords ()
+  "Return configured org TODO keywords."
+  (let ((keywords (or (bound-and-true-p org-todo-keywords-1)
+                      '("TODO" "DONE"))))
+    (delete-dups
+     (cl-remove-if-not
+      #'stringp
+      (copy-sequence keywords)))))
+
+(defun my-ime--org-todo-keyword-p (token)
+  "Return non-nil when TOKEN is an org TODO keyword."
+  (let ((keywords (my-ime--org-todo-keywords)))
+    (or (member token keywords)
+        (member (upcase token) keywords))))
+
+(defun my-ime--org-todo-keyword-prefix-at-point-p ()
+  "Return non-nil when point is in an org TODO keyword slot."
+  (and my-ime-org-aware
+       (derived-mode-p 'org-mode)
+       (save-excursion
+         (let ((point-at-call (point)))
+           (beginning-of-line)
+           (when (looking-at "\\s-*\\*+\\s-+\\([^ \t\n]*\\)")
+             (let* ((token-beg (match-beginning 1))
+                    (token-end (match-end 1))
+                    (token (buffer-substring-no-properties
+                            token-beg
+                            (min point-at-call token-end))))
+               (and (<= token-beg point-at-call)
+                    (<= point-at-call token-end)
+                    (not (string-empty-p token))
+                    (cl-some
+                     (lambda (keyword)
+                       (string-prefix-p (upcase token) (upcase keyword)))
+                     (my-ime--org-todo-keywords)))))))))
 
 (defun my-ime--romaji-suffix-bounds ()
   "Return the romaji suffix bounds before point, capped to a small IME window."
@@ -783,6 +1169,12 @@ LABEL is used for minibuffer status messages."
      ((and (string-search "-" lower)
            (my-ime--hyphenated-romaji-p lower))
       (my-ime--hyphenated-romaji-to-kana lower))
+     ((and (string-suffix-p "-" lower)
+           (> len 1))
+      (let ((base (my-ime--plain-romaji-to-kana
+                   (substring lower 0 (1- len)))))
+        (when base
+          (concat base "ー"))))
      ((cdr (assoc lower my-ime--romaji-kana-table))))))
 
 (defun my-ime--hyphenated-romaji-p (source)
@@ -871,13 +1263,6 @@ LABEL is used for minibuffer status messages."
           (cons adjusted-beg end))
       (cons beg end))))
 
-(defun my-ime--org-todo-keyword-p (token)
-  "Return non-nil when TOKEN is an org TODO keyword."
-  (let ((keywords (or (bound-and-true-p org-todo-keywords-1)
-                      '("TODO" "DONE"))))
-    (or (member token keywords)
-        (member (upcase token) keywords))))
-
 (defun my-ime--space-preedit-after-manual-term-bounds (beg end)
   "Trim manual-term prefix from BEG to END during space preedit."
   (if (not (and my-ime-eager-space-preedit
@@ -894,7 +1279,7 @@ LABEL is used for minibuffer status messages."
         (cons beg end)))))
 
 (defun my-ime--eager-endpoint-path ()
-  "Return the server endpoint path for the current eager trigger."
+  "Return the conversion endpoint path for the current eager trigger."
   (if (and my-ime-eager-space-preedit
            (eq last-command-event ?\s))
       "/preedit"
@@ -927,6 +1312,7 @@ LABEL is used for minibuffer status messages."
              (not (minibufferp))
              (not buffer-read-only))
     (my-ime--local-kana-post-self-insert)
+    (my-ime--short-kana-post-self-insert)
     (when (memq last-command-event my-ime-eager-trigger-chars)
       (let* ((raw-bounds (my-ime--last-sentence-bounds))
              (bounds (my-ime--auto-conversion-bounds (car raw-bounds) (cdr raw-bounds))))
@@ -1062,7 +1448,22 @@ LABEL is used for minibuffer status messages."
     (let ((beg (+ (line-beginning-position) (length (match-string 1))))
           (tag (match-beginning 3))
           (line-end (line-end-position)))
+      (goto-char beg)
+      (when (looking-at "\\([^ \t\n]+\\)\\([ \t]+\\|\\'\\)")
+        (let ((token (match-string-no-properties 1)))
+          (when (my-ime--org-todo-keyword-p token)
+            (setq beg (match-end 0)))))
       (cons beg (or tag line-end)))))
+
+(defun my-ime--select-last-sentence-bounds ()
+  "Return bounds for candidate selection at point."
+  (if (and my-ime-org-aware
+           (derived-mode-p 'org-mode)
+           (save-excursion
+             (beginning-of-line)
+             (looking-at-p "\\s-*\\*+\\s-+")))
+      (my-ime--org-headline-text-bounds)
+    (my-ime--last-sentence-bounds)))
 
 (defun my-ime--region-or-last-sentence-bounds ()
   "Return active region bounds, or last sentence bounds."
@@ -1118,7 +1519,7 @@ LABEL is used for minibuffer status messages."
 (defun my-ime-select-last-sentence-candidate ()
   "Convert the sentence ending at point and choose from candidates."
   (interactive)
-  (let ((bounds (my-ime--last-sentence-bounds)))
+  (let ((bounds (my-ime--select-last-sentence-bounds)))
     (my-ime--replace-bounds-with-selected-candidate
      (car bounds) (cdr bounds) "sentence")))
 

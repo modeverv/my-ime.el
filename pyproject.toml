@@ -12,6 +12,7 @@ license = { text = "MIT" }
 
 [project.scripts]
 my-ime-server = "server.app:main"
+my-ime-stdio = "server.stdio_app:main"
 
 [tool.setuptools]
 packages = ["server"]

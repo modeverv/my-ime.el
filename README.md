@@ -68,9 +68,38 @@ serverwo cachede   -> サーバーをキャッシュで
 
 `/preedit` は入力中の視認性を上げるための処理です。`/convert` は最終的な日本語文に寄せる処理です。`/candidates` は通常の確定変換を壊さず、明示的に候補を見たい時だけ使う処理です。
 
+## 依存 runtime を取得
+
+通常は Docker や常駐 HTTP port を使わず、GPL runtime bundle を取得して
+Emacs 管理の stdio worker として起動します。
+
+```sh
+make deps
+```
+
+`make deps` は OS/arch に対応する `my-ime-kkc-runtime` bundle を GitHub から
+`.deps/kkc-runtime/current` に展開します。Emacs 側はこの中の `bin/kkc` と
+`libkkc-data` を使います。
+
+## Emacs から stdio worker として使う
+
+`emacs/my-ime.el` のデフォルト transport は `stdio` です。最初の変換時に
+Emacs が `my-ime-stdio` worker を別プロセスとして起動し、以後は標準入出力で
+JSON Lines request を送ります。port は消費しません。
+
+ローカル checkout から使う場合は、`my-ime-stdio` entrypoint が PATH に無くても
+`python3 -m server.stdio_app` に fallback します。
+
+```elisp
+(load-file "/path/to/my-ime/emacs/my-ime.el")
+(setq my-ime-transport 'stdio)
+(setq my-ime-runtime-directory "/path/to/my-ime/.deps/kkc-runtime/current")
+(my-ime-mode 1)
+```
+
 ## Docker で起動
 
-推奨の起動方法です。Python サーバー、`kkc` コマンド、`libkkc` の辞書データを Docker Compose の中に固定します。
+互換用の起動方法です。Python サーバー、`kkc` コマンド、`libkkc` の辞書データを Docker Compose の中に固定します。
 
 ```sh
 make docker-up

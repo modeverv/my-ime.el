@@ -176,6 +176,9 @@ def find_kkc_command() -> str:
     configured = env("KKC_COMMAND")
     if configured:
         return configured
+    bundled_probe = _bundled_runtime_dir() / "bin" / "kkc"
+    if bundled_probe.exists():
+        return str(bundled_probe)
     local_probe = Path("/tmp/libkkc-install/bin/kkc")
     if local_probe.exists():
         return str(local_probe)
@@ -218,11 +221,39 @@ def _from_kkc_placeholders(text: str) -> str:
 
 def _kkc_env(command: str) -> dict[str, str]:
     process_env = os.environ.copy()
+    data_path = env("KKC_DATA_PATH")
+    if data_path:
+        process_env["KKC_DATA_PATH"] = data_path
+    else:
+        bundled_data_path = _bundled_kkc_data_path()
+        if bundled_data_path:
+            process_env["KKC_DATA_PATH"] = bundled_data_path
     configured = env("KKC_DYLD_LIBRARY_PATH")
     if configured:
         process_env["DYLD_LIBRARY_PATH"] = configured
+    elif command == str(_bundled_runtime_dir() / "bin" / "kkc"):
+        existing = process_env.get("DYLD_LIBRARY_PATH", "")
+        prefix = str(_bundled_runtime_dir() / "lib")
+        process_env["DYLD_LIBRARY_PATH"] = prefix if not existing else prefix + ":" + existing
     elif command == "/tmp/libkkc-install/bin/kkc":
         existing = process_env.get("DYLD_LIBRARY_PATH", "")
         prefix = "/tmp/libkkc-install/lib:/opt/homebrew/lib"
         process_env["DYLD_LIBRARY_PATH"] = prefix if not existing else prefix + ":" + existing
     return process_env
+
+
+def _bundled_runtime_dir() -> Path:
+    return Path(__file__).resolve().parent.parent / ".deps" / "kkc-runtime" / "current"
+
+
+def _bundled_kkc_data_path() -> str:
+    runtime_dir = _bundled_runtime_dir()
+    model_dir = runtime_dir / "lib" / "libkkc" / "models"
+    if not model_dir.exists():
+        return ""
+    return os.pathsep.join(
+        [
+            str(runtime_dir / "lib" / "libkkc"),
+            str(runtime_dir / "share" / "libkkc"),
+        ]
+    )

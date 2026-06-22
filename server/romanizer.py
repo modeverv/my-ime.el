@@ -36,6 +36,10 @@ def _plain_romaji_to_hiragana(text: str) -> str:
         if char.isspace():
             index += 1
             continue
+        if char == "-" and result:
+            result.append("ー")
+            index += 1
+            continue
         if not char.isascii() or not char.isalpha():
             result.append(char)
             index += 1
@@ -156,6 +160,10 @@ ROMAJI_TABLE: dict[str, str] = {
     "hi": "ひ",
     "hu": "ふ",
     "fu": "ふ",
+    "fa": "ふぁ",
+    "fi": "ふぃ",
+    "fe": "ふぇ",
+    "fo": "ふぉ",
     "he": "へ",
     "ho": "ほ",
     "hya": "ひゃ",

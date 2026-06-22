@@ -10,6 +10,8 @@ class RomanizerTests(unittest.TestCase):
         self.assertEqual(romaji_to_hiragana("dekaihatusuru"), "でかいはつする")
         self.assertEqual(romaji_to_hiragana("wojikkou suru"), "をじっこうする")
         self.assertEqual(romaji_to_hiragana("deyobunohaomoi"), "でよぶのはおもい")
+        self.assertEqual(romaji_to_hiragana("yoi"), "よい")
+        self.assertEqual(romaji_to_hiragana("famiri-"), "ふぁみりー")
 
     def test_preserves_placeholders_and_removes_input_spaces(self) -> None:
         self.assertEqual(romaji_to_hiragana("<TECH_0> de yaru"), "<TECH_0>でやる")
