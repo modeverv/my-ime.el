@@ -104,6 +104,24 @@ instead of converting romaji after each character."
   :type 'boolean
   :group 'my-ime)
 
+(defcustom my-ime-live-idle-delay 0.03
+  "Idle seconds before `my-ime-live-mode' refreshes the live conversion."
+  :type 'number
+  :group 'my-ime)
+
+(defcustom my-ime-live-min-chars 3
+  "Minimum trimmed source length before live conversion is attempted."
+  :type 'integer
+  :group 'my-ime)
+
+(defcustom my-ime-live-preview-endpoint "/convert"
+  "Endpoint used for `my-ime-live-mode' preview overlays.
+Use \"/convert\" for kanji-like live conversion, or \"/preedit\" for lighter
+kana-only preview."
+  :type '(choice (const :tag "Kanji conversion" "/convert")
+                 (const :tag "Kana preedit" "/preedit"))
+  :group 'my-ime)
+
 (defcustom my-ime-eager-short-kana-chars 4
   "Number of lowercase romaji chars to kana-convert without waiting for SPC.
 Set this to nil or 0 to disable short-window kana conversion."
@@ -148,6 +166,21 @@ buffer name, time, and metadata.")
 
 (defvar-local my-ime--suppress-next-ret-conversion nil
   "When non-nil, the next eager RET only inserts a newline.")
+
+(defvar-local my-ime--live-overlay nil
+  "Overlay displaying the current live conversion candidate.")
+
+(defvar-local my-ime--live-state nil
+  "Current live conversion state.")
+
+(defvar-local my-ime--live-timer nil
+  "Idle timer used by `my-ime-live-mode'.")
+
+(defvar-local my-ime--live-sequence 0
+  "Monotonic sequence for discarding stale live conversion responses.")
+
+(defvar-local my-ime--live-inhibit-after-change nil
+  "When non-nil, live-mode after-change handling is suppressed.")
 
 (defvar my-ime--stdio-process nil
   "Live my-ime stdio worker process.")
@@ -200,6 +233,20 @@ buffer name, time, and metadata.")
     map)
   "Keymap for `my-ime-eager-mode'.")
 
+(defvar my-ime-live-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "RET") #'my-ime-live-commit-and-newline)
+    (define-key map (kbd "C-o") #'my-ime-live-select-candidate)
+    (define-key map (kbd "C-c j RET") #'my-ime-live-commit)
+    (define-key map (kbd "C-c j l") #'my-ime-live-mode)
+    map)
+  "Keymap for `my-ime-live-mode'.")
+
+(defface my-ime-live-preview-face
+  '((t :inherit region))
+  "Face used for live conversion preview overlays."
+  :group 'my-ime)
+
 (define-derived-mode my-ime-preview-mode special-mode "my-ime-preview"
   "Major mode for my-ime conversion previews.")
 
@@ -217,6 +264,19 @@ buffer name, time, and metadata.")
   (if my-ime-eager-mode
       (add-hook 'post-self-insert-hook #'my-ime--eager-post-self-insert nil t)
     (remove-hook 'post-self-insert-hook #'my-ime--eager-post-self-insert t)))
+
+;;;###autoload
+(define-minor-mode my-ime-live-mode
+  "Minor mode that previews live conversion with an uncommitted overlay."
+  :lighter " [mj-live]"
+  :keymap my-ime-live-mode-map
+  (if my-ime-live-mode
+      (progn
+        (add-hook 'after-change-functions #'my-ime--live-after-change nil t)
+        (my-ime--live-schedule-refresh))
+    (remove-hook 'after-change-functions #'my-ime--live-after-change t)
+    (my-ime--live-cancel-timer)
+    (my-ime--live-clear)))
 
 (defun my-ime--metadata ()
   "Build request metadata for the current buffer."
@@ -738,7 +798,7 @@ LABEL is used for minibuffer status messages."
     (`sorted t)
     (`duplicates t)
     (`no-cache t)
-    (`annotation " my-ime")
+    (`annotation nil)
     (`post-completion
      (my-ime--company-finish arg))))
 
@@ -806,6 +866,206 @@ LABEL is used for minibuffer status messages."
        (message "my-ime: %s" message))
      metadata
      endpoint-path)))
+
+(defun my-ime--live-after-change (_beg _end _len)
+  "Refresh live conversion after a buffer change."
+  (when (and my-ime-live-mode
+             (not my-ime--live-inhibit-after-change))
+    (my-ime--live-clear)
+    (my-ime--live-schedule-refresh)))
+
+(defun my-ime--live-cancel-timer ()
+  "Cancel the pending live refresh timer."
+  (when (timerp my-ime--live-timer)
+    (cancel-timer my-ime--live-timer))
+  (setq my-ime--live-timer nil))
+
+(defun my-ime--live-schedule-refresh ()
+  "Schedule a live conversion refresh for the current buffer."
+  (when (and my-ime-live-mode
+             (not (minibufferp))
+             (not buffer-read-only))
+    (my-ime--live-cancel-timer)
+    (cl-incf my-ime--live-sequence)
+    (let ((buffer (current-buffer))
+          (sequence my-ime--live-sequence))
+      (setq my-ime--live-timer
+            (run-with-idle-timer
+             my-ime-live-idle-delay nil
+             (lambda ()
+               (when (buffer-live-p buffer)
+                 (with-current-buffer buffer
+                   (when (and my-ime-live-mode
+                              (= sequence my-ime--live-sequence))
+                     (my-ime--live-refresh sequence))))))))))
+
+(defun my-ime--live-refresh (sequence)
+  "Request and render a live conversion for SEQUENCE."
+  (setq my-ime--live-timer nil)
+  (let ((bounds (my-ime--live-bounds)))
+    (when bounds
+      (let* ((beg (car bounds))
+             (end (cdr bounds))
+             (original (buffer-substring-no-properties beg end))
+             (metadata `((trigger . "live-preview")
+                         (sequence . ,sequence)))
+             (beg-marker (copy-marker beg))
+             (end-marker (copy-marker end t))
+             (source-buffer (current-buffer)))
+        (my-ime--request-async
+         original
+         (lambda (converted)
+           (my-ime--live-handle-response
+            source-buffer sequence beg-marker end-marker original converted
+            metadata my-ime-live-preview-endpoint))
+         (lambda (message)
+           (set-marker beg-marker nil)
+           (set-marker end-marker nil)
+           (when (buffer-live-p source-buffer)
+             (with-current-buffer source-buffer
+               (when (= sequence my-ime--live-sequence)
+                 (message "my-ime: live preview skipped: %s" message)))))
+         metadata
+         my-ime-live-preview-endpoint)))))
+
+(defun my-ime--live-handle-response
+    (source-buffer sequence beg-marker end-marker original converted metadata endpoint)
+  "Apply a live conversion response if it still matches the current buffer."
+  (if (not (buffer-live-p source-buffer))
+      (progn
+        (set-marker beg-marker nil)
+        (set-marker end-marker nil))
+    (with-current-buffer source-buffer
+      (unwind-protect
+          (when (and my-ime-live-mode
+                     (= sequence my-ime--live-sequence)
+                     (markerp beg-marker)
+                     (markerp end-marker))
+            (let ((beg (marker-position beg-marker))
+                  (end (marker-position end-marker)))
+              (when (and beg end
+                         (<= beg end)
+                         (string= original
+                                  (buffer-substring-no-properties beg end)))
+                (my-ime--live-render beg end original converted metadata endpoint))))
+        (set-marker beg-marker nil)
+        (set-marker end-marker nil)))))
+
+(defun my-ime--live-render (beg end original converted metadata endpoint)
+  "Render CONVERTED as a live preview for ORIGINAL between BEG and END."
+  (my-ime--live-clear)
+  (unless (string= original converted)
+    (let ((overlay (make-overlay beg end nil nil t)))
+      (overlay-put overlay 'evaporate t)
+      (overlay-put overlay 'display
+                   (propertize converted
+                               'face 'my-ime-live-preview-face))
+      (overlay-put overlay 'help-echo original)
+      (setq my-ime--live-overlay overlay
+            my-ime--live-state
+            `((beg_marker . ,(copy-marker beg))
+              (end_marker . ,(copy-marker end t))
+              (original . ,original)
+              (converted . ,converted)
+              (metadata . ,metadata)
+              (endpoint . ,endpoint))))))
+
+(defun my-ime--live-clear ()
+  "Clear the live conversion overlay and state."
+  (when (overlayp my-ime--live-overlay)
+    (delete-overlay my-ime--live-overlay))
+  (setq my-ime--live-overlay nil)
+  (when my-ime--live-state
+    (let ((beg-marker (alist-get 'beg_marker my-ime--live-state))
+          (end-marker (alist-get 'end_marker my-ime--live-state)))
+      (when (markerp beg-marker)
+        (set-marker beg-marker nil))
+      (when (markerp end-marker)
+        (set-marker end-marker nil))))
+  (setq my-ime--live-state nil))
+
+(defun my-ime--live-bounds ()
+  "Return bounds suitable for a live conversion preview."
+  (when (and my-ime-live-mode
+             (not (minibufferp))
+             (not buffer-read-only)
+             (not (use-region-p)))
+    (let* ((raw-bounds (my-ime--last-sentence-bounds))
+           (bounds (and raw-bounds
+                        (my-ime--auto-conversion-bounds
+                         (car raw-bounds) (cdr raw-bounds)))))
+      (when bounds
+        (let ((text (buffer-substring-no-properties
+                     (car bounds) (cdr bounds))))
+          (when (and (>= (length (string-trim text)) my-ime-live-min-chars)
+                     (my-ime--auto-convertible-text-p text))
+            bounds))))))
+
+(defun my-ime--live-valid-state ()
+  "Return current live state if it still matches the buffer."
+  (when my-ime--live-state
+    (let* ((beg-marker (alist-get 'beg_marker my-ime--live-state))
+           (end-marker (alist-get 'end_marker my-ime--live-state))
+           (original (alist-get 'original my-ime--live-state))
+           (beg (and (markerp beg-marker) (marker-position beg-marker)))
+           (end (and (markerp end-marker) (marker-position end-marker))))
+      (when (and beg end
+                 (<= beg end)
+                 (string= original
+                          (buffer-substring-no-properties beg end)))
+        my-ime--live-state))))
+
+(defun my-ime--live-commit-state (state)
+  "Commit live conversion STATE and return non-nil."
+  (let* ((beg-marker (alist-get 'beg_marker state))
+         (end-marker (alist-get 'end_marker state))
+         (original (alist-get 'original state))
+         (converted (alist-get 'converted state))
+         (metadata (alist-get 'metadata state))
+         (beg (marker-position beg-marker))
+         (end (marker-position end-marker)))
+    (let ((my-ime--live-inhibit-after-change t))
+      (my-ime--live-clear)
+      (my-ime--replace-region-preserve-point beg end converted))
+    (my-ime--record-history original converted "live" metadata)
+    t))
+
+;;;###autoload
+(defun my-ime-live-commit ()
+  "Commit the current live conversion preview."
+  (interactive)
+  (my-ime--live-cancel-timer)
+  (or (let ((state (my-ime--live-valid-state)))
+        (and state (my-ime--live-commit-state state)))
+      (progn
+        (my-ime--live-clear)
+        nil)))
+
+;;;###autoload
+(defun my-ime-live-commit-and-newline ()
+  "Commit the current live conversion preview, then insert a newline."
+  (interactive)
+  (let ((my-ime--live-inhibit-after-change t))
+    (my-ime-live-commit)
+    (newline-and-indent)))
+
+;;;###autoload
+(defun my-ime-live-select-candidate ()
+  "Select a candidate for the current live conversion bounds."
+  (interactive)
+  (my-ime--live-cancel-timer)
+  (let* ((state (my-ime--live-valid-state))
+         (bounds (if state
+                     (cons (marker-position
+                            (alist-get 'beg_marker state))
+                           (marker-position
+                            (alist-get 'end_marker state)))
+                   (my-ime--live-bounds))))
+    (my-ime--live-clear)
+    (if bounds
+        (my-ime--replace-bounds-with-selected-candidate
+         (car bounds) (cdr bounds) "live" nil t)
+      (my-ime-select-candidate-dwim))))
 
 (defun my-ime--preview-bounds (beg end label &optional extra-metadata allow-unsafe)
   "Convert text between BEG and END and show an accept/reject preview."
