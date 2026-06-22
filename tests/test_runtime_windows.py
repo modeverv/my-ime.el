@@ -73,6 +73,19 @@ class RuntimeInstallerTests(unittest.TestCase):
 
 
 class WindowsKkcRuntimeTests(unittest.TestCase):
+    def test_kkc_env_maps_configured_data_path_to_libkkc_env(self) -> None:
+        with mock.patch.dict(
+            os.environ,
+            {"MY_IME_KKC_DATA_PATH": "/runtime/lib/libkkc:/runtime/share/libkkc"},
+            clear=True,
+        ):
+            env = kkc_client._kkc_env("/usr/bin/kkc")
+
+        self.assertEqual(
+            env["LIBKKC_DATA_PATH"],
+            "/runtime/lib/libkkc:/runtime/share/libkkc",
+        )
+
     def test_find_kkc_command_uses_bundled_windows_exe(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
             runtime_dir = Path(temp)

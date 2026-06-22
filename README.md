@@ -80,13 +80,11 @@ make deps
 `make deps` は OS/arch に対応する `my-ime-kkc-runtime` bundle を
 `runtime/my-ime-kkc-runtime` submodule から優先して探し、無ければ GitHub から
 取得して `.deps/kkc-runtime/current` に展開します。Emacs 側はこの中の
-`bin/kkc` または Windows の `bin/kkc.exe` と `libkkc-data` を使います。
+`bin/kkc` と `libkkc-data` を使います。
 
-Windows で `make` を使わない場合は、Python から直接取得できます。
-
-```powershell
-python scripts/install-kkc-runtime.py
-```
+Windows は `bin/kkc.exe` 用の runtime 探索には対応していますが、prebuilt
+bundle を `runtime/my-ime-kkc-runtime` または GitHub 側に置くまでは
+`make deps` / installer は取得に失敗します。
 
 ## Emacs から stdio worker として使う
 

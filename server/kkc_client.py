@@ -225,11 +225,11 @@ def _kkc_env(command: str) -> dict[str, str]:
     process_env = os.environ.copy()
     data_path = env("KKC_DATA_PATH")
     if data_path:
-        process_env["KKC_DATA_PATH"] = data_path
+        process_env["LIBKKC_DATA_PATH"] = data_path
     else:
         bundled_data_path = _bundled_kkc_data_path()
         if bundled_data_path:
-            process_env["KKC_DATA_PATH"] = bundled_data_path
+            process_env["LIBKKC_DATA_PATH"] = bundled_data_path
     library_env_name = _library_env_name()
     configured = env("KKC_LIBRARY_PATH") or env("KKC_DYLD_LIBRARY_PATH")
     if configured:
