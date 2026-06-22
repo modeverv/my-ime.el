@@ -212,7 +212,7 @@ buffer name, time, and metadata.")
 ;;;###autoload
 (define-minor-mode my-ime-eager-mode
   "Minor mode that eagerly converts the previous sentence after punctuation."
-  :lighter " my-ime-eager"
+  :lighter " [mj]"
   :keymap my-ime-eager-mode-map
   (if my-ime-eager-mode
       (add-hook 'post-self-insert-hook #'my-ime--eager-post-self-insert nil t)
@@ -236,21 +236,63 @@ buffer name, time, and metadata.")
   (cond
    (my-ime-stdio-command my-ime-stdio-command)
    ((executable-find "my-ime-stdio") (list (executable-find "my-ime-stdio")))
-   (t (list "python3" "-m" "server.stdio_app"))))
+   (t (list (my-ime--python-command) "-m" "server.stdio_app"))))
+
+(defun my-ime--python-command ()
+  "Return a Python command suitable for the current platform."
+  (or (and (my-ime--windows-p) (executable-find "python"))
+      (executable-find "python3")
+      (executable-find "python")
+      "python3"))
+
+(defun my-ime--windows-p ()
+  "Return non-nil when running on native Windows Emacs."
+  (eq system-type 'windows-nt))
+
+(defun my-ime--runtime-kkc-command (runtime)
+  "Return the kkc executable path inside RUNTIME, or nil."
+  (cl-find-if
+   #'file-executable-p
+   (mapcar
+    (lambda (name) (expand-file-name name runtime))
+    (if (my-ime--windows-p)
+        '("bin/kkc.exe")
+      '("bin/kkc")))))
+
+(defun my-ime--runtime-library-path (runtime)
+  "Return the native library search path entries for RUNTIME."
+  (let ((bin-path (expand-file-name "bin" runtime))
+        (lib-path (expand-file-name "lib" runtime)))
+    (if (my-ime--windows-p)
+        (concat bin-path path-separator lib-path)
+      lib-path)))
+
+(defun my-ime--prepend-env-path (name prefix)
+  "Return an environment assignment that prepends PREFIX to NAME."
+  (let ((existing (getenv name)))
+    (concat name "=" prefix
+            (if (and existing (not (string-empty-p existing)))
+                (concat path-separator existing)
+              ""))))
 
 (defun my-ime--runtime-env ()
   "Return process environment entries for the kkc runtime."
   (let* ((runtime (file-name-as-directory (expand-file-name my-ime-runtime-directory)))
-         (kkc (expand-file-name "bin/kkc" runtime))
+         (kkc (my-ime--runtime-kkc-command runtime))
          (data-path (concat (expand-file-name "lib/libkkc" runtime)
                             path-separator
                             (expand-file-name "share/libkkc" runtime)))
-         (lib-path (expand-file-name "lib" runtime))
+         (library-path (my-ime--runtime-library-path runtime))
          (env nil))
-    (when (file-executable-p kkc)
+    (when kkc
       (push (concat "MY_IME_KKC_COMMAND=" kkc) env)
       (push (concat "MY_IME_KKC_DATA_PATH=" data-path) env)
-      (push (concat "MY_IME_KKC_DYLD_LIBRARY_PATH=" lib-path) env))
+      (push (concat "MY_IME_KKC_LIBRARY_PATH=" library-path) env)
+      (push (concat "MY_IME_KKC_DYLD_LIBRARY_PATH="
+                    (expand-file-name "lib" runtime))
+            env)
+      (when (my-ime--windows-p)
+        (push (my-ime--prepend-env-path "PATH" library-path) env)))
     env))
 
 (defun my-ime--ensure-stdio-process ()
