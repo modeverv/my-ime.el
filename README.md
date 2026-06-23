@@ -168,6 +168,8 @@ export MY_IME_KKC_NBEST=3
 (add-hook 'org-mode-hook #'my-ime-eager-mode)
 ```
 
+有効中は Emacs 標準の日本語入力表示と同じ左端の mode-line 欄に `[mj]` が出ます。
+
 `my-ime-eager-mode` のキー:
 
 ```text
@@ -223,6 +225,8 @@ macOS のライブ変換に近い使い方を試す場合は、`my-ime-live-mode
 ```elisp
 (add-hook 'org-mode-hook #'my-ime-live-mode)
 ```
+
+有効中は左端の mode-line 欄に `[mj-live]` が出ます。
 
 `my-ime-eager-mode` と同じ buffer で同時に使うのではなく、どちらか一方を選んでください。
 

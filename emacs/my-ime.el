@@ -138,6 +138,21 @@ Set this to nil or 0 to disable short-window kana conversion."
   :type 'integer
   :group 'my-ime)
 
+(defcustom my-ime-mode-line-left-indicator t
+  "When non-nil, show active my-ime typing modes in the left mode-line slot."
+  :type 'boolean
+  :group 'my-ime)
+
+(defcustom my-ime-eager-mode-line-title "[mj]"
+  "Mode-line title shown for `my-ime-eager-mode'."
+  :type 'string
+  :group 'my-ime)
+
+(defcustom my-ime-live-mode-line-title "[mjl]"
+  "Mode-line title shown for `my-ime-live-mode'."
+  :type 'string
+  :group 'my-ime)
+
 (defvar my-ime-history nil
   "Recent conversion records.
 Each entry is an alist with original text, converted text, command label,
@@ -181,6 +196,15 @@ buffer name, time, and metadata.")
 
 (defvar-local my-ime--live-inhibit-after-change nil
   "When non-nil, live-mode after-change handling is suppressed.")
+
+(defvar-local my-ime--mode-line-mule-info-saved nil
+  "Saved `mode-line-mule-info' before installing the my-ime indicator.")
+
+(defvar-local my-ime--mode-line-mule-info-was-local nil
+  "Whether `mode-line-mule-info' was buffer-local before my-ime changed it.")
+
+(defvar-local my-ime--mode-line-installed nil
+  "Whether this buffer has the my-ime left mode-line indicator installed.")
 
 (defvar my-ime--stdio-process nil
   "Live my-ime stdio worker process.")
@@ -250,6 +274,63 @@ buffer name, time, and metadata.")
 (define-derived-mode my-ime-preview-mode special-mode "my-ime-preview"
   "Major mode for my-ime conversion previews.")
 
+(defun my-ime--mode-line-active-p ()
+  "Return non-nil when a typing-oriented my-ime mode is active."
+  (or my-ime-eager-mode my-ime-live-mode))
+
+(defun my-ime--mode-line-title ()
+  "Return the active my-ime title for the left mode-line slot."
+  (cond
+   (my-ime-live-mode my-ime-live-mode-line-title)
+   (my-ime-eager-mode my-ime-eager-mode-line-title)))
+
+(defun my-ime--mode-line-segment ()
+  "Return the rendered my-ime left mode-line segment."
+  (let ((title (my-ime--mode-line-title)))
+    (when (and title (not (string-empty-p title)))
+      (propertize (concat title " ")
+                  'face 'mode-line-emphasis
+                  'help-echo "my-ime typing mode is active"))))
+
+(defun my-ime--mode-line-with-indicator (mule-info)
+  "Return MULE-INFO with the my-ime indicator prepended."
+  (append (list "" '(:eval (my-ime--mode-line-segment)))
+          (if (and (consp mule-info)
+                   (stringp (car mule-info))
+                   (string-empty-p (car mule-info)))
+              (cdr mule-info)
+            (list mule-info))))
+
+(defun my-ime--mode-line-install ()
+  "Install the my-ime indicator into `mode-line-mule-info' for this buffer."
+  (unless my-ime--mode-line-installed
+    (setq my-ime--mode-line-mule-info-was-local
+          (local-variable-p 'mode-line-mule-info (current-buffer)))
+    (setq my-ime--mode-line-mule-info-saved mode-line-mule-info)
+    (setq-local mode-line-mule-info
+                (my-ime--mode-line-with-indicator
+                 my-ime--mode-line-mule-info-saved))
+    (setq my-ime--mode-line-installed t))
+  (force-mode-line-update))
+
+(defun my-ime--mode-line-uninstall ()
+  "Restore `mode-line-mule-info' after the my-ime indicator is no longer used."
+  (when my-ime--mode-line-installed
+    (if my-ime--mode-line-mule-info-was-local
+        (setq-local mode-line-mule-info my-ime--mode-line-mule-info-saved)
+      (kill-local-variable 'mode-line-mule-info))
+    (setq my-ime--mode-line-mule-info-saved nil
+          my-ime--mode-line-mule-info-was-local nil
+          my-ime--mode-line-installed nil))
+  (force-mode-line-update))
+
+(defun my-ime--mode-line-refresh ()
+  "Refresh my-ime's left mode-line indicator for the current buffer."
+  (if (and my-ime-mode-line-left-indicator
+           (my-ime--mode-line-active-p))
+      (my-ime--mode-line-install)
+    (my-ime--mode-line-uninstall)))
+
 ;;;###autoload
 (define-minor-mode my-ime-mode
   "Minor mode for local LLM IME conversion commands."
@@ -259,16 +340,17 @@ buffer name, time, and metadata.")
 ;;;###autoload
 (define-minor-mode my-ime-eager-mode
   "Minor mode that eagerly converts the previous sentence after punctuation."
-  :lighter " [mj]"
+  :lighter nil
   :keymap my-ime-eager-mode-map
   (if my-ime-eager-mode
       (add-hook 'post-self-insert-hook #'my-ime--eager-post-self-insert nil t)
-    (remove-hook 'post-self-insert-hook #'my-ime--eager-post-self-insert t)))
+    (remove-hook 'post-self-insert-hook #'my-ime--eager-post-self-insert t))
+  (my-ime--mode-line-refresh))
 
 ;;;###autoload
 (define-minor-mode my-ime-live-mode
   "Minor mode that previews live conversion with an uncommitted overlay."
-  :lighter " [mj-live]"
+  :lighter nil
   :keymap my-ime-live-mode-map
   (if my-ime-live-mode
       (progn
@@ -276,7 +358,8 @@ buffer name, time, and metadata.")
         (my-ime--live-schedule-refresh))
     (remove-hook 'after-change-functions #'my-ime--live-after-change t)
     (my-ime--live-cancel-timer)
-    (my-ime--live-clear)))
+    (my-ime--live-clear))
+  (my-ime--mode-line-refresh))
 
 (defun my-ime--metadata ()
   "Build request metadata for the current buffer."

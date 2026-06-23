@@ -57,6 +57,36 @@
       (my-ime--short-kana-post-self-insert)
       (should (equal (buffer-string) "DONE")))))
 
+(ert-deftest my-ime-eager-mode-line-indicator-uses-left-mule-slot ()
+  (with-temp-buffer
+    (let ((my-ime-mode-line-left-indicator t))
+      (setq-local mode-line-mule-info '("ORIG"))
+      (my-ime-eager-mode 1)
+      (should (local-variable-p 'mode-line-mule-info))
+      (should (equal (car mode-line-mule-info) ""))
+      (should (equal (cadr mode-line-mule-info)
+                     '(:eval (my-ime--mode-line-segment))))
+      (should (equal (substring-no-properties (my-ime--mode-line-segment))
+                     "[mj] "))
+      (my-ime-eager-mode -1)
+      (should (local-variable-p 'mode-line-mule-info))
+      (should (equal mode-line-mule-info '("ORIG"))))))
+
+(ert-deftest my-ime-live-mode-line-indicator-takes-priority-while-active ()
+  (with-temp-buffer
+    (let ((my-ime-mode-line-left-indicator t))
+      (setq-local mode-line-mule-info '("ORIG"))
+      (my-ime-eager-mode 1)
+      (my-ime-live-mode 1)
+      (should (equal (substring-no-properties (my-ime--mode-line-segment))
+                     "[mj-live] "))
+      (my-ime-live-mode -1)
+      (should (equal (substring-no-properties (my-ime--mode-line-segment))
+                     "[mj] "))
+      (my-ime-eager-mode -1)
+      (should (local-variable-p 'mode-line-mule-info))
+      (should (equal mode-line-mule-info '("ORIG"))))))
+
 (ert-deftest my-ime-live-renders-overlay-without-changing-buffer ()
   (with-temp-buffer
     (insert "kyou ha")
