@@ -2,7 +2,7 @@
 
 `my-ime` は、Emacs でローマ字入力した文章をローカルで日本語に変換する IME 補助ツールです。外部 API は使わず、Emacs がローカルの stdio worker を起動し、標準入出力で変換 request を送ります。worker 側では SKK 形式の辞書、ローマ字かな変換、`kkc` によるかな漢字変換を組み合わせます。
 
-主な使い方は 2 つあります。`my-ime-live-mode` は入力中のローマ字を残したまま overlay で変換候補をライブ表示し、`RET` で見えている候補を確定します。`my-ime-eager-mode` は空白や文末記号をトリガーに実バッファを変換します。
+主な使い方は 3 つあります。`my-ime-live2-mode` は入力中のローマ字を残したまま、まず overlay でかな preview を出し、少し idle すると漢字候補へ上書きします。`my-ime-live-mode` は単一 endpoint の overlay preview を表示し、`my-ime-eager-mode` は空白や文末記号をトリガーに実バッファを変換します。
 
 ## demo
 
@@ -159,10 +159,10 @@ export MY_IME_KKC_NBEST=3
 (setq my-ime-transport 'stdio)
 (setq my-ime-runtime-directory "/Users/seijiro/Sync/sync_work/by-llms/my-ime/.deps/kkc-runtime/current")
 
-(add-hook 'org-mode-hook #'my-ime-live-mode)
+(add-hook 'org-mode-hook #'my-ime-live2-mode)
 ```
 
-トリガー型の挙動が好みの場合は、`my-ime-live-mode` の代わりに `my-ime-eager-mode` を使います。
+単一 endpoint の live preview が好みの場合は、`my-ime-live2-mode` の代わりに `my-ime-live-mode` を使います。トリガー型の挙動が好みの場合は `my-ime-eager-mode` を使います。
 
 ```elisp
 (add-hook 'org-mode-hook #'my-ime-eager-mode)
@@ -243,6 +243,33 @@ C-c j l   live-mode の切り替え
 
 ```elisp
 (setq my-ime-live-preview-endpoint "/preedit")
+```
+
+## live2 mode
+
+`my-ime-live2-mode` は、入力直後に `/preedit` のかな preview を overlay 表示し、`my-ime-live2-convert-idle-delay` 秒だけ idle したら `/convert` の漢字候補で同じ overlay を上書きします。
+実バッファは commit までローマ字のままです。
+
+```elisp
+(add-hook 'org-mode-hook #'my-ime-live2-mode)
+```
+
+有効中は左端の mode-line 欄に `[mj-live2]` が出ます。
+
+主なキー:
+
+```text
+RET       見えている live2 候補を確定して改行
+C-o       元のローマ字範囲から候補選択
+C-c j RET 見えている live2 候補を確定
+C-c j l   live2-mode の切り替え
+C-c j 2   live2-mode の切り替え
+```
+
+漢字候補へ上書きするまでの idle 時間は変更できます。
+
+```elisp
+(setq my-ime-live2-convert-idle-delay 0.12)
 ```
 
 ## 辞書

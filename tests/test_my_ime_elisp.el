@@ -87,6 +87,21 @@
       (should (local-variable-p 'mode-line-mule-info))
       (should (equal mode-line-mule-info '("ORIG"))))))
 
+(ert-deftest my-ime-live2-mode-line-indicator-takes-priority-while-active ()
+  (with-temp-buffer
+    (let ((my-ime-mode-line-left-indicator t))
+      (setq-local mode-line-mule-info '("ORIG"))
+      (my-ime-eager-mode 1)
+      (my-ime-live2-mode 1)
+      (should (equal (substring-no-properties (my-ime--mode-line-segment))
+                     "[mj-live2] "))
+      (my-ime-live2-mode -1)
+      (should (equal (substring-no-properties (my-ime--mode-line-segment))
+                     "[mj] "))
+      (my-ime-eager-mode -1)
+      (should (local-variable-p 'mode-line-mule-info))
+      (should (equal mode-line-mule-info '("ORIG"))))))
+
 (ert-deftest my-ime-live-renders-overlay-without-changing-buffer ()
   (with-temp-buffer
     (insert "kyou ha")
@@ -105,6 +120,88 @@
         (should (equal (overlay-get my-ime--live-overlay 'display)
                        (propertize "今日は"
                                    'face 'my-ime-live-preview-face)))))))
+
+(ert-deftest my-ime-live2-renders-preedit-then-convert-overlay ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          callbacks)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (text callback _errback &optional metadata endpoint)
+                   (should (equal text "kyou ha"))
+                   (push (list endpoint (alist-get 'trigger metadata) callback)
+                         callbacks))))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-preedit 1))
+        (funcall (nth 2 (assoc "/preedit" callbacks)) "きょうは")
+        (should (equal (buffer-string) "kyou ha"))
+        (should (equal (overlay-get my-ime--live-overlay 'display)
+                       (propertize "きょうは"
+                                   'face 'my-ime-live-preview-face)))
+        (should (my-ime--live2-refresh-convert 1))
+        (funcall (nth 2 (assoc "/convert" callbacks)) "今日は")
+        (should (equal (overlay-get my-ime--live-overlay 'display)
+                       (propertize "今日は"
+                                   'face 'my-ime-live-preview-face)))
+        (should (equal (alist-get 'converted my-ime--live-state) "今日は"))
+        (should (equal (alist-get 'original my-ime--live-state) "kyou ha"))))))
+
+(ert-deftest my-ime-live2-late-preedit-does-not-overwrite-convert ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          callbacks)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (_text callback _errback &optional _metadata endpoint)
+                   (push (cons endpoint callback) callbacks))))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-preedit 1))
+        (should (my-ime--live2-refresh-convert 1))
+        (funcall (cdr (assoc "/convert" callbacks)) "今日は")
+        (funcall (cdr (assoc "/preedit" callbacks)) "きょうは")
+        (should (equal (overlay-get my-ime--live-overlay 'display)
+                       (propertize "今日は"
+                                   'face 'my-ime-live-preview-face)))
+        (should (equal (alist-get 'endpoint my-ime--live-state) "/convert"))))))
+
+(ert-deftest my-ime-live2-discards-stale-convert-response ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          callback)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (_text response-callback _errback
+                          &optional _metadata _endpoint)
+                   (setq callback response-callback))))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-convert 1))
+        (insert "!")
+        (setq my-ime--live-sequence 2)
+        (funcall callback "今日は")
+        (should-not (overlayp my-ime--live-overlay))
+        (should-not my-ime--live-state)
+        (should (equal (buffer-string) "kyou ha!"))))))
+
+(ert-deftest my-ime-live2-candidate-selection-uses-original-source ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          captured-source)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (_text callback _errback &optional _metadata _endpoint)
+                   (funcall callback "今日は")))
+                ((symbol-function 'my-ime--replace-bounds-with-selected-candidate)
+                 (lambda (beg end _label _metadata _allow-unsafe)
+                   (setq captured-source
+                         (buffer-substring-no-properties beg end)))))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-convert 1))
+        (my-ime-live-select-candidate)
+        (should (equal captured-source "kyou ha"))))))
 
 (ert-deftest my-ime-live-discards-stale-response ()
   (with-temp-buffer

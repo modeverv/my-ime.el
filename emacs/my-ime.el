@@ -122,6 +122,11 @@ kana-only preview."
                  (const :tag "Kana preedit" "/preedit"))
   :group 'my-ime)
 
+(defcustom my-ime-live2-convert-idle-delay 0.12
+  "Idle seconds before `my-ime-live2-mode' upgrades kana preview to kanji."
+  :type 'number
+  :group 'my-ime)
+
 (defcustom my-ime-eager-short-kana-chars 4
   "Number of lowercase romaji chars to kana-convert without waiting for SPC.
 Set this to nil or 0 to disable short-window kana conversion."
@@ -148,8 +153,13 @@ Set this to nil or 0 to disable short-window kana conversion."
   :type 'string
   :group 'my-ime)
 
-(defcustom my-ime-live-mode-line-title "[mjl]"
+(defcustom my-ime-live-mode-line-title "[mj-l]"
   "Mode-line title shown for `my-ime-live-mode'."
+  :type 'string
+  :group 'my-ime)
+
+(defcustom my-ime-live2-mode-line-title "[mj-l2]"
+  "Mode-line title shown for `my-ime-live2-mode'."
   :type 'string
   :group 'my-ime)
 
@@ -190,6 +200,9 @@ buffer name, time, and metadata.")
 
 (defvar-local my-ime--live-timer nil
   "Idle timer used by `my-ime-live-mode'.")
+
+(defvar-local my-ime--live2-convert-timer nil
+  "Idle timer used for delayed kanji preview in `my-ime-live2-mode'.")
 
 (defvar-local my-ime--live-sequence 0
   "Monotonic sequence for discarding stale live conversion responses.")
@@ -246,6 +259,8 @@ buffer name, time, and metadata.")
     (define-key map (kbd "C-c j v") #'my-ime-preview-dwim-async)
     (define-key map (kbd "C-c j h") #'my-ime-show-history)
     (define-key map (kbd "C-c j e") #'my-ime-eager-mode)
+    (define-key map (kbd "C-c j l") #'my-ime-live-mode)
+    (define-key map (kbd "C-c j 2") #'my-ime-live2-mode)
     map)
   "Keymap for `my-ime-mode'.")
 
@@ -263,8 +278,19 @@ buffer name, time, and metadata.")
     (define-key map (kbd "C-o") #'my-ime-live-select-candidate)
     (define-key map (kbd "C-c j RET") #'my-ime-live-commit)
     (define-key map (kbd "C-c j l") #'my-ime-live-mode)
+    (define-key map (kbd "C-c j 2") #'my-ime-live2-mode)
     map)
   "Keymap for `my-ime-live-mode'.")
+
+(defvar my-ime-live2-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map (kbd "RET") #'my-ime-live-commit-and-newline)
+    (define-key map (kbd "C-o") #'my-ime-live-select-candidate)
+    (define-key map (kbd "C-c j RET") #'my-ime-live-commit)
+    (define-key map (kbd "C-c j l") #'my-ime-live2-mode)
+    (define-key map (kbd "C-c j 2") #'my-ime-live2-mode)
+    map)
+  "Keymap for `my-ime-live2-mode'.")
 
 (defface my-ime-live-preview-face
   '((t :inherit region))
@@ -276,11 +302,12 @@ buffer name, time, and metadata.")
 
 (defun my-ime--mode-line-active-p ()
   "Return non-nil when a typing-oriented my-ime mode is active."
-  (or my-ime-eager-mode my-ime-live-mode))
+  (or my-ime-eager-mode my-ime-live-mode my-ime-live2-mode))
 
 (defun my-ime--mode-line-title ()
   "Return the active my-ime title for the left mode-line slot."
   (cond
+   (my-ime-live2-mode my-ime-live2-mode-line-title)
    (my-ime-live-mode my-ime-live-mode-line-title)
    (my-ime-eager-mode my-ime-eager-mode-line-title)))
 
@@ -354,8 +381,26 @@ buffer name, time, and metadata.")
   :keymap my-ime-live-mode-map
   (if my-ime-live-mode
       (progn
+        (when my-ime-live2-mode
+          (my-ime-live2-mode -1))
         (add-hook 'after-change-functions #'my-ime--live-after-change nil t)
         (my-ime--live-schedule-refresh))
+    (remove-hook 'after-change-functions #'my-ime--live-after-change t)
+    (my-ime--live-cancel-timer)
+    (my-ime--live-clear))
+  (my-ime--mode-line-refresh))
+
+;;;###autoload
+(define-minor-mode my-ime-live2-mode
+  "Minor mode that previews kana immediately and kanji after idle."
+  :lighter nil
+  :keymap my-ime-live2-mode-map
+  (if my-ime-live2-mode
+      (progn
+        (when my-ime-live-mode
+          (my-ime-live-mode -1))
+        (add-hook 'after-change-functions #'my-ime--live-after-change nil t)
+        (my-ime--live2-schedule-refresh))
     (remove-hook 'after-change-functions #'my-ime--live-after-change t)
     (my-ime--live-cancel-timer)
     (my-ime--live-clear))
@@ -952,16 +997,25 @@ LABEL is used for minibuffer status messages."
 
 (defun my-ime--live-after-change (_beg _end _len)
   "Refresh live conversion after a buffer change."
-  (when (and my-ime-live-mode
+  (when (and (my-ime--live-active-p)
              (not my-ime--live-inhibit-after-change))
     (my-ime--live-clear)
-    (my-ime--live-schedule-refresh)))
+    (if my-ime-live2-mode
+        (my-ime--live2-schedule-refresh)
+      (my-ime--live-schedule-refresh))))
 
 (defun my-ime--live-cancel-timer ()
-  "Cancel the pending live refresh timer."
+  "Cancel pending live refresh timers."
   (when (timerp my-ime--live-timer)
     (cancel-timer my-ime--live-timer))
-  (setq my-ime--live-timer nil))
+  (when (timerp my-ime--live2-convert-timer)
+    (cancel-timer my-ime--live2-convert-timer))
+  (setq my-ime--live-timer nil
+        my-ime--live2-convert-timer nil))
+
+(defun my-ime--live-active-p ()
+  "Return non-nil when either live preview mode is active."
+  (or my-ime-live-mode my-ime-live2-mode))
 
 (defun my-ime--live-schedule-refresh ()
   "Schedule a live conversion refresh for the current buffer."
@@ -985,12 +1039,50 @@ LABEL is used for minibuffer status messages."
 (defun my-ime--live-refresh (sequence)
   "Request and render a live conversion for SEQUENCE."
   (setq my-ime--live-timer nil)
+  (my-ime--live-request-preview
+   sequence my-ime-live-preview-endpoint "live-preview"))
+
+(defun my-ime--live2-schedule-refresh ()
+  "Schedule a two-phase live2 conversion refresh for the current buffer."
+  (when (and my-ime-live2-mode
+             (not (minibufferp))
+             (not buffer-read-only))
+    (my-ime--live-cancel-timer)
+    (cl-incf my-ime--live-sequence)
+    (let ((sequence my-ime--live-sequence))
+      (when (my-ime--live2-refresh-preedit sequence)
+        (my-ime--live2-schedule-convert sequence)))))
+
+(defun my-ime--live2-refresh-preedit (sequence)
+  "Request the immediate kana preview phase for live2 SEQUENCE."
+  (my-ime--live-request-preview sequence "/preedit" "live2-preedit"))
+
+(defun my-ime--live2-schedule-convert (sequence)
+  "Schedule the delayed kanji preview phase for live2 SEQUENCE."
+  (let ((buffer (current-buffer)))
+    (setq my-ime--live2-convert-timer
+          (run-with-idle-timer
+           my-ime-live2-convert-idle-delay nil
+           (lambda ()
+             (when (buffer-live-p buffer)
+               (with-current-buffer buffer
+                 (setq my-ime--live2-convert-timer nil)
+                 (when (and my-ime-live2-mode
+                            (= sequence my-ime--live-sequence))
+                   (my-ime--live2-refresh-convert sequence)))))))))
+
+(defun my-ime--live2-refresh-convert (sequence)
+  "Request the delayed kanji preview phase for live2 SEQUENCE."
+  (my-ime--live-request-preview sequence "/convert" "live2-convert"))
+
+(defun my-ime--live-request-preview (sequence endpoint trigger)
+  "Request ENDPOINT preview for SEQUENCE and TRIGGER, returning non-nil if sent."
   (let ((bounds (my-ime--live-bounds)))
     (when bounds
       (let* ((beg (car bounds))
              (end (cdr bounds))
              (original (buffer-substring-no-properties beg end))
-             (metadata `((trigger . "live-preview")
+             (metadata `((trigger . ,trigger)
                          (sequence . ,sequence)))
              (beg-marker (copy-marker beg))
              (end-marker (copy-marker end t))
@@ -1000,7 +1092,7 @@ LABEL is used for minibuffer status messages."
          (lambda (converted)
            (my-ime--live-handle-response
             source-buffer sequence beg-marker end-marker original converted
-            metadata my-ime-live-preview-endpoint))
+            metadata endpoint))
          (lambda (message)
            (set-marker beg-marker nil)
            (set-marker end-marker nil)
@@ -1009,7 +1101,8 @@ LABEL is used for minibuffer status messages."
                (when (= sequence my-ime--live-sequence)
                  (message "my-ime: live preview skipped: %s" message)))))
          metadata
-         my-ime-live-preview-endpoint)))))
+         endpoint)
+        t))))
 
 (defun my-ime--live-handle-response
     (source-buffer sequence beg-marker end-marker original converted metadata endpoint)
@@ -1020,7 +1113,7 @@ LABEL is used for minibuffer status messages."
         (set-marker end-marker nil))
     (with-current-buffer source-buffer
       (unwind-protect
-          (when (and my-ime-live-mode
+          (when (and (my-ime--live-active-p)
                      (= sequence my-ime--live-sequence)
                      (markerp beg-marker)
                      (markerp end-marker))
@@ -1030,9 +1123,31 @@ LABEL is used for minibuffer status messages."
                          (<= beg end)
                          (string= original
                                   (buffer-substring-no-properties beg end)))
-                (my-ime--live-render beg end original converted metadata endpoint))))
+                (unless (my-ime--live-response-superseded-p
+                         original metadata endpoint)
+                  (my-ime--live-render
+                   beg end original converted metadata endpoint)))))
         (set-marker beg-marker nil)
         (set-marker end-marker nil)))))
+
+(defun my-ime--live-response-superseded-p (original metadata endpoint)
+  "Return non-nil if an existing live2 phase should keep ENDPOINT from rendering."
+  (let* ((state my-ime--live-state)
+         (state-metadata (and state (alist-get 'metadata state))))
+    (and my-ime-live2-mode
+         state
+         (string= original (or (alist-get 'original state) ""))
+         (equal (alist-get 'sequence metadata)
+                (alist-get 'sequence state-metadata))
+         (> (my-ime--live-endpoint-rank (alist-get 'endpoint state))
+            (my-ime--live-endpoint-rank endpoint)))))
+
+(defun my-ime--live-endpoint-rank (endpoint)
+  "Return render priority for live preview ENDPOINT."
+  (cond
+   ((equal endpoint "/convert") 2)
+   ((equal endpoint "/preedit") 1)
+   (t 0)))
 
 (defun my-ime--live-render (beg end original converted metadata endpoint)
   "Render CONVERTED as a live preview for ORIGINAL between BEG and END."
@@ -1069,7 +1184,7 @@ LABEL is used for minibuffer status messages."
 
 (defun my-ime--live-bounds ()
   "Return bounds suitable for a live conversion preview."
-  (when (and my-ime-live-mode
+  (when (and (my-ime--live-active-p)
              (not (minibufferp))
              (not buffer-read-only)
              (not (use-region-p)))
