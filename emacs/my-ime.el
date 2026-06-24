@@ -190,7 +190,7 @@ buffer name, time, and metadata.")
   "End marker for current my-ime company completion.")
 
 (defvar-local my-ime--suppress-next-ret-conversion nil
-  "When non-nil, the next eager RET only inserts a newline.")
+  "When non-nil, the next typing-mode RET only inserts a newline.")
 
 (defvar-local my-ime--live-overlay nil
   "Overlay displaying the current live conversion candidate.")
@@ -795,6 +795,21 @@ CALLBACK receives converted text.  ERRBACK receives an error string."
   (when (> (length my-ime-history) my-ime-history-limit)
     (setcdr (nthcdr (1- my-ime-history-limit) my-ime-history) nil)))
 
+(defun my-ime--suppress-next-ret-after-candidate-selection ()
+  "Make the next RET a plain newline after candidate selection."
+  (setq my-ime--suppress-next-ret-conversion t)
+  (my-ime--live-invalidate))
+
+(defun my-ime--consume-next-ret-conversion-suppression ()
+  "Return non-nil and clear the pending plain-RET suppression."
+  (when my-ime--suppress-next-ret-conversion
+    (setq my-ime--suppress-next-ret-conversion nil)
+    t))
+
+(defun my-ime--company-selection-active-p ()
+  "Return non-nil while company is replacing a my-ime candidate."
+  (and my-ime--company-original my-ime--company-candidates))
+
 (defun my-ime--point-after-replacement (point beg end replacement-length)
   "Return where POINT should move after BEG END is replaced."
   (cond
@@ -846,18 +861,20 @@ LABEL is used for minibuffer status messages."
         (error "my-ime: no candidates returned"))
        ((null (cdr candidates))
         (let ((converted (car candidates)))
-          (my-ime--replace-region-preserve-point beg end converted)
+          (let ((my-ime--live-inhibit-after-change t))
+            (my-ime--replace-region-preserve-point beg end converted))
           (my-ime--record-history original converted label metadata)
-          (setq my-ime--suppress-next-ret-conversion t)
+          (my-ime--suppress-next-ret-after-candidate-selection)
           (message "my-ime: selected %s" label)))
        ((my-ime--select-candidate-with-company
          beg end label metadata original candidates)
         nil)
        (t
        (let ((converted (my-ime--select-candidate candidates label)))
-          (my-ime--replace-region-preserve-point beg end converted)
+          (let ((my-ime--live-inhibit-after-change t))
+            (my-ime--replace-region-preserve-point beg end converted))
           (my-ime--record-history original converted label metadata)
-          (setq my-ime--suppress-next-ret-conversion t)
+          (my-ime--suppress-next-ret-after-candidate-selection)
           (message "my-ime: selected %s" label)))))))
 
 (defun my-ime--payload-candidates (payload)
@@ -937,7 +954,7 @@ LABEL is used for minibuffer status messages."
         (metadata my-ime--company-metadata))
     (when (and original label)
       (my-ime--record-history original candidate label metadata)
-      (setq my-ime--suppress-next-ret-conversion t)
+      (my-ime--suppress-next-ret-after-candidate-selection)
       (message "my-ime: selected %s" label)))
   (my-ime--company-clear-state))
 
@@ -1000,9 +1017,10 @@ LABEL is used for minibuffer status messages."
   (when (and (my-ime--live-active-p)
              (not my-ime--live-inhibit-after-change))
     (my-ime--live-clear)
-    (if my-ime-live2-mode
-        (my-ime--live2-schedule-refresh)
-      (my-ime--live-schedule-refresh))))
+    (unless (my-ime--company-selection-active-p)
+      (if my-ime-live2-mode
+          (my-ime--live2-schedule-refresh)
+        (my-ime--live-schedule-refresh)))))
 
 (defun my-ime--live-cancel-timer ()
   "Cancel pending live refresh timers."
@@ -1016,6 +1034,13 @@ LABEL is used for minibuffer status messages."
 (defun my-ime--live-active-p ()
   "Return non-nil when either live preview mode is active."
   (or my-ime-live-mode my-ime-live2-mode))
+
+(defun my-ime--live-invalidate ()
+  "Cancel pending live previews and invalidate in-flight responses."
+  (when (my-ime--live-active-p)
+    (my-ime--live-cancel-timer)
+    (cl-incf my-ime--live-sequence)
+    (my-ime--live-clear)))
 
 (defun my-ime--live-schedule-refresh ()
   "Schedule a live conversion refresh for the current buffer."
@@ -1244,14 +1269,17 @@ LABEL is used for minibuffer status messages."
   "Commit the current live conversion preview, then insert a newline."
   (interactive)
   (let ((my-ime--live-inhibit-after-change t))
-    (my-ime-live-commit)
+    (if (my-ime--consume-next-ret-conversion-suppression)
+        (progn
+          (my-ime--live-cancel-timer)
+          (my-ime--live-clear))
+      (my-ime-live-commit))
     (newline-and-indent)))
 
 ;;;###autoload
 (defun my-ime-live-select-candidate ()
   "Select a candidate for the current live conversion bounds."
   (interactive)
-  (my-ime--live-cancel-timer)
   (let* ((state (my-ime--live-valid-state))
          (bounds (if state
                      (cons (marker-position
@@ -1259,7 +1287,7 @@ LABEL is used for minibuffer status messages."
                            (marker-position
                             (alist-get 'end_marker state)))
                    (my-ime--live-bounds))))
-    (my-ime--live-clear)
+    (my-ime--live-invalidate)
     (if bounds
         (my-ime--replace-bounds-with-selected-candidate
          (car bounds) (cdr bounds) "live" nil t)
@@ -1750,18 +1778,22 @@ LABEL is used for minibuffer status messages."
       (my-ime--org-unsafe-region-p beg end)))
 
 (defun my-ime--org-adjust-auto-conversion-bounds (beg end)
-  "Trim org headline prefix from BEG to END for eager conversion."
+  "Trim org structural prefix from BEG to END for eager conversion."
   (save-excursion
     (goto-char beg)
-    (if (looking-at "\\s-*\\*+\\s-+")
-        (let ((adjusted-beg (match-end 0)))
-          (goto-char adjusted-beg)
-          (when (looking-at "\\([^ \t\n]+\\)\\([ \t]+\\|\\'\\)")
-            (let ((token (match-string-no-properties 1)))
-              (when (my-ime--org-todo-keyword-p token)
-                (setq adjusted-beg (match-end 0)))))
-          (cons adjusted-beg end))
-      (cons beg end))))
+    (cond
+     ((looking-at "\\s-*\\*+\\s-+")
+      (let ((adjusted-beg (match-end 0)))
+        (goto-char adjusted-beg)
+        (when (looking-at "\\([^ \t\n]+\\)\\([ \t]+\\|\\'\\)")
+          (let ((token (match-string-no-properties 1)))
+            (when (my-ime--org-todo-keyword-p token)
+              (setq adjusted-beg (match-end 0)))))
+        (cons adjusted-beg end)))
+     ((looking-at "\\s-*\\(?:[-+*]\\|[0-9]+[.)]\\)\\s-+\\(?:\\[[ Xx-]\\]\\s-+\\)?")
+      (cons (match-end 0) end))
+     (t
+      (cons beg end)))))
 
 (defun my-ime--space-preedit-after-manual-term-bounds (beg end)
   "Trim manual-term prefix from BEG to END during space preedit."
@@ -2067,9 +2099,8 @@ LABEL is used for minibuffer status messages."
 When `my-ime-c-j-org-only' is non-nil, non-org buffers only insert a
 normal newline."
   (interactive)
-  (if my-ime--suppress-next-ret-conversion
+  (if (my-ime--consume-next-ret-conversion-suppression)
       (progn
-        (setq my-ime--suppress-next-ret-conversion nil)
         (newline-and-indent))
     (if (and my-ime-c-j-org-only
              (not (derived-mode-p 'org-mode)))

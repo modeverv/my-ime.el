@@ -48,6 +48,32 @@
       (my-ime--short-kana-post-self-insert)
       (should (equal (buffer-string) "* done")))))
 
+(ert-deftest my-ime-org-auto-conversion-trims-unchecked-checkbox ()
+  (with-temp-buffer
+    (org-mode)
+    (let ((my-ime-org-aware t)
+          (my-ime-eager-org-syntax-guard t))
+      (insert "- [ ] syuusei point wo kangaeru")
+      (let* ((bounds (my-ime--last-sentence-bounds))
+             (adjusted (my-ime--auto-conversion-bounds
+                        (car bounds) (cdr bounds))))
+        (should (equal (buffer-substring-no-properties
+                        (car adjusted) (cdr adjusted))
+                       "syuusei point wo kangaeru"))))))
+
+(ert-deftest my-ime-org-auto-conversion-trims-checked-checkbox ()
+  (with-temp-buffer
+    (org-mode)
+    (let ((my-ime-org-aware t)
+          (my-ime-eager-org-syntax-guard t))
+      (insert "- [X] syuusei point wo kangaeru")
+      (let* ((bounds (my-ime--last-sentence-bounds))
+             (adjusted (my-ime--auto-conversion-bounds
+                        (car bounds) (cdr bounds))))
+        (should (equal (buffer-substring-no-properties
+                        (car adjusted) (cdr adjusted))
+                       "syuusei point wo kangaeru"))))))
+
 (ert-deftest my-ime-short-kana-does-not-convert-uppercase-window ()
   (with-temp-buffer
     (let ((my-ime-eager-local-kana nil)
