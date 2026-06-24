@@ -1,0 +1,5001 @@
+;;; source: 2015-2026 AI・Web・IT・カルチャー総合語彙（独自選定）
+ai /AI/
+aino /AIの/
+aiwo /AIを/
+aide /AIで/
+aini /AIに/
+agi /AGI/
+agino /AGIの/
+agiwo /AGIを/
+agide /AGIで/
+agini /AGIに/
+asi /ASI/
+asino /ASIの/
+asiwo /ASIを/
+aside /ASIで/
+asini /ASIに/
+seiseiai /生成AI/
+seiseiaino /生成AIの/
+seiseiaiwo /生成AIを/
+seiseiaide /生成AIで/
+seiseiaini /生成AIに/
+jinkochino /人工知能/
+jinkochinono /人工知能の/
+jinkochinowo /人工知能を/
+jinkochinode /人工知能で/
+jinkochinoni /人工知能に/
+de-ta /データ/
+de-tano /データの/
+de-tawo /データを/
+de-tade /データで/
+de-tani /データに/
+de-tasaiensu /データサイエンス/
+de-tasaiensuno /データサイエンスの/
+de-tasaiensuwo /データサイエンスを/
+de-tasaiensude /データサイエンスで/
+de-tasaiensuni /データサイエンスに/
+kikaigakushu /機械学習/
+kikaigakushuno /機械学習の/
+kikaigakushuwo /機械学習を/
+kikaigakushude /機械学習で/
+kikaigakushuni /機械学習に/
+deep-learning /ディープラーニング/
+deep-learningno /ディープラーニングの/
+deep-learningwo /ディープラーニングを/
+deep-learningde /ディープラーニングで/
+deep-learningni /ディープラーニングに/
+shinso-gakushu /深層学習/
+shinso-gakushuno /深層学習の/
+shinso-gakushuwo /深層学習を/
+shinso-gakushude /深層学習で/
+shinso-gakushuni /深層学習に/
+shizengengoshori /自然言語処理/
+shizengengoshorino /自然言語処理の/
+shizengengoshoriwo /自然言語処理を/
+shizengengoshoride /自然言語処理で/
+shizengengoshorini /自然言語処理に/
+suiron /推論/
+suironno /推論の/
+suironwo /推論を/
+suironde /推論で/
+suironni /推論に/
+gengomoderu /言語モデル/
+gengomoderuno /言語モデルの/
+gengomoderuwo /言語モデルを/
+gengomoderude /言語モデルで/
+gengomoderuni /言語モデルに/
+kibanmoderu /基盤モデル/
+kibanmoderuno /基盤モデルの/
+kibanmoderuwo /基盤モデルを/
+kibanmoderude /基盤モデルで/
+kibanmoderuni /基盤モデルに/
+kakusanmoderu /拡散モデル/
+kakusanmoderuno /拡散モデルの/
+kakusanmoderuwo /拡散モデルを/
+kakusanmoderude /拡散モデルで/
+kakusanmoderuni /拡散モデルに/
+jidokaiki-moderu /自己回帰モデル/
+jidokaiki-moderuno /自己回帰モデルの/
+jidokaiki-moderuwo /自己回帰モデルを/
+jidokaiki-moderude /自己回帰モデルで/
+jidokaiki-moderuni /自己回帰モデルに/
+bunmyaku-nai-gakushu /文脈内学習/
+bunmyaku-nai-gakushuno /文脈内学習の/
+bunmyaku-nai-gakushuwo /文脈内学習を/
+bunmyaku-nai-gakushude /文脈内学習で/
+bunmyaku-nai-gakushuni /文脈内学習に/
+jizengakushu /事前学習/
+jizengakushuno /事前学習の/
+jizengakushuwo /事前学習を/
+jizengakushude /事前学習で/
+jizengakushuni /事前学習に/
+jigogakushu /事後学習/
+jigogakushuno /事後学習の/
+jigogakushuwo /事後学習を/
+jigogakushude /事後学習で/
+jigogakushuni /事後学習に/
+kyoshiari-gakushu /教師あり学習/
+kyoshiari-gakushuno /教師あり学習の/
+kyoshiari-gakushuwo /教師あり学習を/
+kyoshiari-gakushude /教師あり学習で/
+kyoshiari-gakushuni /教師あり学習に/
+kyoshinashi-gakushu /教師なし学習/
+kyoshinashi-gakushuno /教師なし学習の/
+kyoshinashi-gakushuwo /教師なし学習を/
+kyoshinashi-gakushude /教師なし学習で/
+kyoshinashi-gakushuni /教師なし学習に/
+jikokyoshi-gakushu /自己教師あり学習/
+jikokyoshi-gakushuno /自己教師あり学習の/
+jikokyoshi-gakushuwo /自己教師あり学習を/
+jikokyoshi-gakushude /自己教師あり学習で/
+jikokyoshi-gakushuni /自己教師あり学習に/
+kyokagakushu /強化学習/
+kyokagakushuno /強化学習の/
+kyokagakushuwo /強化学習を/
+kyokagakushude /強化学習で/
+kyokagakushuni /強化学習に/
+tenigakushu /転移学習/
+tenigakushuno /転移学習の/
+tenigakushuwo /転移学習を/
+tenigakushude /転移学習で/
+tenigakushuni /転移学習に/
+bunsangakushu /分散学習/
+bunsangakushuno /分散学習の/
+bunsangakushuwo /分散学習を/
+bunsangakushude /分散学習で/
+bunsangakushuni /分散学習に/
+gazou-seisei /画像生成/
+gazou-seiseino /画像生成の/
+gazou-seiseiwo /画像生成を/
+gazou-seiseide /画像生成で/
+gazou-seiseini /画像生成に/
+gazou-ninshiki /画像認識/
+gazou-ninshikino /画像認識の/
+gazou-ninshikiwo /画像認識を/
+gazou-ninshikide /画像認識で/
+gazou-ninshikini /画像認識に/
+buttai-kenshutsu /物体検出/
+buttai-kenshutsuno /物体検出の/
+buttai-kenshutsuwo /物体検出を/
+buttai-kenshutsude /物体検出で/
+buttai-kenshutsuni /物体検出に/
+onsei-ninshiki /音声認識/
+onsei-ninshikino /音声認識の/
+onsei-ninshikiwo /音声認識を/
+onsei-ninshikide /音声認識で/
+onsei-ninshikini /音声認識に/
+onsei-gosei /音声合成/
+onsei-goseino /音声合成の/
+onsei-goseiwo /音声合成を/
+onsei-goseide /音声合成で/
+onsei-goseini /音声合成に/
+kikaihonyaku /機械翻訳/
+kikaihonyakuno /機械翻訳の/
+kikaihonyakuwo /機械翻訳を/
+kikaihonyakude /機械翻訳で/
+kikaihonyakuni /機械翻訳に/
+tokuchoryo /特徴量/
+tokuchoryono /特徴量の/
+tokuchoryowo /特徴量を/
+tokuchoryode /特徴量で/
+tokuchoryoni /特徴量に/
+gakushuritsu /学習率/
+gakushuritsuno /学習率の/
+gakushuritsuwo /学習率を/
+gakushuritsude /学習率で/
+gakushuritsuni /学習率に/
+sonshitsukansu /損失関数/
+sonshitsukansuno /損失関数の/
+sonshitsukansuwo /損失関数を/
+sonshitsukansude /損失関数で/
+sonshitsukansuni /損失関数に/
+kosakensho /交差検証/
+kosakenshono /交差検証の/
+kosakenshowo /交差検証を/
+kosakenshode /交差検証で/
+kosakenshoni /交差検証に/
+kagakushu /過学習/
+kagakushuno /過学習の/
+kagakushuwo /過学習を/
+kagakushude /過学習で/
+kagakushuni /過学習に/
+seisokuka /正則化/
+seisokukano /正則化の/
+seisokukawo /正則化を/
+seisokukade /正則化で/
+seisokukani /正則化に/
+ijokenshutsu /異常検知/
+ijokenshutsuno /異常検知の/
+ijokenshutsuwo /異常検知を/
+ijokenshutsude /異常検知で/
+ijokenshutsuni /異常検知に/
+jigen-sakugen /次元削減/
+jigen-sakugenno /次元削減の/
+jigen-sakugenwo /次元削減を/
+jigen-sakugende /次元削減で/
+jigen-sakugenni /次元削減に/
+kasseikakansu /活性化関数/
+kasseikakansuno /活性化関数の/
+kasseikakansuwo /活性化関数を/
+kasseikakansude /活性化関数で/
+kasseikakansuni /活性化関数に/
+gosa-gyakudenpa /誤差逆伝播法/
+gosa-gyakudenpano /誤差逆伝播法の/
+gosa-gyakudenpawo /誤差逆伝播法を/
+gosa-gyakudenpade /誤差逆伝播法で/
+gosa-gyakudenpani /誤差逆伝播法に/
+setsumeikanou-ai /説明可能AI/
+setsumeikanou-aino /説明可能AIの/
+setsumeikanou-aiwo /説明可能AIを/
+setsumeikanou-aide /説明可能AIで/
+setsumeikanou-aini /説明可能AIに/
+ingasuiron /因果推論/
+ingasuironno /因果推論の/
+ingasuironwo /因果推論を/
+ingasuironde /因果推論で/
+ingasuironni /因果推論に/
+bekutoru-kensaku /ベクトル検索/
+bekutoru-kensakuno /ベクトル検索の/
+bekutoru-kensakuwo /ベクトル検索を/
+bekutoru-kensakude /ベクトル検索で/
+bekutoru-kensakuni /ベクトル検索に/
+chishiki-gurafu /知識グラフ/
+chishiki-gurafuno /知識グラフの/
+chishiki-gurafuwo /知識グラフを/
+chishiki-gurafude /知識グラフで/
+chishiki-gurafuni /知識グラフに/
+keitaiso-kaiseki /形態素解析/
+keitaiso-kaisekino /形態素解析の/
+keitaiso-kaisekiwo /形態素解析を/
+keitaiso-kaisekide /形態素解析で/
+keitaiso-kaisekini /形態素解析に/
+kakariuke-kaiseki /係り受け解析/
+kakariuke-kaisekino /係り受け解析の/
+kakariuke-kaisekiwo /係り受け解析を/
+kakariuke-kaisekide /係り受け解析で/
+kakariuke-kaisekini /係り受け解析に/
+koyu-hyogen-chushutsu /固有表現抽出/
+koyu-hyogen-chushutsuno /固有表現抽出の/
+koyu-hyogen-chushutsuwo /固有表現抽出を/
+koyu-hyogen-chushutsude /固有表現抽出で/
+koyu-hyogen-chushutsuni /固有表現抽出に/
+kanjo-bunseki /感情分析/
+kanjo-bunsekino /感情分析の/
+kanjo-bunsekiwo /感情分析を/
+kanjo-bunsekide /感情分析で/
+kanjo-bunsekini /感情分析に/
+bunsho-yoyaku /文書要約/
+bunsho-yoyakuno /文書要約の/
+bunsho-yoyakuwo /文書要約を/
+bunsho-yoyakude /文書要約で/
+bunsho-yoyakuni /文書要約に/
+gosei-de-ta /合成データ/
+gosei-de-tano /合成データの/
+gosei-de-tawo /合成データを/
+gosei-de-tade /合成データで/
+gosei-de-tani /合成データに/
+ryoshika /量子化/
+ryoshikano /量子化の/
+ryoshikawo /量子化を/
+ryoshikade /量子化で/
+ryoshikani /量子化に/
+generative-ai /ジェネレーティブAI/
+generative-aino /ジェネレーティブAIの/
+generative-aiwo /ジェネレーティブAIを/
+generative-aide /ジェネレーティブAIで/
+generative-aini /ジェネレーティブAIに/
+llm /LLM/
+llmno /LLMの/
+llmwo /LLMを/
+llmde /LLMで/
+llmni /LLMに/
+slm /SLM/
+slmno /SLMの/
+slmwo /SLMを/
+slmde /SLMで/
+slmni /SLMに/
+vlm /VLM/
+vlmno /VLMの/
+vlmwo /VLMを/
+vlmde /VLMで/
+vlmni /VLMに/
+mllm /MLLM/
+mllmno /MLLMの/
+mllmwo /MLLMを/
+mllmde /MLLMで/
+mllmni /MLLMに/
+foundation-model /基盤モデル/
+foundation-modelno /基盤モデルの/
+foundation-modelwo /基盤モデルを/
+foundation-modelde /基盤モデルで/
+foundation-modelni /基盤モデルに/
+language-model /言語モデル/
+language-modelno /言語モデルの/
+language-modelwo /言語モデルを/
+language-modelde /言語モデルで/
+language-modelni /言語モデルに/
+dai-kibogengomoderu /大規模言語モデル/
+dai-kibogengomoderuno /大規模言語モデルの/
+dai-kibogengomoderuwo /大規模言語モデルを/
+dai-kibogengomoderude /大規模言語モデルで/
+dai-kibogengomoderuni /大規模言語モデルに/
+multimodal-model /マルチモーダルモデル/
+multimodal-modelno /マルチモーダルモデルの/
+multimodal-modelwo /マルチモーダルモデルを/
+multimodal-modelde /マルチモーダルモデルで/
+multimodal-modelni /マルチモーダルモデルに/
+reasoning-model /推論モデル/
+reasoning-modelno /推論モデルの/
+reasoning-modelwo /推論モデルを/
+reasoning-modelde /推論モデルで/
+reasoning-modelni /推論モデルに/
+world-model /世界モデル/
+world-modelno /世界モデルの/
+world-modelwo /世界モデルを/
+world-modelde /世界モデルで/
+world-modelni /世界モデルに/
+diffusion-model /拡散モデル/
+diffusion-modelno /拡散モデルの/
+diffusion-modelwo /拡散モデルを/
+diffusion-modelde /拡散モデルで/
+diffusion-modelni /拡散モデルに/
+autoregressive-model /自己回帰モデル/
+autoregressive-modelno /自己回帰モデルの/
+autoregressive-modelwo /自己回帰モデルを/
+autoregressive-modelde /自己回帰モデルで/
+autoregressive-modelni /自己回帰モデルに/
+transformer /Transformer/
+transformerno /Transformerの/
+transformerwo /Transformerを/
+transformerde /Transformerで/
+transformerni /Transformerに/
+attention /アテンション/
+attentionno /アテンションの/
+attentionwo /アテンションを/
+attentionde /アテンションで/
+attentionni /アテンションに/
+self-attention /自己注意/
+self-attentionno /自己注意の/
+self-attentionwo /自己注意を/
+self-attentionde /自己注意で/
+self-attentionni /自己注意に/
+cross-attention /交差注意/
+cross-attentionno /交差注意の/
+cross-attentionwo /交差注意を/
+cross-attentionde /交差注意で/
+cross-attentionni /交差注意に/
+flash-attention /FlashAttention/
+flash-attentionno /FlashAttentionの/
+flash-attentionwo /FlashAttentionを/
+flash-attentionde /FlashAttentionで/
+flash-attentionni /FlashAttentionに/
+rope /RoPE/
+ropeno /RoPEの/
+ropewo /RoPEを/
+ropede /RoPEで/
+ropeni /RoPEに/
+moe /MoE/
+moeno /MoEの/
+moewo /MoEを/
+moede /MoEで/
+moeni /MoEに/
+dense-model /デンスモデル/
+dense-modelno /デンスモデルの/
+dense-modelwo /デンスモデルを/
+dense-modelde /デンスモデルで/
+dense-modelni /デンスモデルに/
+token /トークン/
+tokenno /トークンの/
+tokenwo /トークンを/
+tokende /トークンで/
+tokenni /トークンに/
+tokenizer /トークナイザー/
+tokenizerno /トークナイザーの/
+tokenizerwo /トークナイザーを/
+tokenizerde /トークナイザーで/
+tokenizerni /トークナイザーに/
+sentencepiece /SentencePiece/
+sentencepieceno /SentencePieceの/
+sentencepiecewo /SentencePieceを/
+sentencepiecede /SentencePieceで/
+sentencepieceni /SentencePieceに/
+context-window /コンテキストウィンドウ/
+context-windowno /コンテキストウィンドウの/
+context-windowwo /コンテキストウィンドウを/
+context-windowde /コンテキストウィンドウで/
+context-windowni /コンテキストウィンドウに/
+prompt /プロンプト/
+promptno /プロンプトの/
+promptwo /プロンプトを/
+promptde /プロンプトで/
+promptni /プロンプトに/
+system-prompt /システムプロンプト/
+system-promptno /システムプロンプトの/
+system-promptwo /システムプロンプトを/
+system-promptde /システムプロンプトで/
+system-promptni /システムプロンプトに/
+developer-message /開発者メッセージ/
+developer-messageno /開発者メッセージの/
+developer-messagewo /開発者メッセージを/
+developer-messagede /開発者メッセージで/
+developer-messageni /開発者メッセージに/
+one-shot /ワンショット/
+one-shotno /ワンショットの/
+one-shotwo /ワンショットを/
+one-shotde /ワンショットで/
+one-shotni /ワンショットに/
+prompt-engineering /プロンプトエンジニアリング/
+prompt-engineeringno /プロンプトエンジニアリングの/
+prompt-engineeringwo /プロンプトエンジニアリングを/
+prompt-engineeringde /プロンプトエンジニアリングで/
+prompt-engineeringni /プロンプトエンジニアリングに/
+context-engineering /コンテキストエンジニアリング/
+context-engineeringno /コンテキストエンジニアリングの/
+context-engineeringwo /コンテキストエンジニアリングを/
+context-engineeringde /コンテキストエンジニアリングで/
+context-engineeringni /コンテキストエンジニアリングに/
+cot /CoT/
+cotno /CoTの/
+cotwo /CoTを/
+cotde /CoTで/
+cotni /CoTに/
+chain-of-thought /思考の連鎖/
+chain-of-thoughtno /思考の連鎖の/
+chain-of-thoughtwo /思考の連鎖を/
+chain-of-thoughtde /思考の連鎖で/
+chain-of-thoughtni /思考の連鎖に/
+inference-scaling /推論スケーリング/
+inference-scalingno /推論スケーリングの/
+inference-scalingwo /推論スケーリングを/
+inference-scalingde /推論スケーリングで/
+inference-scalingni /推論スケーリングに/
+pretraining /事前学習/
+pretrainingno /事前学習の/
+pretrainingwo /事前学習を/
+pretrainingde /事前学習で/
+pretrainingni /事前学習に/
+post-training /事後学習/
+post-trainingno /事後学習の/
+post-trainingwo /事後学習を/
+post-trainingde /事後学習で/
+post-trainingni /事後学習に/
+fine-tuning /ファインチューニング/
+fine-tuningno /ファインチューニングの/
+fine-tuningwo /ファインチューニングを/
+fine-tuningde /ファインチューニングで/
+fine-tuningni /ファインチューニングに/
+supervised-fine-tuning /教師ありファインチューニング/
+supervised-fine-tuningno /教師ありファインチューニングの/
+supervised-fine-tuningwo /教師ありファインチューニングを/
+supervised-fine-tuningde /教師ありファインチューニングで/
+supervised-fine-tuningni /教師ありファインチューニングに/
+instruction-tuning /指示チューニング/
+instruction-tuningno /指示チューニングの/
+instruction-tuningwo /指示チューニングを/
+instruction-tuningde /指示チューニングで/
+instruction-tuningni /指示チューニングに/
+rlhf /RLHF/
+rlhfno /RLHFの/
+rlhfwo /RLHFを/
+rlhfde /RLHFで/
+rlhfni /RLHFに/
+dpo /DPO/
+dpono /DPOの/
+dpowo /DPOを/
+dpode /DPOで/
+dponi /DPOに/
+grpo /GRPO/
+grpono /GRPOの/
+grpowo /GRPOを/
+grpode /GRPOで/
+grponi /GRPOに/
+constitutional-ai /Constitutional AI/
+constitutional-aino /Constitutional AIの/
+constitutional-aiwo /Constitutional AIを/
+constitutional-aide /Constitutional AIで/
+constitutional-aini /Constitutional AIに/
+alignment /アラインメント/
+alignmentno /アラインメントの/
+alignmentwo /アラインメントを/
+alignmentde /アラインメントで/
+alignmentni /アラインメントに/
+ai-safety /AI安全性/
+ai-safetyno /AI安全性の/
+ai-safetywo /AI安全性を/
+ai-safetyde /AI安全性で/
+ai-safetyni /AI安全性に/
+red-teaming /レッドチーミング/
+red-teamingno /レッドチーミングの/
+red-teamingwo /レッドチーミングを/
+red-teamingde /レッドチーミングで/
+red-teamingni /レッドチーミングに/
+jailbreak /ジェイルブレイク/
+jailbreakno /ジェイルブレイクの/
+jailbreakwo /ジェイルブレイクを/
+jailbreakde /ジェイルブレイクで/
+jailbreakni /ジェイルブレイクに/
+prompt-injection /プロンプトインジェクション/
+prompt-injectionno /プロンプトインジェクションの/
+prompt-injectionwo /プロンプトインジェクションを/
+prompt-injectionde /プロンプトインジェクションで/
+prompt-injectionni /プロンプトインジェクションに/
+safety-filter /安全フィルター/
+safety-filterno /安全フィルターの/
+safety-filterwo /安全フィルターを/
+safety-filterde /安全フィルターで/
+safety-filterni /安全フィルターに/
+hallucination /ハルシネーション/
+hallucinationno /ハルシネーションの/
+hallucinationwo /ハルシネーションを/
+hallucinationde /ハルシネーションで/
+hallucinationni /ハルシネーションに/
+grounding /グラウンディング/
+groundingno /グラウンディングの/
+groundingwo /グラウンディングを/
+groundingde /グラウンディングで/
+groundingni /グラウンディングに/
+factuality /事実性/
+factualityno /事実性の/
+factualitywo /事実性を/
+factualityde /事実性で/
+factualityni /事実性に/
+rag /RAG/
+ragno /RAGの/
+ragwo /RAGを/
+ragde /RAGで/
+ragni /RAGに/
+graph-rag /GraphRAG/
+graph-ragno /GraphRAGの/
+graph-ragwo /GraphRAGを/
+graph-ragde /GraphRAGで/
+graph-ragni /GraphRAGに/
+vector-search /ベクトル検索/
+vector-searchno /ベクトル検索の/
+vector-searchwo /ベクトル検索を/
+vector-searchde /ベクトル検索で/
+vector-searchni /ベクトル検索に/
+semantic-search /セマンティック検索/
+semantic-searchno /セマンティック検索の/
+semantic-searchwo /セマンティック検索を/
+semantic-searchde /セマンティック検索で/
+semantic-searchni /セマンティック検索に/
+embedding /埋め込み/
+embeddingno /埋め込みの/
+embeddingwo /埋め込みを/
+embeddingde /埋め込みで/
+embeddingni /埋め込みに/
+vector-database /ベクトルデータベース/
+vector-databaseno /ベクトルデータベースの/
+vector-databasewo /ベクトルデータベースを/
+vector-databasede /ベクトルデータベースで/
+vector-databaseni /ベクトルデータベースに/
+reranking /リランキング/
+rerankingno /リランキングの/
+rerankingwo /リランキングを/
+rerankingde /リランキングで/
+rerankingni /リランキングに/
+bi-encoder /バイエンコーダー/
+bi-encoderno /バイエンコーダーの/
+bi-encoderwo /バイエンコーダーを/
+bi-encoderde /バイエンコーダーで/
+bi-encoderni /バイエンコーダーに/
+hybrid-search /ハイブリッド検索/
+hybrid-searchno /ハイブリッド検索の/
+hybrid-searchwo /ハイブリッド検索を/
+hybrid-searchde /ハイブリッド検索で/
+hybrid-searchni /ハイブリッド検索に/
+chunking /チャンキング/
+chunkingno /チャンキングの/
+chunkingwo /チャンキングを/
+chunkingde /チャンキングで/
+chunkingni /チャンキングに/
+ocr /OCR/
+ocrno /OCRの/
+ocrwo /OCRを/
+ocrde /OCRで/
+ocrni /OCRに/
+knowledge-graph /知識グラフ/
+knowledge-graphno /知識グラフの/
+knowledge-graphwo /知識グラフを/
+knowledge-graphde /知識グラフで/
+knowledge-graphni /知識グラフに/
+entity-linking /エンティティリンキング/
+entity-linkingno /エンティティリンキングの/
+entity-linkingwo /エンティティリンキングを/
+entity-linkingde /エンティティリンキングで/
+entity-linkingni /エンティティリンキングに/
+ner /固有表現抽出/
+nerno /固有表現抽出の/
+nerwo /固有表現抽出を/
+nerde /固有表現抽出で/
+nerni /固有表現抽出に/
+question-answering /質問応答/
+question-answeringno /質問応答の/
+question-answeringwo /質問応答を/
+question-answeringde /質問応答で/
+question-answeringni /質問応答に/
+topic-modeling /トピックモデリング/
+topic-modelingno /トピックモデリングの/
+topic-modelingwo /トピックモデリングを/
+topic-modelingde /トピックモデリングで/
+topic-modelingni /トピックモデリングに/
+summarization /要約/
+summarizationno /要約の/
+summarizationwo /要約を/
+summarizationde /要約で/
+summarizationni /要約に/
+machine-translation /機械翻訳/
+machine-translationno /機械翻訳の/
+machine-translationwo /機械翻訳を/
+machine-translationde /機械翻訳で/
+machine-translationni /機械翻訳に/
+speech-recognition /音声認識/
+speech-recognitionno /音声認識の/
+speech-recognitionwo /音声認識を/
+speech-recognitionde /音声認識で/
+speech-recognitionni /音声認識に/
+text-to-speech /音声合成/
+text-to-speechno /音声合成の/
+text-to-speechwo /音声合成を/
+text-to-speechde /音声合成で/
+text-to-speechni /音声合成に/
+phoneme /音素/
+phonemeno /音素の/
+phonemewo /音素を/
+phonemede /音素で/
+phonemeni /音素に/
+lemmatization /見出し語化/
+lemmatizationno /見出し語化の/
+lemmatizationwo /見出し語化を/
+lemmatizationde /見出し語化で/
+lemmatizationni /見出し語化に/
+corpus /コーパス/
+corpusno /コーパスの/
+corpuswo /コーパスを/
+corpusde /コーパスで/
+corpusni /コーパスに/
+synthetic-data /合成データ/
+synthetic-datano /合成データの/
+synthetic-datawo /合成データを/
+synthetic-datade /合成データで/
+synthetic-datani /合成データに/
+distillation /蒸留/
+distillationno /蒸留の/
+distillationwo /蒸留を/
+distillationde /蒸留で/
+distillationni /蒸留に/
+quantization /量子化/
+quantizationno /量子化の/
+quantizationwo /量子化を/
+quantizationde /量子化で/
+quantizationni /量子化に/
+pruning /枝刈り/
+pruningno /枝刈りの/
+pruningwo /枝刈りを/
+pruningde /枝刈りで/
+pruningni /枝刈りに/
+lora /LoRA/
+lorano /LoRAの/
+lorawo /LoRAを/
+lorade /LoRAで/
+lorani /LoRAに/
+qlora /QLoRA/
+qlorano /QLoRAの/
+qlorawo /QLoRAを/
+qlorade /QLoRAで/
+qlorani /QLoRAに/
+peft /PEFT/
+peftno /PEFTの/
+peftwo /PEFTを/
+peftde /PEFTで/
+peftni /PEFTに/
+weight-averaging /重み平均/
+weight-averagingno /重み平均の/
+weight-averagingwo /重み平均を/
+weight-averagingde /重み平均で/
+weight-averagingni /重み平均に/
+checkpoint /チェックポイント/
+checkpointno /チェックポイントの/
+checkpointwo /チェックポイントを/
+checkpointde /チェックポイントで/
+checkpointni /チェックポイントに/
+gguf /GGUF/
+ggufno /GGUFの/
+ggufwo /GGUFを/
+ggufde /GGUFで/
+ggufni /GGUFに/
+onnx /ONNX/
+onnxno /ONNXの/
+onnxwo /ONNXを/
+onnxde /ONNXで/
+onnxni /ONNXに/
+vllm /vLLM/
+vllmno /vLLMの/
+vllmwo /vLLMを/
+vllmde /vLLMで/
+vllmni /vLLMに/
+llama-cpp /llama.cpp/
+llama-cppno /llama.cppの/
+llama-cppwo /llama.cppを/
+llama-cppde /llama.cppで/
+llama-cppni /llama.cppに/
+jax /JAX/
+jaxno /JAXの/
+jaxwo /JAXを/
+jaxde /JAXで/
+jaxni /JAXに/
+pytorch /PyTorch/
+pytorchno /PyTorchの/
+pytorchwo /PyTorchを/
+pytorchde /PyTorchで/
+pytorchni /PyTorchに/
+tensorflow /TensorFlow/
+tensorflowno /TensorFlowの/
+tensorflowwo /TensorFlowを/
+tensorflowde /TensorFlowで/
+tensorflowni /TensorFlowに/
+keras /Keras/
+kerasno /Kerasの/
+keraswo /Kerasを/
+kerasde /Kerasで/
+kerasni /Kerasに/
+scikit-learn /scikit-learn/
+scikit-learnno /scikit-learnの/
+scikit-learnwo /scikit-learnを/
+scikit-learnde /scikit-learnで/
+scikit-learnni /scikit-learnに/
+xgboost /XGBoost/
+xgboostno /XGBoostの/
+xgboostwo /XGBoostを/
+xgboostde /XGBoostで/
+xgboostni /XGBoostに/
+numpy /NumPy/
+numpyno /NumPyの/
+numpywo /NumPyを/
+numpyde /NumPyで/
+numpyni /NumPyに/
+pandas /pandas/
+pandasno /pandasの/
+pandaswo /pandasを/
+pandasde /pandasで/
+pandasni /pandasに/
+polars /Polars/
+polarsno /Polarsの/
+polarswo /Polarsを/
+polarsde /Polarsで/
+polarsni /Polarsに/
+hugging-face /Hugging Face/
+hugging-faceno /Hugging Faceの/
+hugging-facewo /Hugging Faceを/
+hugging-facede /Hugging Faceで/
+hugging-faceni /Hugging Faceに/
+transformers /Transformers/
+transformersno /Transformersの/
+transformerswo /Transformersを/
+transformersde /Transformersで/
+transformersni /Transformersに/
+datasets /Datasets/
+datasetsno /Datasetsの/
+datasetswo /Datasetsを/
+datasetsde /Datasetsで/
+datasetsni /Datasetsに/
+langchain /LangChain/
+langchainno /LangChainの/
+langchainwo /LangChainを/
+langchainde /LangChainで/
+langchainni /LangChainに/
+llamaindex /LlamaIndex/
+llamaindexno /LlamaIndexの/
+llamaindexwo /LlamaIndexを/
+llamaindexde /LlamaIndexで/
+llamaindexni /LlamaIndexに/
+dspy /DSPy/
+dspyno /DSPyの/
+dspywo /DSPyを/
+dspyde /DSPyで/
+dspyni /DSPyに/
+langgraph /LangGraph/
+langgraphno /LangGraphの/
+langgraphwo /LangGraphを/
+langgraphde /LangGraphで/
+langgraphni /LangGraphに/
+autogen /AutoGen/
+autogenno /AutoGenの/
+autogenwo /AutoGenを/
+autogende /AutoGenで/
+autogenni /AutoGenに/
+crewai /CrewAI/
+crewaino /CrewAIの/
+crewaiwo /CrewAIを/
+crewaide /CrewAIで/
+crewaini /CrewAIに/
+semantic-kernel /Semantic Kernel/
+semantic-kernelno /Semantic Kernelの/
+semantic-kernelwo /Semantic Kernelを/
+semantic-kernelde /Semantic Kernelで/
+semantic-kernelni /Semantic Kernelに/
+mcp /MCP/
+mcpno /MCPの/
+mcpwo /MCPを/
+mcpde /MCPで/
+mcpni /MCPに/
+a2a /A2A/
+a2ano /A2Aの/
+a2awo /A2Aを/
+a2ade /A2Aで/
+a2ani /A2Aに/
+tool-calling /ツール呼び出し/
+tool-callingno /ツール呼び出しの/
+tool-callingwo /ツール呼び出しを/
+tool-callingde /ツール呼び出しで/
+tool-callingni /ツール呼び出しに/
+function-calling /関数呼び出し/
+function-callingno /関数呼び出しの/
+function-callingwo /関数呼び出しを/
+function-callingde /関数呼び出しで/
+function-callingni /関数呼び出しに/
+structured-output /構造化出力/
+structured-outputno /構造化出力の/
+structured-outputwo /構造化出力を/
+structured-outputde /構造化出力で/
+structured-outputni /構造化出力に/
+agent /エージェント/
+agentno /エージェントの/
+agentwo /エージェントを/
+agentde /エージェントで/
+agentni /エージェントに/
+ai-agent /AIエージェント/
+ai-agentno /AIエージェントの/
+ai-agentwo /AIエージェントを/
+ai-agentde /AIエージェントで/
+ai-agentni /AIエージェントに/
+agentic-ai /エージェンティックAI/
+agentic-aino /エージェンティックAIの/
+agentic-aiwo /エージェンティックAIを/
+agentic-aide /エージェンティックAIで/
+agentic-aini /エージェンティックAIに/
+autonomous-agent /自律エージェント/
+autonomous-agentno /自律エージェントの/
+autonomous-agentwo /自律エージェントを/
+autonomous-agentde /自律エージェントで/
+autonomous-agentni /自律エージェントに/
+computer-use /コンピューター操作/
+computer-useno /コンピューター操作の/
+computer-usewo /コンピューター操作を/
+computer-usede /コンピューター操作で/
+computer-useni /コンピューター操作に/
+code-interpreter /コードインタープリター/
+code-interpreterno /コードインタープリターの/
+code-interpreterwo /コードインタープリターを/
+code-interpreterde /コードインタープリターで/
+code-interpreterni /コードインタープリターに/
+sandbox /サンドボックス/
+sandboxno /サンドボックスの/
+sandboxwo /サンドボックスを/
+sandboxde /サンドボックスで/
+sandboxni /サンドボックスに/
+short-term-memory /短期記憶/
+short-term-memoryno /短期記憶の/
+short-term-memorywo /短期記憶を/
+short-term-memoryde /短期記憶で/
+short-term-memoryni /短期記憶に/
+planning /プランニング/
+planningno /プランニングの/
+planningwo /プランニングを/
+planningde /プランニングで/
+planningni /プランニングに/
+reflection /リフレクション/
+reflectionno /リフレクションの/
+reflectionwo /リフレクションを/
+reflectionde /リフレクションで/
+reflectionni /リフレクションに/
+greedy-decoding /貪欲デコーディング/
+greedy-decodingno /貪欲デコーディングの/
+greedy-decodingwo /貪欲デコーディングを/
+greedy-decodingde /貪欲デコーディングで/
+greedy-decodingni /貪欲デコーディングに/
+sampling /サンプリング/
+samplingno /サンプリングの/
+samplingwo /サンプリングを/
+samplingde /サンプリングで/
+samplingni /サンプリングに/
+temperature /温度/
+temperatureno /温度の/
+temperaturewo /温度を/
+temperaturede /温度で/
+temperatureni /温度に/
+top-k /Top-k/
+top-kno /Top-kの/
+top-kwo /Top-kを/
+top-kde /Top-kで/
+top-kni /Top-kに/
+top-p /Top-p/
+top-pno /Top-pの/
+top-pwo /Top-pを/
+top-pde /Top-pで/
+top-pni /Top-pに/
+constrained-decoding /制約付きデコーディング/
+constrained-decodingno /制約付きデコーディングの/
+constrained-decodingwo /制約付きデコーディングを/
+constrained-decodingde /制約付きデコーディングで/
+constrained-decodingni /制約付きデコーディングに/
+kv-cache /KVキャッシュ/
+kv-cacheno /KVキャッシュの/
+kv-cachewo /KVキャッシュを/
+kv-cachede /KVキャッシュで/
+kv-cacheni /KVキャッシュに/
+tensor-parallelism /テンソル並列/
+tensor-parallelismno /テンソル並列の/
+tensor-parallelismwo /テンソル並列を/
+tensor-parallelismde /テンソル並列で/
+tensor-parallelismni /テンソル並列に/
+distributed-training /分散学習/
+distributed-trainingno /分散学習の/
+distributed-trainingwo /分散学習を/
+distributed-trainingde /分散学習で/
+distributed-trainingni /分散学習に/
+gradient-accumulation /勾配累積/
+gradient-accumulationno /勾配累積の/
+gradient-accumulationwo /勾配累積を/
+gradient-accumulationde /勾配累積で/
+gradient-accumulationni /勾配累積に/
+fp16 /FP16/
+fp16no /FP16の/
+fp16wo /FP16を/
+fp16de /FP16で/
+fp16ni /FP16に/
+bf16 /BF16/
+bf16no /BF16の/
+bf16wo /BF16を/
+bf16de /BF16で/
+bf16ni /BF16に/
+fp8 /FP8/
+fp8no /FP8の/
+fp8wo /FP8を/
+fp8de /FP8で/
+fp8ni /FP8に/
+int8 /INT8/
+int8no /INT8の/
+int8wo /INT8を/
+int8de /INT8で/
+int8ni /INT8に/
+int4 /INT4/
+int4no /INT4の/
+int4wo /INT4を/
+int4de /INT4で/
+int4ni /INT4に/
+cuda /CUDA/
+cudano /CUDAの/
+cudawo /CUDAを/
+cudade /CUDAで/
+cudani /CUDAに/
+gpu /GPU/
+gpuno /GPUの/
+gpuwo /GPUを/
+gpude /GPUで/
+gpuni /GPUに/
+npu /NPU/
+npuno /NPUの/
+npuwo /NPUを/
+npude /NPUで/
+npuni /NPUに/
+h100 /H100/
+h100no /H100の/
+h100wo /H100を/
+h100de /H100で/
+h100ni /H100に/
+h200 /H200/
+h200no /H200の/
+h200wo /H200を/
+h200de /H200で/
+h200ni /H200に/
+b200 /B200/
+b200no /B200の/
+b200wo /B200を/
+b200de /B200で/
+b200ni /B200に/
+blackwell /Blackwell/
+blackwellno /Blackwellの/
+blackwellwo /Blackwellを/
+blackwellde /Blackwellで/
+blackwellni /Blackwellに/
+infiniband /InfiniBand/
+infinibandno /InfiniBandの/
+infinibandwo /InfiniBandを/
+infinibandde /InfiniBandで/
+infinibandni /InfiniBandに/
+inference /推論/
+inferenceno /推論の/
+inferencewo /推論を/
+inferencede /推論で/
+inferenceni /推論に/
+latency /レイテンシー/
+latencyno /レイテンシーの/
+latencywo /レイテンシーを/
+latencyde /レイテンシーで/
+latencyni /レイテンシーに/
+throughput /スループット/
+throughputno /スループットの/
+throughputwo /スループットを/
+throughputde /スループットで/
+throughputni /スループットに/
+benchmark /ベンチマーク/
+benchmarkno /ベンチマークの/
+benchmarkwo /ベンチマークを/
+benchmarkde /ベンチマークで/
+benchmarkni /ベンチマークに/
+mmlu /MMLU/
+mmluno /MMLUの/
+mmluwo /MMLUを/
+mmlude /MMLUで/
+mmluni /MMLUに/
+humaneval /HumanEval/
+humanevalno /HumanEvalの/
+humanevalwo /HumanEvalを/
+humanevalde /HumanEvalで/
+humanevalni /HumanEvalに/
+swe-bench /SWE-bench/
+swe-benchno /SWE-benchの/
+swe-benchwo /SWE-benchを/
+swe-benchde /SWE-benchで/
+swe-benchni /SWE-benchに/
+arc-agi /ARC-AGI/
+arc-agino /ARC-AGIの/
+arc-agiwo /ARC-AGIを/
+arc-agide /ARC-AGIで/
+arc-agini /ARC-AGIに/
+lmarena /LMArena/
+lmarenano /LMArenaの/
+lmarenawo /LMArenaを/
+lmarenade /LMArenaで/
+lmarenani /LMArenaに/
+perplexity-score /パープレキシティ/
+perplexity-scoreno /パープレキシティの/
+perplexity-scorewo /パープレキシティを/
+perplexity-scorede /パープレキシティで/
+perplexity-scoreni /パープレキシティに/
+bertscore /BERTScore/
+bertscoreno /BERTScoreの/
+bertscorewo /BERTScoreを/
+bertscorede /BERTScoreで/
+bertscoreni /BERTScoreに/
+precision /適合率/
+precisionno /適合率の/
+precisionwo /適合率を/
+precisionde /適合率で/
+precisionni /適合率に/
+recall /再現率/
+recallno /再現率の/
+recallwo /再現率を/
+recallde /再現率で/
+recallni /再現率に/
+confusion-matrix /混同行列/
+confusion-matrixno /混同行列の/
+confusion-matrixwo /混同行列を/
+confusion-matrixde /混同行列で/
+confusion-matrixni /混同行列に/
+cross-validation /交差検証/
+cross-validationno /交差検証の/
+cross-validationwo /交差検証を/
+cross-validationde /交差検証で/
+cross-validationni /交差検証に/
+overfitting /過学習/
+overfittingno /過学習の/
+overfittingwo /過学習を/
+overfittingde /過学習で/
+overfittingni /過学習に/
+regularization /正則化/
+regularizationno /正則化の/
+regularizationwo /正則化を/
+regularizationde /正則化で/
+regularizationni /正則化に/
+batch-normalization /バッチ正規化/
+batch-normalizationno /バッチ正規化の/
+batch-normalizationwo /バッチ正規化を/
+batch-normalizationde /バッチ正規化で/
+batch-normalizationni /バッチ正規化に/
+gradient-descent /勾配降下法/
+gradient-descentno /勾配降下法の/
+gradient-descentwo /勾配降下法を/
+gradient-descentde /勾配降下法で/
+gradient-descentni /勾配降下法に/
+adamw /AdamW/
+adamwno /AdamWの/
+adamwwo /AdamWを/
+adamwde /AdamWで/
+adamwni /AdamWに/
+learning-rate /学習率/
+learning-rateno /学習率の/
+learning-ratewo /学習率を/
+learning-ratede /学習率で/
+learning-rateni /学習率に/
+scheduler /スケジューラー/
+schedulerno /スケジューラーの/
+schedulerwo /スケジューラーを/
+schedulerde /スケジューラーで/
+schedulerni /スケジューラーに/
+kl-divergence /KLダイバージェンス/
+kl-divergenceno /KLダイバージェンスの/
+kl-divergencewo /KLダイバージェンスを/
+kl-divergencede /KLダイバージェンスで/
+kl-divergenceni /KLダイバージェンスに/
+backpropagation /誤差逆伝播法/
+backpropagationno /誤差逆伝播法の/
+backpropagationwo /誤差逆伝播法を/
+backpropagationde /誤差逆伝播法で/
+backpropagationni /誤差逆伝播法に/
+gelu /GELU/
+geluno /GELUの/
+geluwo /GELUを/
+gelude /GELUで/
+geluni /GELUに/
+supervised-learning /教師あり学習/
+supervised-learningno /教師あり学習の/
+supervised-learningwo /教師あり学習を/
+supervised-learningde /教師あり学習で/
+supervised-learningni /教師あり学習に/
+unsupervised-learning /教師なし学習/
+unsupervised-learningno /教師なし学習の/
+unsupervised-learningwo /教師なし学習を/
+unsupervised-learningde /教師なし学習で/
+unsupervised-learningni /教師なし学習に/
+semi-supervised-learning /半教師あり学習/
+semi-supervised-learningno /半教師あり学習の/
+semi-supervised-learningwo /半教師あり学習を/
+semi-supervised-learningde /半教師あり学習で/
+semi-supervised-learningni /半教師あり学習に/
+reinforcement-learning /強化学習/
+reinforcement-learningno /強化学習の/
+reinforcement-learningwo /強化学習を/
+reinforcement-learningde /強化学習で/
+reinforcement-learningni /強化学習に/
+transfer-learning /転移学習/
+transfer-learningno /転移学習の/
+transfer-learningwo /転移学習を/
+transfer-learningde /転移学習で/
+transfer-learningni /転移学習に/
+federated-learning /連合学習/
+federated-learningno /連合学習の/
+federated-learningwo /連合学習を/
+federated-learningde /連合学習で/
+federated-learningni /連合学習に/
+multimodal-learning /マルチモーダル学習/
+multimodal-learningno /マルチモーダル学習の/
+multimodal-learningwo /マルチモーダル学習を/
+multimodal-learningde /マルチモーダル学習で/
+multimodal-learningni /マルチモーダル学習に/
+computer-vision /コンピュータービジョン/
+computer-visionno /コンピュータービジョンの/
+computer-visionwo /コンピュータービジョンを/
+computer-visionde /コンピュータービジョンで/
+computer-visionni /コンピュータービジョンに/
+instance-segmentation /インスタンスセグメンテーション/
+instance-segmentationno /インスタンスセグメンテーションの/
+instance-segmentationwo /インスタンスセグメンテーションを/
+instance-segmentationde /インスタンスセグメンテーションで/
+instance-segmentationni /インスタンスセグメンテーションに/
+image-generation /画像生成/
+image-generationno /画像生成の/
+image-generationwo /画像生成を/
+image-generationde /画像生成で/
+image-generationni /画像生成に/
+text-to-image /テキスト画像生成/
+text-to-imageno /テキスト画像生成の/
+text-to-imagewo /テキスト画像生成を/
+text-to-imagede /テキスト画像生成で/
+text-to-imageni /テキスト画像生成に/
+inpainting /インペインティング/
+inpaintingno /インペインティングの/
+inpaintingwo /インペインティングを/
+inpaintingde /インペインティングで/
+inpaintingni /インペインティングに/
+outpainting /アウトペインティング/
+outpaintingno /アウトペインティングの/
+outpaintingwo /アウトペインティングを/
+outpaintingde /アウトペインティングで/
+outpaintingni /アウトペインティングに/
+controlnet /ControlNet/
+controlnetno /ControlNetの/
+controlnetwo /ControlNetを/
+controlnetde /ControlNetで/
+controlnetni /ControlNetに/
+classifier-free-guidance /Classifier-Free Guidance/
+classifier-free-guidanceno /Classifier-Free Guidanceの/
+classifier-free-guidancewo /Classifier-Free Guidanceを/
+classifier-free-guidancede /Classifier-Free Guidanceで/
+classifier-free-guidanceni /Classifier-Free Guidanceに/
+upscaler /アップスケーラー/
+upscalerno /アップスケーラーの/
+upscalerwo /アップスケーラーを/
+upscalerde /アップスケーラーで/
+upscalerni /アップスケーラーに/
+neural-network /ニューラルネットワーク/
+neural-networkno /ニューラルネットワークの/
+neural-networkwo /ニューラルネットワークを/
+neural-networkde /ニューラルネットワークで/
+neural-networkni /ニューラルネットワークに/
+cnn /CNN/
+cnnno /CNNの/
+cnnwo /CNNを/
+cnnde /CNNで/
+cnnni /CNNに/
+rnn /RNN/
+rnnno /RNNの/
+rnnwo /RNNを/
+rnnde /RNNで/
+rnnni /RNNに/
+lstm /LSTM/
+lstmno /LSTMの/
+lstmwo /LSTMを/
+lstmde /LSTMで/
+lstmni /LSTMに/
+gan /GAN/
+ganno /GANの/
+ganwo /GANを/
+gande /GANで/
+ganni /GANに/
+vae /VAE/
+vaeno /VAEの/
+vaewo /VAEを/
+vaede /VAEで/
+vaeni /VAEに/
+autoencoder /オートエンコーダー/
+autoencoderno /オートエンコーダーの/
+autoencoderwo /オートエンコーダーを/
+autoencoderde /オートエンコーダーで/
+autoencoderni /オートエンコーダーに/
+decoder /デコーダー/
+decoderno /デコーダーの/
+decoderwo /デコーダーを/
+decoderde /デコーダーで/
+decoderni /デコーダーに/
+bert /BERT/
+bertno /BERTの/
+bertwo /BERTを/
+bertde /BERTで/
+bertni /BERTに/
+gpt /GPT/
+gptno /GPTの/
+gptwo /GPTを/
+gptde /GPTで/
+gptni /GPTに/
+clip /CLIP/
+clipno /CLIPの/
+clipwo /CLIPを/
+clipde /CLIPで/
+clipni /CLIPに/
+vit /ViT/
+vitno /ViTの/
+vitwo /ViTを/
+vitde /ViTで/
+vitni /ViTに/
+resnet /ResNet/
+resnetno /ResNetの/
+resnetwo /ResNetを/
+resnetde /ResNetで/
+resnetni /ResNetに/
+yolo /YOLO/
+yolono /YOLOの/
+yolowo /YOLOを/
+yolode /YOLOで/
+yoloni /YOLOに/
+sam /SAM/
+samno /SAMの/
+samwo /SAMを/
+samde /SAMで/
+samni /SAMに/
+whisper /Whisper/
+whisperno /Whisperの/
+whisperwo /Whisperを/
+whisperde /Whisperで/
+whisperni /Whisperに/
+nerf /NeRF/
+nerfno /NeRFの/
+nerfwo /NeRFを/
+nerfde /NeRFで/
+nerfni /NeRFに/
+gaussian-splatting /ガウシアン・スプラッティング/
+gaussian-splattingno /ガウシアン・スプラッティングの/
+gaussian-splattingwo /ガウシアン・スプラッティングを/
+gaussian-splattingde /ガウシアン・スプラッティングで/
+gaussian-splattingni /ガウシアン・スプラッティングに/
+time-series /時系列/
+time-seriesno /時系列の/
+time-serieswo /時系列を/
+time-seriesde /時系列で/
+time-seriesni /時系列に/
+anomaly-detection /異常検知/
+anomaly-detectionno /異常検知の/
+anomaly-detectionwo /異常検知を/
+anomaly-detectionde /異常検知で/
+anomaly-detectionni /異常検知に/
+clustering /クラスタリング/
+clusteringno /クラスタリングの/
+clusteringwo /クラスタリングを/
+clusteringde /クラスタリングで/
+clusteringni /クラスタリングに/
+regression /回帰/
+regressionno /回帰の/
+regressionwo /回帰を/
+regressionde /回帰で/
+regressionni /回帰に/
+classification /分類/
+classificationno /分類の/
+classificationwo /分類を/
+classificationde /分類で/
+classificationni /分類に/
+dimensionality-reduction /次元削減/
+dimensionality-reductionno /次元削減の/
+dimensionality-reductionwo /次元削減を/
+dimensionality-reductionde /次元削減で/
+dimensionality-reductionni /次元削減に/
+feature-engineering /特徴量エンジニアリング/
+feature-engineeringno /特徴量エンジニアリングの/
+feature-engineeringwo /特徴量エンジニアリングを/
+feature-engineeringde /特徴量エンジニアリングで/
+feature-engineeringni /特徴量エンジニアリングに/
+feature-selection /特徴選択/
+feature-selectionno /特徴選択の/
+feature-selectionwo /特徴選択を/
+feature-selectionde /特徴選択で/
+feature-selectionni /特徴選択に/
+train-data /学習データ/
+train-datano /学習データの/
+train-datawo /学習データを/
+train-datade /学習データで/
+train-datani /学習データに/
+class-imbalance /クラス不均衡/
+class-imbalanceno /クラス不均衡の/
+class-imbalancewo /クラス不均衡を/
+class-imbalancede /クラス不均衡で/
+class-imbalanceni /クラス不均衡に/
+standardization /標準化/
+standardizationno /標準化の/
+standardizationwo /標準化を/
+standardizationde /標準化で/
+standardizationni /標準化に/
+random-forest /ランダムフォレスト/
+random-forestno /ランダムフォレストの/
+random-forestwo /ランダムフォレストを/
+random-forestde /ランダムフォレストで/
+random-forestni /ランダムフォレストに/
+decision-tree /決定木/
+decision-treeno /決定木の/
+decision-treewo /決定木を/
+decision-treede /決定木で/
+decision-treeni /決定木に/
+bayesian-optimization /ベイズ最適化/
+bayesian-optimizationno /ベイズ最適化の/
+bayesian-optimizationwo /ベイズ最適化を/
+bayesian-optimizationde /ベイズ最適化で/
+bayesian-optimizationni /ベイズ最適化に/
+hyperparameter /ハイパーパラメータ/
+hyperparameterno /ハイパーパラメータの/
+hyperparameterwo /ハイパーパラメータを/
+hyperparameterde /ハイパーパラメータで/
+hyperparameterni /ハイパーパラメータに/
+experiment-tracking /実験管理/
+experiment-trackingno /実験管理の/
+experiment-trackingwo /実験管理を/
+experiment-trackingde /実験管理で/
+experiment-trackingni /実験管理に/
+mlops /MLOps/
+mlopsno /MLOpsの/
+mlopswo /MLOpsを/
+mlopsde /MLOpsで/
+mlopsni /MLOpsに/
+llmops /LLMOps/
+llmopsno /LLMOpsの/
+llmopswo /LLMOpsを/
+llmopsde /LLMOpsで/
+llmopsni /LLMOpsに/
+data-drift /データドリフト/
+data-driftno /データドリフトの/
+data-driftwo /データドリフトを/
+data-driftde /データドリフトで/
+data-driftni /データドリフトに/
+feature-store /特徴量ストア/
+feature-storeno /特徴量ストアの/
+feature-storewo /特徴量ストアを/
+feature-storede /特徴量ストアで/
+feature-storeni /特徴量ストアに/
+edge-ai /エッジAI/
+edge-aino /エッジAIの/
+edge-aiwo /エッジAIを/
+edge-aide /エッジAIで/
+edge-aini /エッジAIに/
+on-device-ai /オンデバイスAI/
+on-device-aino /オンデバイスAIの/
+on-device-aiwo /オンデバイスAIを/
+on-device-aide /オンデバイスAIで/
+on-device-aini /オンデバイスAIに/
+differential-privacy /差分プライバシー/
+differential-privacyno /差分プライバシーの/
+differential-privacywo /差分プライバシーを/
+differential-privacyde /差分プライバシーで/
+differential-privacyni /差分プライバシーに/
+explainable-ai /説明可能AI/
+explainable-aino /説明可能AIの/
+explainable-aiwo /説明可能AIを/
+explainable-aide /説明可能AIで/
+explainable-aini /説明可能AIに/
+xai /XAI/
+xaino /XAIの/
+xaiwo /XAIを/
+xaide /XAIで/
+xaini /XAIに/
+feature-importance /特徴量重要度/
+feature-importanceno /特徴量重要度の/
+feature-importancewo /特徴量重要度を/
+feature-importancede /特徴量重要度で/
+feature-importanceni /特徴量重要度に/
+causal-inference /因果推論/
+causal-inferenceno /因果推論の/
+causal-inferencewo /因果推論を/
+causal-inferencede /因果推論で/
+causal-inferenceni /因果推論に/
+causal-graph /因果グラフ/
+causal-graphno /因果グラフの/
+causal-graphwo /因果グラフを/
+causal-graphde /因果グラフで/
+causal-graphni /因果グラフに/
+ab-test /A／Bテスト/
+ab-testno /A／Bテストの/
+ab-testwo /A／Bテストを/
+ab-testde /A／Bテストで/
+ab-testni /A／Bテストに/
+p-value /p値/
+p-valueno /p値の/
+p-valuewo /p値を/
+p-valuede /p値で/
+p-valueni /p値に/
+bayesian-statistics /ベイズ統計/
+bayesian-statisticsno /ベイズ統計の/
+bayesian-statisticswo /ベイズ統計を/
+bayesian-statisticsde /ベイズ統計で/
+bayesian-statisticsni /ベイズ統計に/
+monte-carlo /モンテカルロ法/
+monte-carlono /モンテカルロ法の/
+monte-carlowo /モンテカルロ法を/
+monte-carlode /モンテカルロ法で/
+monte-carloni /モンテカルロ法に/
+correlation /相関/
+correlationno /相関の/
+correlationwo /相関を/
+correlationde /相関で/
+correlationni /相関に/
+api /API/
+apino /APIの/
+apiwo /APIを/
+apide /APIで/
+apini /APIに/
+rest-api /REST API/
+rest-apino /REST APIの/
+rest-apiwo /REST APIを/
+rest-apide /REST APIで/
+rest-apini /REST APIに/
+graphql-api /GraphQL API/
+graphql-apino /GraphQL APIの/
+graphql-apiwo /GraphQL APIを/
+graphql-apide /GraphQL APIで/
+graphql-apini /GraphQL APIに/
+grpc /gRPC/
+grpcno /gRPCの/
+grpcwo /gRPCを/
+grpcde /gRPCで/
+grpcni /gRPCに/
+websocket /WebSocket/
+websocketno /WebSocketの/
+websocketwo /WebSocketを/
+websocketde /WebSocketで/
+websocketni /WebSocketに/
+http /HTTP/
+httpno /HTTPの/
+httpwo /HTTPを/
+httpde /HTTPで/
+httpni /HTTPに/
+http2 /HTTP／2/
+http2no /HTTP／2の/
+http2wo /HTTP／2を/
+http2de /HTTP／2で/
+http2ni /HTTP／2に/
+http3 /HTTP／3/
+http3no /HTTP／3の/
+http3wo /HTTP／3を/
+http3de /HTTP／3で/
+http3ni /HTTP／3に/
+dns /DNS/
+dnsno /DNSの/
+dnswo /DNSを/
+dnsde /DNSで/
+dnsni /DNSに/
+tls /TLS/
+tlsno /TLSの/
+tlswo /TLSを/
+tlsde /TLSで/
+tlsni /TLSに/
+oauth /OAuth/
+oauthno /OAuthの/
+oauthwo /OAuthを/
+oauthde /OAuthで/
+oauthni /OAuthに/
+openid-connect /OpenID Connect/
+openid-connectno /OpenID Connectの/
+openid-connectwo /OpenID Connectを/
+openid-connectde /OpenID Connectで/
+openid-connectni /OpenID Connectに/
+jwt /JWT/
+jwtno /JWTの/
+jwtwo /JWTを/
+jwtde /JWTで/
+jwtni /JWTに/
+passkey /パスキー/
+passkeyno /パスキーの/
+passkeywo /パスキーを/
+passkeyde /パスキーで/
+passkeyni /パスキーに/
+mfa /MFA/
+mfano /MFAの/
+mfawo /MFAを/
+mfade /MFAで/
+mfani /MFAに/
+zero-trust /ゼロトラスト/
+zero-trustno /ゼロトラストの/
+zero-trustwo /ゼロトラストを/
+zero-trustde /ゼロトラストで/
+zero-trustni /ゼロトラストに/
+least-privilege /最小権限/
+least-privilegeno /最小権限の/
+least-privilegewo /最小権限を/
+least-privilegede /最小権限で/
+least-privilegeni /最小権限に/
+iam /IAM/
+iamno /IAMの/
+iamwo /IAMを/
+iamde /IAMで/
+iamni /IAMに/
+encryption /暗号化/
+encryptionno /暗号化の/
+encryptionwo /暗号化を/
+encryptionde /暗号化で/
+encryptionni /暗号化に/
+hashing /ハッシュ化/
+hashingno /ハッシュ化の/
+hashingwo /ハッシュ化を/
+hashingde /ハッシュ化で/
+hashingni /ハッシュ化に/
+salt /ソルト/
+saltno /ソルトの/
+saltwo /ソルトを/
+saltde /ソルトで/
+saltni /ソルトに/
+rsa /RSA/
+rsano /RSAの/
+rsawo /RSAを/
+rsade /RSAで/
+rsani /RSAに/
+public-key /公開鍵/
+public-keyno /公開鍵の/
+public-keywo /公開鍵を/
+public-keyde /公開鍵で/
+public-keyni /公開鍵に/
+private-key /秘密鍵/
+private-keyno /秘密鍵の/
+private-keywo /秘密鍵を/
+private-keyde /秘密鍵で/
+private-keyni /秘密鍵に/
+certificate /証明書/
+certificateno /証明書の/
+certificatewo /証明書を/
+certificatede /証明書で/
+certificateni /証明書に/
+csp /CSP/
+cspno /CSPの/
+cspwo /CSPを/
+cspde /CSPで/
+cspni /CSPに/
+xss /XSS/
+xssno /XSSの/
+xsswo /XSSを/
+xssde /XSSで/
+xssni /XSSに/
+sql-injection /SQLインジェクション/
+sql-injectionno /SQLインジェクションの/
+sql-injectionwo /SQLインジェクションを/
+sql-injectionde /SQLインジェクションで/
+sql-injectionni /SQLインジェクションに/
+rce /RCE/
+rceno /RCEの/
+rcewo /RCEを/
+rcede /RCEで/
+rceni /RCEに/
+ssrf /SSRF/
+ssrfno /SSRFの/
+ssrfwo /SSRFを/
+ssrfde /SSRFで/
+ssrfni /SSRFに/
+supply-chain-attack /サプライチェーン攻撃/
+supply-chain-attackno /サプライチェーン攻撃の/
+supply-chain-attackwo /サプライチェーン攻撃を/
+supply-chain-attackde /サプライチェーン攻撃で/
+supply-chain-attackni /サプライチェーン攻撃に/
+ransomware /ランサムウェア/
+ransomwareno /ランサムウェアの/
+ransomwarewo /ランサムウェアを/
+ransomwarede /ランサムウェアで/
+ransomwareni /ランサムウェアに/
+phishing /フィッシング/
+phishingno /フィッシングの/
+phishingwo /フィッシングを/
+phishingde /フィッシングで/
+phishingni /フィッシングに/
+vulnerability /脆弱性/
+vulnerabilityno /脆弱性の/
+vulnerabilitywo /脆弱性を/
+vulnerabilityde /脆弱性で/
+vulnerabilityni /脆弱性に/
+cve /CVE/
+cveno /CVEの/
+cvewo /CVEを/
+cvede /CVEで/
+cveni /CVEに/
+cvss /CVSS/
+cvssno /CVSSの/
+cvsswo /CVSSを/
+cvssde /CVSSで/
+cvssni /CVSSに/
+sbom /SBOM/
+sbomno /SBOMの/
+sbomwo /SBOMを/
+sbomde /SBOMで/
+sbomni /SBOMに/
+typosquatting /タイポスクワッティング/
+typosquattingno /タイポスクワッティングの/
+typosquattingwo /タイポスクワッティングを/
+typosquattingde /タイポスクワッティングで/
+typosquattingni /タイポスクワッティングに/
+bug-bounty /バグバウンティ/
+bug-bountyno /バグバウンティの/
+bug-bountywo /バグバウンティを/
+bug-bountyde /バグバウンティで/
+bug-bountyni /バグバウンティに/
+owasp-top10 /OWASP Top 10/
+owasp-top10no /OWASP Top 10の/
+owasp-top10wo /OWASP Top 10を/
+owasp-top10de /OWASP Top 10で/
+owasp-top10ni /OWASP Top 10に/
+incident-response /インシデント対応/
+incident-responseno /インシデント対応の/
+incident-responsewo /インシデント対応を/
+incident-responsede /インシデント対応で/
+incident-responseni /インシデント対応に/
+load-balancing /負荷分散/
+load-balancingno /負荷分散の/
+load-balancingwo /負荷分散を/
+load-balancingde /負荷分散で/
+load-balancingni /負荷分散に/
+autoscaling /オートスケーリング/
+autoscalingno /オートスケーリングの/
+autoscalingwo /オートスケーリングを/
+autoscalingde /オートスケーリングで/
+autoscalingni /オートスケーリングに/
+cdn /CDN/
+cdnno /CDNの/
+cdnwo /CDNを/
+cdnde /CDNで/
+cdnni /CDNに/
+edge-computing /エッジコンピューティング/
+edge-computingno /エッジコンピューティングの/
+edge-computingwo /エッジコンピューティングを/
+edge-computingde /エッジコンピューティングで/
+edge-computingni /エッジコンピューティングに/
+serverless /サーバーレス/
+serverlessno /サーバーレスの/
+serverlesswo /サーバーレスを/
+serverlessde /サーバーレスで/
+serverlessni /サーバーレスに/
+paas /PaaS/
+paasno /PaaSの/
+paaswo /PaaSを/
+paasde /PaaSで/
+paasni /PaaSに/
+saas /SaaS/
+saasno /SaaSの/
+saaswo /SaaSを/
+saasde /SaaSで/
+saasni /SaaSに/
+iaas /IaaS/
+iaasno /IaaSの/
+iaaswo /IaaSを/
+iaasde /IaaSで/
+iaasni /IaaSに/
+cloud-native /クラウドネイティブ/
+cloud-nativeno /クラウドネイティブの/
+cloud-nativewo /クラウドネイティブを/
+cloud-nativede /クラウドネイティブで/
+cloud-nativeni /クラウドネイティブに/
+microservices /マイクロサービス/
+microservicesno /マイクロサービスの/
+microserviceswo /マイクロサービスを/
+microservicesde /マイクロサービスで/
+microservicesni /マイクロサービスに/
+monolith /モノリス/
+monolithno /モノリスの/
+monolithwo /モノリスを/
+monolithde /モノリスで/
+monolithni /モノリスに/
+service-mesh /サービスメッシュ/
+service-meshno /サービスメッシュの/
+service-meshwo /サービスメッシュを/
+service-meshde /サービスメッシュで/
+service-meshni /サービスメッシュに/
+pubsub /Pub／Sub/
+pubsubno /Pub／Subの/
+pubsubwo /Pub／Subを/
+pubsubde /Pub／Subで/
+pubsubni /Pub／Subに/
+etl /ETL/
+etlno /ETLの/
+etlwo /ETLを/
+etlde /ETLで/
+etlni /ETLに/
+data-lake /データレイク/
+data-lakeno /データレイクの/
+data-lakewo /データレイクを/
+data-lakede /データレイクで/
+data-lakeni /データレイクに/
+data-warehouse /データウェアハウス/
+data-warehouseno /データウェアハウスの/
+data-warehousewo /データウェアハウスを/
+data-warehousede /データウェアハウスで/
+data-warehouseni /データウェアハウスに/
+lakehouse /レイクハウス/
+lakehouseno /レイクハウスの/
+lakehousewo /レイクハウスを/
+lakehousede /レイクハウスで/
+lakehouseni /レイクハウスに/
+data-pipeline /データパイプライン/
+data-pipelineno /データパイプラインの/
+data-pipelinewo /データパイプラインを/
+data-pipelinede /データパイプラインで/
+data-pipelineni /データパイプラインに/
+cdc /CDC/
+cdcno /CDCの/
+cdcwo /CDCを/
+cdcde /CDCで/
+cdcni /CDCに/
+acid /ACID/
+acidno /ACIDの/
+acidwo /ACIDを/
+acidde /ACIDで/
+acidni /ACIDに/
+eventual-consistency /結果整合性/
+eventual-consistencyno /結果整合性の/
+eventual-consistencywo /結果整合性を/
+eventual-consistencyde /結果整合性で/
+eventual-consistencyni /結果整合性に/
+sharding /シャーディング/
+shardingno /シャーディングの/
+shardingwo /シャーディングを/
+shardingde /シャーディングで/
+shardingni /シャーディングに/
+replication /レプリケーション/
+replicationno /レプリケーションの/
+replicationwo /レプリケーションを/
+replicationde /レプリケーションで/
+replicationni /レプリケーションに/
+indexing /インデックス作成/
+indexingno /インデックス作成の/
+indexingwo /インデックス作成を/
+indexingde /インデックス作成で/
+indexingni /インデックス作成に/
+schema-migration /スキーマ移行/
+schema-migrationno /スキーマ移行の/
+schema-migrationwo /スキーマ移行を/
+schema-migrationde /スキーマ移行で/
+schema-migrationni /スキーマ移行に/
+orm /ORM/
+ormno /ORMの/
+ormwo /ORMを/
+ormde /ORMで/
+ormni /ORMに/
+semantic-versioning /セマンティックバージョニング/
+semantic-versioningno /セマンティックバージョニングの/
+semantic-versioningwo /セマンティックバージョニングを/
+semantic-versioningde /セマンティックバージョニングで/
+semantic-versioningni /セマンティックバージョニングに/
+api-versioning /APIバージョニング/
+api-versioningno /APIバージョニングの/
+api-versioningwo /APIバージョニングを/
+api-versioningde /APIバージョニングで/
+api-versioningni /APIバージョニングに/
+deprecation /非推奨化/
+deprecationno /非推奨化の/
+deprecationwo /非推奨化を/
+deprecationde /非推奨化で/
+deprecationni /非推奨化に/
+feature-flag /フィーチャーフラグ/
+feature-flagno /フィーチャーフラグの/
+feature-flagwo /フィーチャーフラグを/
+feature-flagde /フィーチャーフラグで/
+feature-flagni /フィーチャーフラグに/
+chaos-engineering /カオスエンジニアリング/
+chaos-engineeringno /カオスエンジニアリングの/
+chaos-engineeringwo /カオスエンジニアリングを/
+chaos-engineeringde /カオスエンジニアリングで/
+chaos-engineeringni /カオスエンジニアリングに/
+infrastructure-as-code /Infrastructure as Code/
+infrastructure-as-codeno /Infrastructure as Codeの/
+infrastructure-as-codewo /Infrastructure as Codeを/
+infrastructure-as-codede /Infrastructure as Codeで/
+infrastructure-as-codeni /Infrastructure as Codeに/
+container /コンテナ/
+containerno /コンテナの/
+containerwo /コンテナを/
+containerde /コンテナで/
+containerni /コンテナに/
+virtual-machine /仮想マシン/
+virtual-machineno /仮想マシンの/
+virtual-machinewo /仮想マシンを/
+virtual-machinede /仮想マシンで/
+virtual-machineni /仮想マシンに/
+server /サーバー/
+serverno /サーバーの/
+serverwo /サーバーを/
+serverde /サーバーで/
+serverni /サーバーに/
+client /クライアント/
+clientno /クライアントの/
+clientwo /クライアントを/
+clientde /クライアントで/
+clientni /クライアントに/
+frontend /フロントエンド/
+frontendno /フロントエンドの/
+frontendwo /フロントエンドを/
+frontendde /フロントエンドで/
+frontendni /フロントエンドに/
+backend /バックエンド/
+backendno /バックエンドの/
+backendwo /バックエンドを/
+backendde /バックエンドで/
+backendni /バックエンドに/
+full-stack /フルスタック/
+full-stackno /フルスタックの/
+full-stackwo /フルスタックを/
+full-stackde /フルスタックで/
+full-stackni /フルスタックに/
+observability /オブザーバビリティ/
+observabilityno /オブザーバビリティの/
+observabilitywo /オブザーバビリティを/
+observabilityde /オブザーバビリティで/
+observabilityni /オブザーバビリティに/
+telemetry /テレメトリー/
+telemetryno /テレメトリーの/
+telemetrywo /テレメトリーを/
+telemetryde /テレメトリーで/
+telemetryni /テレメトリーに/
+logging /ロギング/
+loggingno /ロギングの/
+loggingwo /ロギングを/
+loggingde /ロギングで/
+loggingni /ロギングに/
+metrics /メトリクス/
+metricsno /メトリクスの/
+metricswo /メトリクスを/
+metricsde /メトリクスで/
+metricsni /メトリクスに/
+tracing /トレーシング/
+tracingno /トレーシングの/
+tracingwo /トレーシングを/
+tracingde /トレーシングで/
+tracingni /トレーシングに/
+ci-cd /CI／CD/
+ci-cdno /CI／CDの/
+ci-cdwo /CI／CDを/
+ci-cdde /CI／CDで/
+ci-cdni /CI／CDに/
+devops /DevOps/
+devopsno /DevOpsの/
+devopswo /DevOpsを/
+devopsde /DevOpsで/
+devopsni /DevOpsに/
+sre /SRE/
+sreno /SREの/
+srewo /SREを/
+srede /SREで/
+sreni /SREに/
+unit-test /単体テスト/
+unit-testno /単体テストの/
+unit-testwo /単体テストを/
+unit-testde /単体テストで/
+unit-testni /単体テストに/
+integration-test /結合テスト/
+integration-testno /結合テストの/
+integration-testwo /結合テストを/
+integration-testde /結合テストで/
+integration-testni /結合テストに/
+e2e-test /E2Eテスト/
+e2e-testno /E2Eテストの/
+e2e-testwo /E2Eテストを/
+e2e-testde /E2Eテストで/
+e2e-testni /E2Eテストに/
+test-coverage /テストカバレッジ/
+test-coverageno /テストカバレッジの/
+test-coveragewo /テストカバレッジを/
+test-coveragede /テストカバレッジで/
+test-coverageni /テストカバレッジに/
+tdd /TDD/
+tddno /TDDの/
+tddwo /TDDを/
+tddde /TDDで/
+tddni /TDDに/
+ddd /ドメイン駆動設計/
+dddno /ドメイン駆動設計の/
+dddwo /ドメイン駆動設計を/
+dddde /ドメイン駆動設計で/
+dddni /ドメイン駆動設計に/
+clean-architecture /クリーンアーキテクチャ/
+clean-architectureno /クリーンアーキテクチャの/
+clean-architecturewo /クリーンアーキテクチャを/
+clean-architecturede /クリーンアーキテクチャで/
+clean-architectureni /クリーンアーキテクチャに/
+design-pattern /デザインパターン/
+design-patternno /デザインパターンの/
+design-patternwo /デザインパターンを/
+design-patternde /デザインパターンで/
+design-patternni /デザインパターンに/
+dry /DRY/
+dryno /DRYの/
+drywo /DRYを/
+dryde /DRYで/
+dryni /DRYに/
+code-review /コードレビュー/
+code-reviewno /コードレビューの/
+code-reviewwo /コードレビューを/
+code-reviewde /コードレビューで/
+code-reviewni /コードレビューに/
+pull-request /プルリクエスト/
+pull-requestno /プルリクエストの/
+pull-requestwo /プルリクエストを/
+pull-requestde /プルリクエストで/
+pull-requestni /プルリクエストに/
+commit /コミット/
+commitno /コミットの/
+commitwo /コミットを/
+commitde /コミットで/
+commitni /コミットに/
+branch /ブランチ/
+branchno /ブランチの/
+branchwo /ブランチを/
+branchde /ブランチで/
+branchni /ブランチに/
+merge /マージ/
+mergeno /マージの/
+mergewo /マージを/
+mergede /マージで/
+mergeni /マージに/
+rebase /リベース/
+rebaseno /リベースの/
+rebasewo /リベースを/
+rebasede /リベースで/
+rebaseni /リベースに/
+cherry-pick /チェリーピック/
+cherry-pickno /チェリーピックの/
+cherry-pickwo /チェリーピックを/
+cherry-pickde /チェリーピックで/
+cherry-pickni /チェリーピックに/
+repository /リポジトリ/
+repositoryno /リポジトリの/
+repositorywo /リポジトリを/
+repositoryde /リポジトリで/
+repositoryni /リポジトリに/
+open-source /オープンソース/
+open-sourceno /オープンソースの/
+open-sourcewo /オープンソースを/
+open-sourcede /オープンソースで/
+open-sourceni /オープンソースに/
+tech-debt /技術的負債/
+tech-debtno /技術的負債の/
+tech-debtwo /技術的負債を/
+tech-debtde /技術的負債で/
+tech-debtni /技術的負債に/
+refactoring /リファクタリング/
+refactoringno /リファクタリングの/
+refactoringwo /リファクタリングを/
+refactoringde /リファクタリングで/
+refactoringni /リファクタリングに/
+code-smell /コードスメル/
+code-smellno /コードスメルの/
+code-smellwo /コードスメルを/
+code-smellde /コードスメルで/
+code-smellni /コードスメルに/
+rollback /ロールバック/
+rollbackno /ロールバックの/
+rollbackwo /ロールバックを/
+rollbackde /ロールバックで/
+rollbackni /ロールバックに/
+bug-fix /バグ修正/
+bug-fixno /バグ修正の/
+bug-fixwo /バグ修正を/
+bug-fixde /バグ修正で/
+bug-fixni /バグ修正に/
+openai /OpenAI/
+openaino /OpenAIの/
+openaiwo /OpenAIを/
+openaide /OpenAIで/
+openaini /OpenAIに/
+chatgpt /ChatGPT/
+chatgptno /ChatGPTの/
+chatgptwo /ChatGPTを/
+chatgptde /ChatGPTで/
+chatgptni /ChatGPTに/
+chatgpt-search /ChatGPT Search/
+chatgpt-searchno /ChatGPT Searchの/
+chatgpt-searchwo /ChatGPT Searchを/
+chatgpt-searchde /ChatGPT Searchで/
+chatgpt-searchni /ChatGPT Searchに/
+chatgpt-images /ChatGPT Images/
+chatgpt-imagesno /ChatGPT Imagesの/
+chatgpt-imageswo /ChatGPT Imagesを/
+chatgpt-imagesde /ChatGPT Imagesで/
+chatgpt-imagesni /ChatGPT Imagesに/
+deep-research /Deep Research/
+deep-researchno /Deep Researchの/
+deep-researchwo /Deep Researchを/
+deep-researchde /Deep Researchで/
+deep-researchni /Deep Researchに/
+codex /Codex/
+codexno /Codexの/
+codexwo /Codexを/
+codexde /Codexで/
+codexni /Codexに/
+gpt-4 /GPT-4/
+gpt-4no /GPT-4の/
+gpt-4wo /GPT-4を/
+gpt-4de /GPT-4で/
+gpt-4ni /GPT-4に/
+gpt-4o /GPT-4o/
+gpt-4ono /GPT-4oの/
+gpt-4owo /GPT-4oを/
+gpt-4ode /GPT-4oで/
+gpt-4oni /GPT-4oに/
+gpt-5 /GPT-5/
+gpt-5no /GPT-5の/
+gpt-5wo /GPT-5を/
+gpt-5de /GPT-5で/
+gpt-5ni /GPT-5に/
+gpt-5-4 /GPT-5.4/
+gpt-5-4no /GPT-5.4の/
+gpt-5-4wo /GPT-5.4を/
+gpt-5-4de /GPT-5.4で/
+gpt-5-4ni /GPT-5.4に/
+gpt-5-5 /GPT-5.5/
+gpt-5-5no /GPT-5.5の/
+gpt-5-5wo /GPT-5.5を/
+gpt-5-5de /GPT-5.5で/
+gpt-5-5ni /GPT-5.5に/
+gpt-5-5-pro /GPT-5.5 Pro/
+gpt-5-5-prono /GPT-5.5 Proの/
+gpt-5-5-prowo /GPT-5.5 Proを/
+gpt-5-5-prode /GPT-5.5 Proで/
+gpt-5-5-proni /GPT-5.5 Proに/
+gpt-5-5-thinking /GPT-5.5 Thinking/
+gpt-5-5-thinkingno /GPT-5.5 Thinkingの/
+gpt-5-5-thinkingwo /GPT-5.5 Thinkingを/
+gpt-5-5-thinkingde /GPT-5.5 Thinkingで/
+gpt-5-5-thinkingni /GPT-5.5 Thinkingに/
+gpt-5-5-instant /GPT-5.5 Instant/
+gpt-5-5-instantno /GPT-5.5 Instantの/
+gpt-5-5-instantwo /GPT-5.5 Instantを/
+gpt-5-5-instantde /GPT-5.5 Instantで/
+gpt-5-5-instantni /GPT-5.5 Instantに/
+gpt-5-3-codex /GPT-5.3-Codex/
+gpt-5-3-codexno /GPT-5.3-Codexの/
+gpt-5-3-codexwo /GPT-5.3-Codexを/
+gpt-5-3-codexde /GPT-5.3-Codexで/
+gpt-5-3-codexni /GPT-5.3-Codexに/
+o1 /OpenAI o1/
+o1no /OpenAI o1の/
+o1wo /OpenAI o1を/
+o1de /OpenAI o1で/
+o1ni /OpenAI o1に/
+o3 /OpenAI o3/
+o3no /OpenAI o3の/
+o3wo /OpenAI o3を/
+o3de /OpenAI o3で/
+o3ni /OpenAI o3に/
+o3-mini /OpenAI o3-mini/
+o3-minino /OpenAI o3-miniの/
+o3-miniwo /OpenAI o3-miniを/
+o3-minide /OpenAI o3-miniで/
+o3-minini /OpenAI o3-miniに/
+o4-mini /OpenAI o4-mini/
+o4-minino /OpenAI o4-miniの/
+o4-miniwo /OpenAI o4-miniを/
+o4-minide /OpenAI o4-miniで/
+o4-minini /OpenAI o4-miniに/
+dall-e /DALL-E/
+dall-eno /DALL-Eの/
+dall-ewo /DALL-Eを/
+dall-ede /DALL-Eで/
+dall-eni /DALL-Eに/
+sora /Sora/
+sorano /Soraの/
+sorawo /Soraを/
+sorade /Soraで/
+sorani /Soraに/
+anthropic /Anthropic/
+anthropicno /Anthropicの/
+anthropicwo /Anthropicを/
+anthropicde /Anthropicで/
+anthropicni /Anthropicに/
+claude /Claude/
+claudeno /Claudeの/
+claudewo /Claudeを/
+claudede /Claudeで/
+claudeni /Claudeに/
+claude-code /Claude Code/
+claude-codeno /Claude Codeの/
+claude-codewo /Claude Codeを/
+claude-codede /Claude Codeで/
+claude-codeni /Claude Codeに/
+claude-opus /Claude Opus/
+claude-opusno /Claude Opusの/
+claude-opuswo /Claude Opusを/
+claude-opusde /Claude Opusで/
+claude-opusni /Claude Opusに/
+claude-sonnet /Claude Sonnet/
+claude-sonnetno /Claude Sonnetの/
+claude-sonnetwo /Claude Sonnetを/
+claude-sonnetde /Claude Sonnetで/
+claude-sonnetni /Claude Sonnetに/
+claude-haiku /Claude Haiku/
+claude-haikuno /Claude Haikuの/
+claude-haikuwo /Claude Haikuを/
+claude-haikude /Claude Haikuで/
+claude-haikuni /Claude Haikuに/
+claude-opus-4-5 /Claude Opus 4.5/
+claude-opus-4-5no /Claude Opus 4.5の/
+claude-opus-4-5wo /Claude Opus 4.5を/
+claude-opus-4-5de /Claude Opus 4.5で/
+claude-opus-4-5ni /Claude Opus 4.5に/
+claude-haiku-4-5 /Claude Haiku 4.5/
+claude-haiku-4-5no /Claude Haiku 4.5の/
+claude-haiku-4-5wo /Claude Haiku 4.5を/
+claude-haiku-4-5de /Claude Haiku 4.5で/
+claude-haiku-4-5ni /Claude Haiku 4.5に/
+claude-opus-4-6 /Claude Opus 4.6/
+claude-opus-4-6no /Claude Opus 4.6の/
+claude-opus-4-6wo /Claude Opus 4.6を/
+claude-opus-4-6de /Claude Opus 4.6で/
+claude-opus-4-6ni /Claude Opus 4.6に/
+claude-sonnet-4-6 /Claude Sonnet 4.6/
+claude-sonnet-4-6no /Claude Sonnet 4.6の/
+claude-sonnet-4-6wo /Claude Sonnet 4.6を/
+claude-sonnet-4-6de /Claude Sonnet 4.6で/
+claude-sonnet-4-6ni /Claude Sonnet 4.6に/
+claude-opus-4-8 /Claude Opus 4.8/
+claude-opus-4-8no /Claude Opus 4.8の/
+claude-opus-4-8wo /Claude Opus 4.8を/
+claude-opus-4-8de /Claude Opus 4.8で/
+claude-opus-4-8ni /Claude Opus 4.8に/
+claude-fable-5 /Claude Fable 5/
+claude-fable-5no /Claude Fable 5の/
+claude-fable-5wo /Claude Fable 5を/
+claude-fable-5de /Claude Fable 5で/
+claude-fable-5ni /Claude Fable 5に/
+claude-mythos-5 /Claude Mythos 5/
+claude-mythos-5no /Claude Mythos 5の/
+claude-mythos-5wo /Claude Mythos 5を/
+claude-mythos-5de /Claude Mythos 5で/
+claude-mythos-5ni /Claude Mythos 5に/
+google-deepmind /Google DeepMind/
+google-deepmindno /Google DeepMindの/
+google-deepmindwo /Google DeepMindを/
+google-deepmindde /Google DeepMindで/
+google-deepmindni /Google DeepMindに/
+gemini /Gemini/
+geminino /Geminiの/
+geminiwo /Geminiを/
+geminide /Geminiで/
+geminini /Geminiに/
+gemini-2-5 /Gemini 2.5/
+gemini-2-5no /Gemini 2.5の/
+gemini-2-5wo /Gemini 2.5を/
+gemini-2-5de /Gemini 2.5で/
+gemini-2-5ni /Gemini 2.5に/
+gemini-2-5-pro /Gemini 2.5 Pro/
+gemini-2-5-prono /Gemini 2.5 Proの/
+gemini-2-5-prowo /Gemini 2.5 Proを/
+gemini-2-5-prode /Gemini 2.5 Proで/
+gemini-2-5-proni /Gemini 2.5 Proに/
+gemini-2-5-flash /Gemini 2.5 Flash/
+gemini-2-5-flashno /Gemini 2.5 Flashの/
+gemini-2-5-flashwo /Gemini 2.5 Flashを/
+gemini-2-5-flashde /Gemini 2.5 Flashで/
+gemini-2-5-flashni /Gemini 2.5 Flashに/
+gemini-3 /Gemini 3/
+gemini-3no /Gemini 3の/
+gemini-3wo /Gemini 3を/
+gemini-3de /Gemini 3で/
+gemini-3ni /Gemini 3に/
+gemini-3-flash /Gemini 3 Flash/
+gemini-3-flashno /Gemini 3 Flashの/
+gemini-3-flashwo /Gemini 3 Flashを/
+gemini-3-flashde /Gemini 3 Flashで/
+gemini-3-flashni /Gemini 3 Flashに/
+gemma /Gemma/
+gemmano /Gemmaの/
+gemmawo /Gemmaを/
+gemmade /Gemmaで/
+gemmani /Gemmaに/
+notebooklm /NotebookLM/
+notebooklmno /NotebookLMの/
+notebooklmwo /NotebookLMを/
+notebooklmde /NotebookLMで/
+notebooklmni /NotebookLMに/
+ai-studio /Google AI Studio/
+ai-studiono /Google AI Studioの/
+ai-studiowo /Google AI Studioを/
+ai-studiode /Google AI Studioで/
+ai-studioni /Google AI Studioに/
+vertex-ai /Vertex AI/
+vertex-aino /Vertex AIの/
+vertex-aiwo /Vertex AIを/
+vertex-aide /Vertex AIで/
+vertex-aini /Vertex AIに/
+imagen /Imagen/
+imagenno /Imagenの/
+imagenwo /Imagenを/
+imagende /Imagenで/
+imagenni /Imagenに/
+veo /Veo/
+veono /Veoの/
+veowo /Veoを/
+veode /Veoで/
+veoni /Veoに/
+meta-ai /Meta AI/
+meta-aino /Meta AIの/
+meta-aiwo /Meta AIを/
+meta-aide /Meta AIで/
+meta-aini /Meta AIに/
+llama /Llama/
+llamano /Llamaの/
+llamawo /Llamaを/
+llamade /Llamaで/
+llamani /Llamaに/
+llama-2 /Llama 2/
+llama-2no /Llama 2の/
+llama-2wo /Llama 2を/
+llama-2de /Llama 2で/
+llama-2ni /Llama 2に/
+llama-3 /Llama 3/
+llama-3no /Llama 3の/
+llama-3wo /Llama 3を/
+llama-3de /Llama 3で/
+llama-3ni /Llama 3に/
+llama-4 /Llama 4/
+llama-4no /Llama 4の/
+llama-4wo /Llama 4を/
+llama-4de /Llama 4で/
+llama-4ni /Llama 4に/
+llama-4-scout /Llama 4 Scout/
+llama-4-scoutno /Llama 4 Scoutの/
+llama-4-scoutwo /Llama 4 Scoutを/
+llama-4-scoutde /Llama 4 Scoutで/
+llama-4-scoutni /Llama 4 Scoutに/
+llama-4-maverick /Llama 4 Maverick/
+llama-4-maverickno /Llama 4 Maverickの/
+llama-4-maverickwo /Llama 4 Maverickを/
+llama-4-maverickde /Llama 4 Maverickで/
+llama-4-maverickni /Llama 4 Maverickに/
+llama-4-behemoth /Llama 4 Behemoth/
+llama-4-behemothno /Llama 4 Behemothの/
+llama-4-behemothwo /Llama 4 Behemothを/
+llama-4-behemothde /Llama 4 Behemothで/
+llama-4-behemothni /Llama 4 Behemothに/
+mistral-ai /Mistral AI/
+mistral-aino /Mistral AIの/
+mistral-aiwo /Mistral AIを/
+mistral-aide /Mistral AIで/
+mistral-aini /Mistral AIに/
+mistral /Mistral/
+mistralno /Mistralの/
+mistralwo /Mistralを/
+mistralde /Mistralで/
+mistralni /Mistralに/
+cohere /Cohere/
+cohereno /Cohereの/
+coherewo /Cohereを/
+coherede /Cohereで/
+cohereni /Cohereに/
+deepseek /DeepSeek/
+deepseekno /DeepSeekの/
+deepseekwo /DeepSeekを/
+deepseekde /DeepSeekで/
+deepseekni /DeepSeekに/
+deepseek-r1 /DeepSeek-R1/
+deepseek-r1no /DeepSeek-R1の/
+deepseek-r1wo /DeepSeek-R1を/
+deepseek-r1de /DeepSeek-R1で/
+deepseek-r1ni /DeepSeek-R1に/
+qwen /Qwen/
+qwenno /Qwenの/
+qwenwo /Qwenを/
+qwende /Qwenで/
+qwenni /Qwenに/
+qwen3 /Qwen3/
+qwen3no /Qwen3の/
+qwen3wo /Qwen3を/
+qwen3de /Qwen3で/
+qwen3ni /Qwen3に/
+baichuan /Baichuan/
+baichuanno /Baichuanの/
+baichuanwo /Baichuanを/
+baichuande /Baichuanで/
+baichuanni /Baichuanに/
+minimax /MiniMax/
+minimaxno /MiniMaxの/
+minimaxwo /MiniMaxを/
+minimaxde /MiniMaxで/
+minimaxni /MiniMaxに/
+x-ai /xAI/
+x-aino /xAIの/
+x-aiwo /xAIを/
+x-aide /xAIで/
+x-aini /xAIに/
+grok /Grok/
+grokno /Grokの/
+grokwo /Grokを/
+grokde /Grokで/
+grokni /Grokに/
+perplexity-ai /Perplexity AI/
+perplexity-aino /Perplexity AIの/
+perplexity-aiwo /Perplexity AIを/
+perplexity-aide /Perplexity AIで/
+perplexity-aini /Perplexity AIに/
+character-ai /Character.AI/
+character-aino /Character.AIの/
+character-aiwo /Character.AIを/
+character-aide /Character.AIで/
+character-aini /Character.AIに/
+poe /Poe/
+poeno /Poeの/
+poewo /Poeを/
+poede /Poeで/
+poeni /Poeに/
+andisearch /Andi Search/
+andisearchno /Andi Searchの/
+andisearchwo /Andi Searchを/
+andisearchde /Andi Searchで/
+andisearchni /Andi Searchに/
+stability-ai /Stability AI/
+stability-aino /Stability AIの/
+stability-aiwo /Stability AIを/
+stability-aide /Stability AIで/
+stability-aini /Stability AIに/
+stable-diffusion /Stable Diffusion/
+stable-diffusionno /Stable Diffusionの/
+stable-diffusionwo /Stable Diffusionを/
+stable-diffusionde /Stable Diffusionで/
+stable-diffusionni /Stable Diffusionに/
+midjourney /Midjourney/
+midjourneyno /Midjourneyの/
+midjourneywo /Midjourneyを/
+midjourneyde /Midjourneyで/
+midjourneyni /Midjourneyに/
+runway /Runway/
+runwayno /Runwayの/
+runwaywo /Runwayを/
+runwayde /Runwayで/
+runwayni /Runwayに/
+luma-ai /Luma AI/
+luma-aino /Luma AIの/
+luma-aiwo /Luma AIを/
+luma-aide /Luma AIで/
+luma-aini /Luma AIに/
+flux /FLUX/
+fluxno /FLUXの/
+fluxwo /FLUXを/
+fluxde /FLUXで/
+fluxni /FLUXに/
+civitai /Civitai/
+civitaino /Civitaiの/
+civitaiwo /Civitaiを/
+civitaide /Civitaiで/
+civitaini /Civitaiに/
+comfyui /ComfyUI/
+comfyuino /ComfyUIの/
+comfyuiwo /ComfyUIを/
+comfyuide /ComfyUIで/
+comfyuini /ComfyUIに/
+elevenlabs /ElevenLabs/
+elevenlabsno /ElevenLabsの/
+elevenlabswo /ElevenLabsを/
+elevenlabsde /ElevenLabsで/
+elevenlabsni /ElevenLabsに/
+suno /Suno/
+sunono /Sunoの/
+sunowo /Sunoを/
+sunode /Sunoで/
+sunoni /Sunoに/
+udio /Udio/
+udiono /Udioの/
+udiowo /Udioを/
+udiode /Udioで/
+udioni /Udioに/
+mureka /Mureka/
+murekano /Murekaの/
+murekawo /Murekaを/
+murekade /Murekaで/
+murekani /Murekaに/
+granola /Granola/
+granolano /Granolaの/
+granolawo /Granolaを/
+granolade /Granolaで/
+granolani /Granolaに/
+cursor /Cursor/
+cursorno /Cursorの/
+cursorwo /Cursorを/
+cursorde /Cursorで/
+cursorni /Cursorに/
+windsurf /Windsurf/
+windsurfno /Windsurfの/
+windsurfwo /Windsurfを/
+windsurfde /Windsurfで/
+windsurfni /Windsurfに/
+replit /Replit/
+replitno /Replitの/
+replitwo /Replitを/
+replitde /Replitで/
+replitni /Replitに/
+devin /Devin/
+devinno /Devinの/
+devinwo /Devinを/
+devinde /Devinで/
+devinni /Devinに/
+copilot /Copilot/
+copilotno /Copilotの/
+copilotwo /Copilotを/
+copilotde /Copilotで/
+copilotni /Copilotに/
+github-copilot /GitHub Copilot/
+github-copilotno /GitHub Copilotの/
+github-copilotwo /GitHub Copilotを/
+github-copilotde /GitHub Copilotで/
+github-copilotni /GitHub Copilotに/
+microsoft-copilot /Microsoft Copilot/
+microsoft-copilotno /Microsoft Copilotの/
+microsoft-copilotwo /Microsoft Copilotを/
+microsoft-copilotde /Microsoft Copilotで/
+microsoft-copilotni /Microsoft Copilotに/
+amazon-q /Amazon Q/
+amazon-qno /Amazon Qの/
+amazon-qwo /Amazon Qを/
+amazon-qde /Amazon Qで/
+amazon-qni /Amazon Qに/
+tabnine /Tabnine/
+tabnineno /Tabnineの/
+tabninewo /Tabnineを/
+tabninede /Tabnineで/
+tabnineni /Tabnineに/
+photoshop /Photoshop/
+photoshopno /Photoshopの/
+photoshopwo /Photoshopを/
+photoshopde /Photoshopで/
+photoshopni /Photoshopに/
+figma /Figma/
+figmano /Figmaの/
+figmawo /Figmaを/
+figmade /Figmaで/
+figmani /Figmaに/
+canva /Canva/
+canvano /Canvaの/
+canvawo /Canvaを/
+canvade /Canvaで/
+canvani /Canvaに/
+miro /Miro/
+mirono /Miroの/
+mirowo /Miroを/
+mirode /Miroで/
+mironi /Miroに/
+notion /Notion/
+notionno /Notionの/
+notionwo /Notionを/
+notionde /Notionで/
+notionni /Notionに/
+obsidian /Obsidian/
+obsidianno /Obsidianの/
+obsidianwo /Obsidianを/
+obsidiande /Obsidianで/
+obsidianni /Obsidianに/
+asana /Asana/
+asanano /Asanaの/
+asanawo /Asanaを/
+asanade /Asanaで/
+asanani /Asanaに/
+coda /Coda/
+codano /Codaの/
+codawo /Codaを/
+codade /Codaで/
+codani /Codaに/
+slack /Slack/
+slackno /Slackの/
+slackwo /Slackを/
+slackde /Slackで/
+slackni /Slackに/
+discord /Discord/
+discordno /Discordの/
+discordwo /Discordを/
+discordde /Discordで/
+discordni /Discordに/
+zoom /Zoom/
+zoomno /Zoomの/
+zoomwo /Zoomを/
+zoomde /Zoomで/
+zoomni /Zoomに/
+microsoft-teams /Microsoft Teams/
+microsoft-teamsno /Microsoft Teamsの/
+microsoft-teamswo /Microsoft Teamsを/
+microsoft-teamsde /Microsoft Teamsで/
+microsoft-teamsni /Microsoft Teamsに/
+google-meet /Google Meet/
+google-meetno /Google Meetの/
+google-meetwo /Google Meetを/
+google-meetde /Google Meetで/
+google-meetni /Google Meetに/
+zapier /Zapier/
+zapierno /Zapierの/
+zapierwo /Zapierを/
+zapierde /Zapierで/
+zapierni /Zapierに/
+n8n /n8n/
+n8nno /n8nの/
+n8nwo /n8nを/
+n8nde /n8nで/
+n8nni /n8nに/
+pipedream /Pipedream/
+pipedreamno /Pipedreamの/
+pipedreamwo /Pipedreamを/
+pipedreamde /Pipedreamで/
+pipedreamni /Pipedreamに/
+dropbox /Dropbox/
+dropboxno /Dropboxの/
+dropboxwo /Dropboxを/
+dropboxde /Dropboxで/
+dropboxni /Dropboxに/
+google-drive /Google Drive/
+google-driveno /Google Driveの/
+google-drivewo /Google Driveを/
+google-drivede /Google Driveで/
+google-driveni /Google Driveに/
+gmail /Gmail/
+gmailno /Gmailの/
+gmailwo /Gmailを/
+gmailde /Gmailで/
+gmailni /Gmailに/
+proton-mail /Proton Mail/
+proton-mailno /Proton Mailの/
+proton-mailwo /Proton Mailを/
+proton-mailde /Proton Mailで/
+proton-mailni /Proton Mailに/
+signal /Signal/
+signalno /Signalの/
+signalwo /Signalを/
+signalde /Signalで/
+signalni /Signalに/
+telegram /Telegram/
+telegramno /Telegramの/
+telegramwo /Telegramを/
+telegramde /Telegramで/
+telegramni /Telegramに/
+whatsapp /WhatsApp/
+whatsappno /WhatsAppの/
+whatsappwo /WhatsAppを/
+whatsappde /WhatsAppで/
+whatsappni /WhatsAppに/
+line /LINE/
+lineno /LINEの/
+linewo /LINEを/
+linede /LINEで/
+lineni /LINEに/
+instagram /Instagram/
+instagramno /Instagramの/
+instagramwo /Instagramを/
+instagramde /Instagramで/
+instagramni /Instagramに/
+threads /Threads/
+threadsno /Threadsの/
+threadswo /Threadsを/
+threadsde /Threadsで/
+threadsni /Threadsに/
+tiktok /TikTok/
+tiktokno /TikTokの/
+tiktokwo /TikTokを/
+tiktokde /TikTokで/
+tiktokni /TikTokに/
+youtube /YouTube/
+youtubeno /YouTubeの/
+youtubewo /YouTubeを/
+youtubede /YouTubeで/
+youtubeni /YouTubeに/
+youtube-shorts /YouTube Shorts/
+youtube-shortsno /YouTube Shortsの/
+youtube-shortswo /YouTube Shortsを/
+youtube-shortsde /YouTube Shortsで/
+youtube-shortsni /YouTube Shortsに/
+twitch /Twitch/
+twitchno /Twitchの/
+twitchwo /Twitchを/
+twitchde /Twitchで/
+twitchni /Twitchに/
+x /X/
+xno /Xの/
+xwo /Xを/
+xde /Xで/
+xni /Xに/
+twitter /Twitter/
+twitterno /Twitterの/
+twitterwo /Twitterを/
+twitterde /Twitterで/
+twitterni /Twitterに/
+bluesky /Bluesky/
+blueskyno /Blueskyの/
+blueskywo /Blueskyを/
+blueskyde /Blueskyで/
+blueskyni /Blueskyに/
+mastodon /Mastodon/
+mastodonno /Mastodonの/
+mastodonwo /Mastodonを/
+mastodonde /Mastodonで/
+mastodonni /Mastodonに/
+misskey /Misskey/
+misskeyno /Misskeyの/
+misskeywo /Misskeyを/
+misskeyde /Misskeyで/
+misskeyni /Misskeyに/
+reddit /Reddit/
+redditno /Redditの/
+redditwo /Redditを/
+redditde /Redditで/
+redditni /Redditに/
+linkedin /LinkedIn/
+linkedinno /LinkedInの/
+linkedinwo /LinkedInを/
+linkedinde /LinkedInで/
+linkedinni /LinkedInに/
+snapchat /Snapchat/
+snapchatno /Snapchatの/
+snapchatwo /Snapchatを/
+snapchatde /Snapchatで/
+snapchatni /Snapchatに/
+substack /Substack/
+substackno /Substackの/
+substackwo /Substackを/
+substackde /Substackで/
+substackni /Substackに/
+note /note/
+noteno /noteの/
+notewo /noteを/
+notede /noteで/
+noteni /noteに/
+zenn /Zenn/
+zennno /Zennの/
+zennwo /Zennを/
+zennde /Zennで/
+zennni /Zennに/
+qiita /Qiita/
+qiitano /Qiitaの/
+qiitawo /Qiitaを/
+qiitade /Qiitaで/
+qiitani /Qiitaに/
+wordpress /WordPress/
+wordpressno /WordPressの/
+wordpresswo /WordPressを/
+wordpressde /WordPressで/
+wordpressni /WordPressに/
+shopify /Shopify/
+shopifyno /Shopifyの/
+shopifywo /Shopifyを/
+shopifyde /Shopifyで/
+shopifyni /Shopifyに/
+stripe /Stripe/
+stripeno /Stripeの/
+stripewo /Stripeを/
+stripede /Stripeで/
+stripeni /Stripeに/
+paypal /PayPal/
+paypalno /PayPalの/
+paypalwo /PayPalを/
+paypalde /PayPalで/
+paypalni /PayPalに/
+wise /Wise/
+wiseno /Wiseの/
+wisewo /Wiseを/
+wisede /Wiseで/
+wiseni /Wiseに/
+paypay /PayPay/
+paypayno /PayPayの/
+paypaywo /PayPayを/
+paypayde /PayPayで/
+paypayni /PayPayに/
+mercari /メルカリ/
+mercarino /メルカリの/
+mercariwo /メルカリを/
+mercaride /メルカリで/
+mercarini /メルカリに/
+rakuten /楽天/
+rakutenno /楽天の/
+rakutenwo /楽天を/
+rakutende /楽天で/
+rakutenni /楽天に/
+amazon /Amazon/
+amazonno /Amazonの/
+amazonwo /Amazonを/
+amazonde /Amazonで/
+amazonni /Amazonに/
+uber /Uber/
+uberno /Uberの/
+uberwo /Uberを/
+uberde /Uberで/
+uberni /Uberに/
+uber-eats /Uber Eats/
+uber-eatsno /Uber Eatsの/
+uber-eatswo /Uber Eatsを/
+uber-eatsde /Uber Eatsで/
+uber-eatsni /Uber Eatsに/
+airbnb /Airbnb/
+airbnbno /Airbnbの/
+airbnbwo /Airbnbを/
+airbnbde /Airbnbで/
+airbnbni /Airbnbに/
+booking-com /Booking.com/
+booking-comno /Booking.comの/
+booking-comwo /Booking.comを/
+booking-comde /Booking.comで/
+booking-comni /Booking.comに/
+spotify /Spotify/
+spotifyno /Spotifyの/
+spotifywo /Spotifyを/
+spotifyde /Spotifyで/
+spotifyni /Spotifyに/
+apple-music /Apple Music/
+apple-musicno /Apple Musicの/
+apple-musicwo /Apple Musicを/
+apple-musicde /Apple Musicで/
+apple-musicni /Apple Musicに/
+youtube-music /YouTube Music/
+youtube-musicno /YouTube Musicの/
+youtube-musicwo /YouTube Musicを/
+youtube-musicde /YouTube Musicで/
+youtube-musicni /YouTube Musicに/
+netflix /Netflix/
+netflixno /Netflixの/
+netflixwo /Netflixを/
+netflixde /Netflixで/
+netflixni /Netflixに/
+disney-plus /Disney+/
+disney-plusno /Disney+の/
+disney-pluswo /Disney+を/
+disney-plusde /Disney+で/
+disney-plusni /Disney+に/
+prime-video /Prime Video/
+prime-videono /Prime Videoの/
+prime-videowo /Prime Videoを/
+prime-videode /Prime Videoで/
+prime-videoni /Prime Videoに/
+abema /ABEMA/
+abemano /ABEMAの/
+abemawo /ABEMAを/
+abemade /ABEMAで/
+abemani /ABEMAに/
+tver /TVer/
+tverno /TVerの/
+tverwo /TVerを/
+tverde /TVerで/
+tverni /TVerに/
+audible /Audible/
+audibleno /Audibleの/
+audiblewo /Audibleを/
+audiblede /Audibleで/
+audibleni /Audibleに/
+kindle /Kindle/
+kindleno /Kindleの/
+kindlewo /Kindleを/
+kindlede /Kindleで/
+kindleni /Kindleに/
+kobo /Kobo/
+kobono /Koboの/
+kobowo /Koboを/
+kobode /Koboで/
+koboni /Koboに/
+steam /Steam/
+steamno /Steamの/
+steamwo /Steamを/
+steamde /Steamで/
+steamni /Steamに/
+epic-games-store /Epic Games Store/
+epic-games-storeno /Epic Games Storeの/
+epic-games-storewo /Epic Games Storeを/
+epic-games-storede /Epic Games Storeで/
+epic-games-storeni /Epic Games Storeに/
+playstation /PlayStation/
+playstationno /PlayStationの/
+playstationwo /PlayStationを/
+playstationde /PlayStationで/
+playstationni /PlayStationに/
+xbox /Xbox/
+xboxno /Xboxの/
+xboxwo /Xboxを/
+xboxde /Xboxで/
+xboxni /Xboxに/
+xbox-game-pass /Xbox Game Pass/
+xbox-game-passno /Xbox Game Passの/
+xbox-game-passwo /Xbox Game Passを/
+xbox-game-passde /Xbox Game Passで/
+xbox-game-passni /Xbox Game Passに/
+nintendo-switch /Nintendo Switch/
+nintendo-switchno /Nintendo Switchの/
+nintendo-switchwo /Nintendo Switchを/
+nintendo-switchde /Nintendo Switchで/
+nintendo-switchni /Nintendo Switchに/
+nintendo-switch2 /Nintendo Switch 2/
+nintendo-switch2no /Nintendo Switch 2の/
+nintendo-switch2wo /Nintendo Switch 2を/
+nintendo-switch2de /Nintendo Switch 2で/
+nintendo-switch2ni /Nintendo Switch 2に/
+geforce-now /GeForce NOW/
+geforce-nowno /GeForce NOWの/
+geforce-nowwo /GeForce NOWを/
+geforce-nowde /GeForce NOWで/
+geforce-nowni /GeForce NOWに/
+roblox /Roblox/
+robloxno /Robloxの/
+robloxwo /Robloxを/
+robloxde /Robloxで/
+robloxni /Robloxに/
+fortnite /Fortnite/
+fortniteno /Fortniteの/
+fortnitewo /Fortniteを/
+fortnitede /Fortniteで/
+fortniteni /Fortniteに/
+minecraft /Minecraft/
+minecraftno /Minecraftの/
+minecraftwo /Minecraftを/
+minecraftde /Minecraftで/
+minecraftni /Minecraftに/
+vrchat /VRChat/
+vrchatno /VRChatの/
+vrchatwo /VRChatを/
+vrchatde /VRChatで/
+vrchatni /VRChatに/
+meta-quest /Meta Quest/
+meta-questno /Meta Questの/
+meta-questwo /Meta Questを/
+meta-questde /Meta Questで/
+meta-questni /Meta Questに/
+vision-pro /Apple Vision Pro/
+vision-prono /Apple Vision Proの/
+vision-prowo /Apple Vision Proを/
+vision-prode /Apple Vision Proで/
+vision-proni /Apple Vision Proに/
+apple-intelligence /Apple Intelligence/
+apple-intelligenceno /Apple Intelligenceの/
+apple-intelligencewo /Apple Intelligenceを/
+apple-intelligencede /Apple Intelligenceで/
+apple-intelligenceni /Apple Intelligenceに/
+siri /Siri/
+sirino /Siriの/
+siriwo /Siriを/
+siride /Siriで/
+sirini /Siriに/
+alexa /Alexa/
+alexano /Alexaの/
+alexawo /Alexaを/
+alexade /Alexaで/
+alexani /Alexaに/
+apple /Apple/
+appleno /Appleの/
+applewo /Appleを/
+applede /Appleで/
+appleni /Appleに/
+microsoft /Microsoft/
+microsoftno /Microsoftの/
+microsoftwo /Microsoftを/
+microsoftde /Microsoftで/
+microsoftni /Microsoftに/
+google /Google/
+googleno /Googleの/
+googlewo /Googleを/
+googlede /Googleで/
+googleni /Googleに/
+meta /Meta/
+metano /Metaの/
+metawo /Metaを/
+metade /Metaで/
+metani /Metaに/
+nvidia /NVIDIA/
+nvidiano /NVIDIAの/
+nvidiawo /NVIDIAを/
+nvidiade /NVIDIAで/
+nvidiani /NVIDIAに/
+amd /AMD/
+amdno /AMDの/
+amdwo /AMDを/
+amdde /AMDで/
+amdni /AMDに/
+intel /Intel/
+intelno /Intelの/
+intelwo /Intelを/
+intelde /Intelで/
+intelni /Intelに/
+arm /Arm/
+armno /Armの/
+armwo /Armを/
+armde /Armで/
+armni /Armに/
+tsmc /TSMC/
+tsmcno /TSMCの/
+tsmcwo /TSMCを/
+tsmcde /TSMCで/
+tsmcni /TSMCに/
+sony /ソニー/
+sonyno /ソニーの/
+sonywo /ソニーを/
+sonyde /ソニーで/
+sonyni /ソニーに/
+nintendo /任天堂/
+nintendono /任天堂の/
+nintendowo /任天堂を/
+nintendode /任天堂で/
+nintendoni /任天堂に/
+bytedance /ByteDance/
+bytedanceno /ByteDanceの/
+bytedancewo /ByteDanceを/
+bytedancede /ByteDanceで/
+bytedanceni /ByteDanceに/
+tesla /Tesla/
+teslano /Teslaの/
+teslawo /Teslaを/
+teslade /Teslaで/
+teslani /Teslaに/
+spacex /SpaceX/
+spacexno /SpaceXの/
+spacexwo /SpaceXを/
+spacexde /SpaceXで/
+spacexni /SpaceXに/
+waymo /Waymo/
+waymono /Waymoの/
+waymowo /Waymoを/
+waymode /Waymoで/
+waymoni /Waymoに/
+hugging-face-hub /Hugging Face Hub/
+hugging-face-hubno /Hugging Face Hubの/
+hugging-face-hubwo /Hugging Face Hubを/
+hugging-face-hubde /Hugging Face Hubで/
+hugging-face-hubni /Hugging Face Hubに/
+kaggle /Kaggle/
+kaggleno /Kaggleの/
+kagglewo /Kaggleを/
+kagglede /Kaggleで/
+kaggleni /Kaggleに/
+databricks /Databricks/
+databricksno /Databricksの/
+databrickswo /Databricksを/
+databricksde /Databricksで/
+databricksni /Databricksに/
+snowflake /Snowflake/
+snowflakeno /Snowflakeの/
+snowflakewo /Snowflakeを/
+snowflakede /Snowflakeで/
+snowflakeni /Snowflakeに/
+cloudflare /Cloudflare/
+cloudflareno /Cloudflareの/
+cloudflarewo /Cloudflareを/
+cloudflarede /Cloudflareで/
+cloudflareni /Cloudflareに/
+aws /AWS/
+awsno /AWSの/
+awswo /AWSを/
+awsde /AWSで/
+awsni /AWSに/
+azure /Azure/
+azureno /Azureの/
+azurewo /Azureを/
+azurede /Azureで/
+azureni /Azureに/
+google-cloud /Google Cloud/
+google-cloudno /Google Cloudの/
+google-cloudwo /Google Cloudを/
+google-cloudde /Google Cloudで/
+google-cloudni /Google Cloudに/
+vercel /Vercel/
+vercelno /Vercelの/
+vercelwo /Vercelを/
+vercelde /Vercelで/
+vercelni /Vercelに/
+netlify /Netlify/
+netlifyno /Netlifyの/
+netlifywo /Netlifyを/
+netlifyde /Netlifyで/
+netlifyni /Netlifyに/
+firebase /Firebase/
+firebaseno /Firebaseの/
+firebasewo /Firebaseを/
+firebasede /Firebaseで/
+firebaseni /Firebaseに/
+supabase /Supabase/
+supabaseno /Supabaseの/
+supabasewo /Supabaseを/
+supabasede /Supabaseで/
+supabaseni /Supabaseに/
+cloudflare-workers /Cloudflare Workers/
+cloudflare-workersno /Cloudflare Workersの/
+cloudflare-workerswo /Cloudflare Workersを/
+cloudflare-workersde /Cloudflare Workersで/
+cloudflare-workersni /Cloudflare Workersに/
+openrouter /OpenRouter/
+openrouterno /OpenRouterの/
+openrouterwo /OpenRouterを/
+openrouterde /OpenRouterで/
+openrouterni /OpenRouterに/
+groq /Groq/
+groqno /Groqの/
+groqwo /Groqを/
+groqde /Groqで/
+groqni /Groqに/
+cerebras /Cerebras/
+cerebrasno /Cerebrasの/
+cerebraswo /Cerebrasを/
+cerebrasde /Cerebrasで/
+cerebrasni /Cerebrasに/
+modal /Modal/
+modalno /Modalの/
+modalwo /Modalを/
+modalde /Modalで/
+modalni /Modalに/
+coreweave /CoreWeave/
+coreweaveno /CoreWeaveの/
+coreweavewo /CoreWeaveを/
+coreweavede /CoreWeaveで/
+coreweaveni /CoreWeaveに/
+wandb /W&B/
+wandbno /W&Bの/
+wandbwo /W&Bを/
+wandbde /W&Bで/
+wandbni /W&Bに/
+python /Python/
+pythonno /Pythonの/
+pythonwo /Pythonを/
+pythonde /Pythonで/
+pythonni /Pythonに/
+javascript /JavaScript/
+javascriptno /JavaScriptの/
+javascriptwo /JavaScriptを/
+javascriptde /JavaScriptで/
+javascriptni /JavaScriptに/
+typescript /TypeScript/
+typescriptno /TypeScriptの/
+typescriptwo /TypeScriptを/
+typescriptde /TypeScriptで/
+typescriptni /TypeScriptに/
+rust /Rust/
+rustno /Rustの/
+rustwo /Rustを/
+rustde /Rustで/
+rustni /Rustに/
+go-lang /Go/
+go-langno /Goの/
+go-langwo /Goを/
+go-langde /Goで/
+go-langni /Goに/
+java /Java/
+javano /Javaの/
+javawo /Javaを/
+javade /Javaで/
+javani /Javaに/
+kotlin /Kotlin/
+kotlinno /Kotlinの/
+kotlinwo /Kotlinを/
+kotlinde /Kotlinで/
+kotlinni /Kotlinに/
+swift /Swift/
+swiftno /Swiftの/
+swiftwo /Swiftを/
+swiftde /Swiftで/
+swiftni /Swiftに/
+csharp /C#/
+csharpno /C#の/
+csharpwo /C#を/
+csharpde /C#で/
+csharpni /C#に/
+cpp /C++/
+cppno /C++の/
+cppwo /C++を/
+cppde /C++で/
+cppni /C++に/
+haskell /Haskell/
+haskellno /Haskellの/
+haskellwo /Haskellを/
+haskellde /Haskellで/
+haskellni /Haskellに/
+r-lang /R/
+r-langno /Rの/
+r-langwo /Rを/
+r-langde /Rで/
+r-langni /Rに/
+solidity /Solidity/
+solidityno /Solidityの/
+soliditywo /Solidityを/
+solidityde /Solidityで/
+solidityni /Solidityに/
+webassembly /WebAssembly/
+webassemblyno /WebAssemblyの/
+webassemblywo /WebAssemblyを/
+webassemblyde /WebAssemblyで/
+webassemblyni /WebAssemblyに/
+html /HTML/
+htmlno /HTMLの/
+htmlwo /HTMLを/
+htmlde /HTMLで/
+htmlni /HTMLに/
+css /CSS/
+cssno /CSSの/
+csswo /CSSを/
+cssde /CSSで/
+cssni /CSSに/
+sql /SQL/
+sqlno /SQLの/
+sqlwo /SQLを/
+sqlde /SQLで/
+sqlni /SQLに/
+graphql /GraphQL/
+graphqlno /GraphQLの/
+graphqlwo /GraphQLを/
+graphqlde /GraphQLで/
+graphqlni /GraphQLに/
+bash /Bash/
+bashno /Bashの/
+bashwo /Bashを/
+bashde /Bashで/
+bashni /Bashに/
+json /JSON/
+jsonno /JSONの/
+jsonwo /JSONを/
+jsonde /JSONで/
+jsonni /JSONに/
+yaml /YAML/
+yamlno /YAMLの/
+yamlwo /YAMLを/
+yamlde /YAMLで/
+yamlni /YAMLに/
+markdown /Markdown/
+markdownno /Markdownの/
+markdownwo /Markdownを/
+markdownde /Markdownで/
+markdownni /Markdownに/
+mdx /MDX/
+mdxno /MDXの/
+mdxwo /MDXを/
+mdxde /MDXで/
+mdxni /MDXに/
+react /React/
+reactno /Reactの/
+reactwo /Reactを/
+reactde /Reactで/
+reactni /Reactに/
+vue-js /Vue.js/
+vue-jsno /Vue.jsの/
+vue-jswo /Vue.jsを/
+vue-jsde /Vue.jsで/
+vue-jsni /Vue.jsに/
+angular /Angular/
+angularno /Angularの/
+angularwo /Angularを/
+angularde /Angularで/
+angularni /Angularに/
+svelte /Svelte/
+svelteno /Svelteの/
+sveltewo /Svelteを/
+sveltede /Svelteで/
+svelteni /Svelteに/
+next-js /Next.js/
+next-jsno /Next.jsの/
+next-jswo /Next.jsを/
+next-jsde /Next.jsで/
+next-jsni /Next.jsに/
+nuxt /Nuxt/
+nuxtno /Nuxtの/
+nuxtwo /Nuxtを/
+nuxtde /Nuxtで/
+nuxtni /Nuxtに/
+astro /Astro/
+astrono /Astroの/
+astrowo /Astroを/
+astrode /Astroで/
+astroni /Astroに/
+htmx /HTMX/
+htmxno /HTMXの/
+htmxwo /HTMXを/
+htmxde /HTMXで/
+htmxni /HTMXに/
+tailwind-css /Tailwind CSS/
+tailwind-cssno /Tailwind CSSの/
+tailwind-csswo /Tailwind CSSを/
+tailwind-cssde /Tailwind CSSで/
+tailwind-cssni /Tailwind CSSに/
+vite /Vite/
+viteno /Viteの/
+vitewo /Viteを/
+vitede /Viteで/
+viteni /Viteに/
+webpack /Webpack/
+webpackno /Webpackの/
+webpackwo /Webpackを/
+webpackde /Webpackで/
+webpackni /Webpackに/
+esbuild /esbuild/
+esbuildno /esbuildの/
+esbuildwo /esbuildを/
+esbuildde /esbuildで/
+esbuildni /esbuildに/
+eslint /ESLint/
+eslintno /ESLintの/
+eslintwo /ESLintを/
+eslintde /ESLintで/
+eslintni /ESLintに/
+prettier /Prettier/
+prettierno /Prettierの/
+prettierwo /Prettierを/
+prettierde /Prettierで/
+prettierni /Prettierに/
+bun /Bun/
+bunno /Bunの/
+bunwo /Bunを/
+bunde /Bunで/
+bunni /Bunに/
+deno /Deno/
+denono /Denoの/
+denowo /Denoを/
+denode /Denoで/
+denoni /Denoに/
+node-js /Node.js/
+node-jsno /Node.jsの/
+node-jswo /Node.jsを/
+node-jsde /Node.jsで/
+node-jsni /Node.jsに/
+npm /npm/
+npmno /npmの/
+npmwo /npmを/
+npmde /npmで/
+npmni /npmに/
+pnpm /pnpm/
+pnpmno /pnpmの/
+pnpmwo /pnpmを/
+pnpmde /pnpmで/
+pnpmni /pnpmに/
+yarn /Yarn/
+yarnno /Yarnの/
+yarnwo /Yarnを/
+yarnde /Yarnで/
+yarnni /Yarnに/
+nx /Nx/
+nxno /Nxの/
+nxwo /Nxを/
+nxde /Nxで/
+nxni /Nxに/
+electron /Electron/
+electronno /Electronの/
+electronwo /Electronを/
+electronde /Electronで/
+electronni /Electronに/
+tauri /Tauri/
+taurino /Tauriの/
+tauriwo /Tauriを/
+tauride /Tauriで/
+taurini /Tauriに/
+react-native /React Native/
+react-nativeno /React Nativeの/
+react-nativewo /React Nativeを/
+react-nativede /React Nativeで/
+react-nativeni /React Nativeに/
+flutter /Flutter/
+flutterno /Flutterの/
+flutterwo /Flutterを/
+flutterde /Flutterで/
+flutterni /Flutterに/
+ios /iOS/
+iosno /iOSの/
+ioswo /iOSを/
+iosde /iOSで/
+iosni /iOSに/
+android /Android/
+androidno /Androidの/
+androidwo /Androidを/
+androidde /Androidで/
+androidni /Androidに/
+unity /Unity/
+unityno /Unityの/
+unitywo /Unityを/
+unityde /Unityで/
+unityni /Unityに/
+unreal-engine /Unreal Engine/
+unreal-engineno /Unreal Engineの/
+unreal-enginewo /Unreal Engineを/
+unreal-enginede /Unreal Engineで/
+unreal-engineni /Unreal Engineに/
+godot /Godot/
+godotno /Godotの/
+godotwo /Godotを/
+godotde /Godotで/
+godotni /Godotに/
+docker /Docker/
+dockerno /Dockerの/
+dockerwo /Dockerを/
+dockerde /Dockerで/
+dockerni /Dockerに/
+kubernetes /Kubernetes/
+kubernetesno /Kubernetesの/
+kuberneteswo /Kubernetesを/
+kubernetesde /Kubernetesで/
+kubernetesni /Kubernetesに/
+istio /Istio/
+istiono /Istioの/
+istiowo /Istioを/
+istiode /Istioで/
+istioni /Istioに/
+terraform /Terraform/
+terraformno /Terraformの/
+terraformwo /Terraformを/
+terraformde /Terraformで/
+terraformni /Terraformに/
+nix /Nix/
+nixno /Nixの/
+nixwo /Nixを/
+nixde /Nixで/
+nixni /Nixに/
+git /Git/
+gitno /Gitの/
+gitwo /Gitを/
+gitde /Gitで/
+gitni /Gitに/
+github /GitHub/
+githubno /GitHubの/
+githubwo /GitHubを/
+githubde /GitHubで/
+githubni /GitHubに/
+gitlab /GitLab/
+gitlabno /GitLabの/
+gitlabwo /GitLabを/
+gitlabde /GitLabで/
+gitlabni /GitLabに/
+github-actions /GitHub Actions/
+github-actionsno /GitHub Actionsの/
+github-actionswo /GitHub Actionsを/
+github-actionsde /GitHub Actionsで/
+github-actionsni /GitHub Actionsに/
+flux-cd /Flux CD/
+flux-cdno /Flux CDの/
+flux-cdwo /Flux CDを/
+flux-cdde /Flux CDで/
+flux-cdni /Flux CDに/
+opentelemetry /OpenTelemetry/
+opentelemetryno /OpenTelemetryの/
+opentelemetrywo /OpenTelemetryを/
+opentelemetryde /OpenTelemetryで/
+opentelemetryni /OpenTelemetryに/
+prometheus /Prometheus/
+prometheusno /Prometheusの/
+prometheuswo /Prometheusを/
+prometheusde /Prometheusで/
+prometheusni /Prometheusに/
+grafana /Grafana/
+grafanano /Grafanaの/
+grafanawo /Grafanaを/
+grafanade /Grafanaで/
+grafanani /Grafanaに/
+sentry /Sentry/
+sentryno /Sentryの/
+sentrywo /Sentryを/
+sentryde /Sentryで/
+sentryni /Sentryに/
+elasticsearch /Elasticsearch/
+elasticsearchno /Elasticsearchの/
+elasticsearchwo /Elasticsearchを/
+elasticsearchde /Elasticsearchで/
+elasticsearchni /Elasticsearchに/
+kafka /Apache Kafka/
+kafkano /Apache Kafkaの/
+kafkawo /Apache Kafkaを/
+kafkade /Apache Kafkaで/
+kafkani /Apache Kafkaに/
+redis /Redis/
+redisno /Redisの/
+rediswo /Redisを/
+redisde /Redisで/
+redisni /Redisに/
+memcached /Memcached/
+memcachedno /Memcachedの/
+memcachedwo /Memcachedを/
+memcachedde /Memcachedで/
+memcachedni /Memcachedに/
+postgresql /PostgreSQL/
+postgresqlno /PostgreSQLの/
+postgresqlwo /PostgreSQLを/
+postgresqlde /PostgreSQLで/
+postgresqlni /PostgreSQLに/
+mysql /MySQL/
+mysqlno /MySQLの/
+mysqlwo /MySQLを/
+mysqlde /MySQLで/
+mysqlni /MySQLに/
+sqlite /SQLite/
+sqliteno /SQLiteの/
+sqlitewo /SQLiteを/
+sqlitede /SQLiteで/
+sqliteni /SQLiteに/
+mongodb /MongoDB/
+mongodbno /MongoDBの/
+mongodbwo /MongoDBを/
+mongodbde /MongoDBで/
+mongodbni /MongoDBに/
+clickhouse /ClickHouse/
+clickhouseno /ClickHouseの/
+clickhousewo /ClickHouseを/
+clickhousede /ClickHouseで/
+clickhouseni /ClickHouseに/
+duckdb /DuckDB/
+duckdbno /DuckDBの/
+duckdbwo /DuckDBを/
+duckdbde /DuckDBで/
+duckdbni /DuckDBに/
+dbt /dbt/
+dbtno /dbtの/
+dbtwo /dbtを/
+dbtde /dbtで/
+dbtni /dbtに/
+airflow /Apache Airflow/
+airflowno /Apache Airflowの/
+airflowwo /Apache Airflowを/
+airflowde /Apache Airflowで/
+airflowni /Apache Airflowに/
+dagster /Dagster/
+dagsterno /Dagsterの/
+dagsterwo /Dagsterを/
+dagsterde /Dagsterで/
+dagsterni /Dagsterに/
+spark /Apache Spark/
+sparkno /Apache Sparkの/
+sparkwo /Apache Sparkを/
+sparkde /Apache Sparkで/
+sparkni /Apache Sparkに/
+prisma /Prisma/
+prismano /Prismaの/
+prismawo /Prismaを/
+prismade /Prismaで/
+prismani /Prismaに/
+sqlalchemy /SQLAlchemy/
+sqlalchemyno /SQLAlchemyの/
+sqlalchemywo /SQLAlchemyを/
+sqlalchemyde /SQLAlchemyで/
+sqlalchemyni /SQLAlchemyに/
+django /Django/
+djangono /Djangoの/
+djangowo /Djangoを/
+djangode /Djangoで/
+djangoni /Djangoに/
+fastapi /FastAPI/
+fastapino /FastAPIの/
+fastapiwo /FastAPIを/
+fastapide /FastAPIで/
+fastapini /FastAPIに/
+rails /Ruby on Rails/
+railsno /Ruby on Railsの/
+railswo /Ruby on Railsを/
+railsde /Ruby on Railsで/
+railsni /Ruby on Railsに/
+asp-net-core /ASP.NET Core/
+asp-net-coreno /ASP.NET Coreの/
+asp-net-corewo /ASP.NET Coreを/
+asp-net-corede /ASP.NET Coreで/
+asp-net-coreni /ASP.NET Coreに/
+nginx /Nginx/
+nginxno /Nginxの/
+nginxwo /Nginxを/
+nginxde /Nginxで/
+nginxni /Nginxに/
+vscode /Visual Studio Code/
+vscodeno /Visual Studio Codeの/
+vscodewo /Visual Studio Codeを/
+vscodede /Visual Studio Codeで/
+vscodeni /Visual Studio Codeに/
+neovim /Neovim/
+neovimno /Neovimの/
+neovimwo /Neovimを/
+neovimde /Neovimで/
+neovimni /Neovimに/
+zed /Zed/
+zedno /Zedの/
+zedwo /Zedを/
+zedde /Zedで/
+zedni /Zedに/
+shingeki-no-kyojin /進撃の巨人/
+shingeki-no-kyojinno /進撃の巨人の/
+shingeki-no-kyojinwo /進撃の巨人を/
+shingeki-no-kyojinga /進撃の巨人が/
+shingeki-no-kyojinha /進撃の巨人は/
+kimetsu-no-yaiba /鬼滅の刃/
+kimetsu-no-yaibano /鬼滅の刃の/
+kimetsu-no-yaibawo /鬼滅の刃を/
+kimetsu-no-yaibaga /鬼滅の刃が/
+kimetsu-no-yaibaha /鬼滅の刃は/
+jujutsu-kaisen /呪術廻戦/
+jujutsu-kaisenno /呪術廻戦の/
+jujutsu-kaisenwo /呪術廻戦を/
+jujutsu-kaisenga /呪術廻戦が/
+jujutsu-kaisenha /呪術廻戦は/
+boku-no-hero-academia /僕のヒーローアカデミア/
+boku-no-hero-academiano /僕のヒーローアカデミアの/
+boku-no-hero-academiawo /僕のヒーローアカデミアを/
+boku-no-hero-academiaga /僕のヒーローアカデミアが/
+boku-no-hero-academiaha /僕のヒーローアカデミアは/
+chainsaw-man /チェンソーマン/
+chainsaw-manno /チェンソーマンの/
+chainsaw-manwo /チェンソーマンを/
+chainsaw-manga /チェンソーマンが/
+chainsaw-manha /チェンソーマンは/
+spy-family /SPY×FAMILY/
+spy-familyno /SPY×FAMILYの/
+spy-familywo /SPY×FAMILYを/
+spy-familyga /SPY×FAMILYが/
+spy-familyha /SPY×FAMILYは/
+sousou-no-furiren /葬送のフリーレン/
+sousou-no-furirenno /葬送のフリーレンの/
+sousou-no-furirenwo /葬送のフリーレンを/
+sousou-no-furirenga /葬送のフリーレンが/
+sousou-no-furirenha /葬送のフリーレンは/
+kusuriya-no-hitorigoto /薬屋のひとりごと/
+kusuriya-no-hitorigotono /薬屋のひとりごとの/
+kusuriya-no-hitorigotowo /薬屋のひとりごとを/
+kusuriya-no-hitorigotoga /薬屋のひとりごとが/
+kusuriya-no-hitorigotoha /薬屋のひとりごとは/
+oshi-no-ko /【推しの子】/
+oshi-no-kono /【推しの子】の/
+oshi-no-kowo /【推しの子】を/
+oshi-no-koga /【推しの子】が/
+oshi-no-koha /【推しの子】は/
+bocchi-the-rock /ぼっち・ざ・ろっく！/
+bocchi-the-rockno /ぼっち・ざ・ろっく！の/
+bocchi-the-rockwo /ぼっち・ざ・ろっく！を/
+bocchi-the-rockga /ぼっち・ざ・ろっく！が/
+bocchi-the-rockha /ぼっち・ざ・ろっく！は/
+lycoris-recoil /リコリス・リコイル/
+lycoris-recoilno /リコリス・リコイルの/
+lycoris-recoilwo /リコリス・リコイルを/
+lycoris-recoilga /リコリス・リコイルが/
+lycoris-recoilha /リコリス・リコイルは/
+cyberpunk-edgerunners /サイバーパンク エッジランナーズ/
+cyberpunk-edgerunnersno /サイバーパンク エッジランナーズの/
+cyberpunk-edgerunnerswo /サイバーパンク エッジランナーズを/
+cyberpunk-edgerunnersga /サイバーパンク エッジランナーズが/
+cyberpunk-edgerunnersha /サイバーパンク エッジランナーズは/
+blue-lock /ブルーロック/
+blue-lockno /ブルーロックの/
+blue-lockwo /ブルーロックを/
+blue-lockga /ブルーロックが/
+blue-lockha /ブルーロックは/
+haikyu /ハイキュー!!/
+haikyuno /ハイキュー!!の/
+haikyuwo /ハイキュー!!を/
+haikyuga /ハイキュー!!が/
+haikyuha /ハイキュー!!は/
+one-piece /ONE PIECE/
+one-pieceno /ONE PIECEの/
+one-piecewo /ONE PIECEを/
+one-piecega /ONE PIECEが/
+one-pieceha /ONE PIECEは/
+doragonbo-ru-super /ドラゴンボール超/
+doragonbo-ru-superno /ドラゴンボール超の/
+doragonbo-ru-superwo /ドラゴンボール超を/
+doragonbo-ru-superga /ドラゴンボール超が/
+doragonbo-ru-superha /ドラゴンボール超は/
+boruto /BORUTO/
+borutono /BORUTOの/
+borutowo /BORUTOを/
+borutoga /BORUTOが/
+borutoha /BORUTOは/
+naruto /NARUTO/
+narutono /NARUTOの/
+narutowo /NARUTOを/
+narutoga /NARUTOが/
+narutoha /NARUTOは/
+bleach /BLEACH/
+bleachno /BLEACHの/
+bleachwo /BLEACHを/
+bleachga /BLEACHが/
+bleachha /BLEACHは/
+jojo-no-kimyo-na-boken /ジョジョの奇妙な冒険/
+jojo-no-kimyo-na-bokenno /ジョジョの奇妙な冒険の/
+jojo-no-kimyo-na-bokenwo /ジョジョの奇妙な冒険を/
+jojo-no-kimyo-na-bokenga /ジョジョの奇妙な冒険が/
+jojo-no-kimyo-na-bokenha /ジョジョの奇妙な冒険は/
+mob-psycho100 /モブサイコ100/
+mob-psycho100no /モブサイコ100の/
+mob-psycho100wo /モブサイコ100を/
+mob-psycho100ga /モブサイコ100が/
+mob-psycho100ha /モブサイコ100は/
+one-punch-man /ワンパンマン/
+one-punch-manno /ワンパンマンの/
+one-punch-manwo /ワンパンマンを/
+one-punch-manga /ワンパンマンが/
+one-punch-manha /ワンパンマンは/
+dr-stone /Dr.STONE/
+dr-stoneno /Dr.STONEの/
+dr-stonewo /Dr.STONEを/
+dr-stonega /Dr.STONEが/
+dr-stoneha /Dr.STONEは/
+yakusoku-no-neverland /約束のネバーランド/
+yakusoku-no-neverlandno /約束のネバーランドの/
+yakusoku-no-neverlandwo /約束のネバーランドを/
+yakusoku-no-neverlandga /約束のネバーランドが/
+yakusoku-no-neverlandha /約束のネバーランドは/
+made-in-abyss /メイドインアビス/
+made-in-abyssno /メイドインアビスの/
+made-in-abysswo /メイドインアビスを/
+made-in-abyssga /メイドインアビスが/
+made-in-abyssha /メイドインアビスは/
+rezero /Re:ゼロから始める異世界生活/
+rezerono /Re:ゼロから始める異世界生活の/
+rezerowo /Re:ゼロから始める異世界生活を/
+rezeroga /Re:ゼロから始める異世界生活が/
+rezeroha /Re:ゼロから始める異世界生活は/
+konosuba /この素晴らしい世界に祝福を！/
+konosubano /この素晴らしい世界に祝福を！の/
+konosubawo /この素晴らしい世界に祝福を！を/
+konosubaga /この素晴らしい世界に祝福を！が/
+konosubaha /この素晴らしい世界に祝福を！は/
+mushoku-tensei /無職転生/
+mushoku-tenseino /無職転生の/
+mushoku-tenseiwo /無職転生を/
+mushoku-tenseiga /無職転生が/
+mushoku-tenseiha /無職転生は/
+tensura /転生したらスライムだった件/
+tensurano /転生したらスライムだった件の/
+tensurawo /転生したらスライムだった件を/
+tensuraga /転生したらスライムだった件が/
+tensuraha /転生したらスライムだった件は/
+solo-leveling /俺だけレベルアップな件/
+solo-levelingno /俺だけレベルアップな件の/
+solo-levelingwo /俺だけレベルアップな件を/
+solo-levelingga /俺だけレベルアップな件が/
+solo-levelingha /俺だけレベルアップな件は/
+dandadan /ダンダダン/
+dandadanno /ダンダダンの/
+dandadanwo /ダンダダンを/
+dandadanga /ダンダダンが/
+dandadanha /ダンダダンは/
+kaiju-no8 /怪獣8号/
+kaiju-no8no /怪獣8号の/
+kaiju-no8wo /怪獣8号を/
+kaiju-no8ga /怪獣8号が/
+kaiju-no8ha /怪獣8号は/
+sakamoto-days /SAKAMOTO DAYS/
+sakamoto-daysno /SAKAMOTO DAYSの/
+sakamoto-dayswo /SAKAMOTO DAYSを/
+sakamoto-daysga /SAKAMOTO DAYSが/
+sakamoto-daysha /SAKAMOTO DAYSは/
+chi-chikyu-no-undo /チ。―地球の運動について―/
+chi-chikyu-no-undono /チ。―地球の運動について―の/
+chi-chikyu-no-undowo /チ。―地球の運動について―を/
+chi-chikyu-no-undoga /チ。―地球の運動について―が/
+chi-chikyu-no-undoha /チ。―地球の運動について―は/
+medalist /メダリスト/
+medalistno /メダリストの/
+medalistwo /メダリストを/
+medalistga /メダリストが/
+medalistha /メダリストは/
+ao-no-hako /アオのハコ/
+ao-no-hakono /アオのハコの/
+ao-no-hakowo /アオのハコを/
+ao-no-hakoga /アオのハコが/
+ao-no-hakoha /アオのハコは/
+kaguya-sama /かぐや様は告らせたい/
+kaguya-samano /かぐや様は告らせたいの/
+kaguya-samawo /かぐや様は告らせたいを/
+kaguya-samaga /かぐや様は告らせたいが/
+kaguya-samaha /かぐや様は告らせたいは/
+horimiya /ホリミヤ/
+horimiyano /ホリミヤの/
+horimiyawo /ホリミヤを/
+horimiyaga /ホリミヤが/
+horimiyaha /ホリミヤは/
+kisekoi /その着せ替え人形は恋をする/
+kisekoino /その着せ替え人形は恋をするの/
+kisekoiwo /その着せ替え人形は恋をするを/
+kisekoiga /その着せ替え人形は恋をするが/
+kisekoiha /その着せ替え人形は恋をするは/
+kimi-no-na-wa /君の名は。/
+kimi-no-na-wano /君の名は。の/
+kimi-no-na-wawo /君の名は。を/
+kimi-no-na-waga /君の名は。が/
+kimi-no-na-waha /君の名は。は/
+tenki-no-ko /天気の子/
+tenki-no-kono /天気の子の/
+tenki-no-kowo /天気の子を/
+tenki-no-koga /天気の子が/
+tenki-no-koha /天気の子は/
+suzume-no-tojimari /すずめの戸締まり/
+suzume-no-tojimarino /すずめの戸締まりの/
+suzume-no-tojimariwo /すずめの戸締まりを/
+suzume-no-tojimariga /すずめの戸締まりが/
+suzume-no-tojimariha /すずめの戸締まりは/
+kimitachi-wa-do-ikiru-ka /君たちはどう生きるか/
+kimitachi-wa-do-ikiru-kano /君たちはどう生きるかの/
+kimitachi-wa-do-ikiru-kawo /君たちはどう生きるかを/
+kimitachi-wa-do-ikiru-kaga /君たちはどう生きるかが/
+kimitachi-wa-do-ikiru-kaha /君たちはどう生きるかは/
+ryu-to-sobakasu-no-hime /竜とそばかすの姫/
+ryu-to-sobakasu-no-himeno /竜とそばかすの姫の/
+ryu-to-sobakasu-no-himewo /竜とそばかすの姫を/
+ryu-to-sobakasu-no-himega /竜とそばかすの姫が/
+ryu-to-sobakasu-no-himeha /竜とそばかすの姫は/
+look-back /ルックバック/
+look-backno /ルックバックの/
+look-backwo /ルックバックを/
+look-backga /ルックバックが/
+look-backha /ルックバックは/
+the-first-slam-dunk /THE FIRST SLAM DUNK/
+the-first-slam-dunkno /THE FIRST SLAM DUNKの/
+the-first-slam-dunkwo /THE FIRST SLAM DUNKを/
+the-first-slam-dunkga /THE FIRST SLAM DUNKが/
+the-first-slam-dunkha /THE FIRST SLAM DUNKは/
+shin-evangelion /シン・エヴァンゲリオン劇場版/
+shin-evangelionno /シン・エヴァンゲリオン劇場版の/
+shin-evangelionwo /シン・エヴァンゲリオン劇場版を/
+shin-evangelionga /シン・エヴァンゲリオン劇場版が/
+shin-evangelionha /シン・エヴァンゲリオン劇場版は/
+gundam-suisei-no-majo /機動戦士ガンダム 水星の魔女/
+gundam-suisei-no-majono /機動戦士ガンダム 水星の魔女の/
+gundam-suisei-no-majowo /機動戦士ガンダム 水星の魔女を/
+gundam-suisei-no-majoga /機動戦士ガンダム 水星の魔女が/
+gundam-suisei-no-majoha /機動戦士ガンダム 水星の魔女は/
+gquuuuuux /機動戦士Gundam GQuuuuuuX/
+gquuuuuuxno /機動戦士Gundam GQuuuuuuXの/
+gquuuuuuxwo /機動戦士Gundam GQuuuuuuXを/
+gquuuuuuxga /機動戦士Gundam GQuuuuuuXが/
+gquuuuuuxha /機動戦士Gundam GQuuuuuuXは/
+osama-ranking /王様ランキング/
+osama-rankingno /王様ランキングの/
+osama-rankingwo /王様ランキングを/
+osama-rankingga /王様ランキングが/
+osama-rankingha /王様ランキングは/
+dungeon-meshi /ダンジョン飯/
+dungeon-meshino /ダンジョン飯の/
+dungeon-meshiwo /ダンジョン飯を/
+dungeon-meshiga /ダンジョン飯が/
+dungeon-meshiha /ダンジョン飯は/
+pluto /PLUTO/
+plutono /PLUTOの/
+plutowo /PLUTOを/
+plutoga /PLUTOが/
+plutoha /PLUTOは/
+arcane /Arcane/
+arcaneno /Arcaneの/
+arcanewo /Arcaneを/
+arcanega /Arcaneが/
+arcaneha /Arcaneは/
+frieren-season2 /葬送のフリーレン 第2期/
+frieren-season2no /葬送のフリーレン 第2期の/
+frieren-season2wo /葬送のフリーレン 第2期を/
+frieren-season2ga /葬送のフリーレン 第2期が/
+frieren-season2ha /葬送のフリーレン 第2期は/
+jujutsu-kaisen-season3 /呪術廻戦 第3期/
+jujutsu-kaisen-season3no /呪術廻戦 第3期の/
+jujutsu-kaisen-season3wo /呪術廻戦 第3期を/
+jujutsu-kaisen-season3ga /呪術廻戦 第3期が/
+jujutsu-kaisen-season3ha /呪術廻戦 第3期は/
+heroaca-final-season /僕のヒーローアカデミア FINAL SEASON/
+heroaca-final-seasonno /僕のヒーローアカデミア FINAL SEASONの/
+heroaca-final-seasonwo /僕のヒーローアカデミア FINAL SEASONを/
+heroaca-final-seasonga /僕のヒーローアカデミア FINAL SEASONが/
+heroaca-final-seasonha /僕のヒーローアカデミア FINAL SEASONは/
+witch-hat-atelier /とんがり帽子のアトリエ/
+witch-hat-atelierno /とんがり帽子のアトリエの/
+witch-hat-atelierwo /とんがり帽子のアトリエを/
+witch-hat-atelierga /とんがり帽子のアトリエが/
+witch-hat-atelierha /とんがり帽子のアトリエは/
+daemons-of-shadow-realm /黄泉のツガイ/
+daemons-of-shadow-realmno /黄泉のツガイの/
+daemons-of-shadow-realmwo /黄泉のツガイを/
+daemons-of-shadow-realmga /黄泉のツガイが/
+daemons-of-shadow-realmha /黄泉のツガイは/
+summer-hikaru-died /光が死んだ夏/
+summer-hikaru-diedno /光が死んだ夏の/
+summer-hikaru-diedwo /光が死んだ夏を/
+summer-hikaru-diedga /光が死んだ夏が/
+summer-hikaru-diedha /光が死んだ夏は/
+blue-period /ブルーピリオド/
+blue-periodno /ブルーピリオドの/
+blue-periodwo /ブルーピリオドを/
+blue-periodga /ブルーピリオドが/
+blue-periodha /ブルーピリオドは/
+insomniacs-after-school /君は放課後インソムニア/
+insomniacs-after-schoolno /君は放課後インソムニアの/
+insomniacs-after-schoolwo /君は放課後インソムニアを/
+insomniacs-after-schoolga /君は放課後インソムニアが/
+insomniacs-after-schoolha /君は放課後インソムニアは/
+beastars /BEASTARS/
+beastarsno /BEASTARSの/
+beastarswo /BEASTARSを/
+beastarsga /BEASTARSが/
+beastarsha /BEASTARSは/
+akudama-drive /アクダマドライブ/
+akudama-driveno /アクダマドライブの/
+akudama-drivewo /アクダマドライブを/
+akudama-drivega /アクダマドライブが/
+akudama-driveha /アクダマドライブは/
+blue-giant /BLUE GIANT/
+blue-giantno /BLUE GIANTの/
+blue-giantwo /BLUE GIANTを/
+blue-giantga /BLUE GIANTが/
+blue-giantha /BLUE GIANTは/
+golden-kamuy /ゴールデンカムイ/
+golden-kamuyno /ゴールデンカムイの/
+golden-kamuywo /ゴールデンカムイを/
+golden-kamuyga /ゴールデンカムイが/
+golden-kamuyha /ゴールデンカムイは/
+vinland-saga /ヴィンランド・サガ/
+vinland-sagano /ヴィンランド・サガの/
+vinland-sagawo /ヴィンランド・サガを/
+vinland-sagaga /ヴィンランド・サガが/
+vinland-sagaha /ヴィンランド・サガは/
+pokemon-go /Pokémon GO/
+pokemon-gono /Pokémon GOの/
+pokemon-gowo /Pokémon GOを/
+pokemon-goga /Pokémon GOが/
+pokemon-goha /Pokémon GOは/
+zelda-botw /ゼルダの伝説 ブレス オブ ザ ワイルド/
+zelda-botwno /ゼルダの伝説 ブレス オブ ザ ワイルドの/
+zelda-botwwo /ゼルダの伝説 ブレス オブ ザ ワイルドを/
+zelda-botwga /ゼルダの伝説 ブレス オブ ザ ワイルドが/
+zelda-botwha /ゼルダの伝説 ブレス オブ ザ ワイルドは/
+zelda-totk /ゼルダの伝説 ティアーズ オブ ザ キングダム/
+zelda-totkno /ゼルダの伝説 ティアーズ オブ ザ キングダムの/
+zelda-totkwo /ゼルダの伝説 ティアーズ オブ ザ キングダムを/
+zelda-totkga /ゼルダの伝説 ティアーズ オブ ザ キングダムが/
+zelda-totkha /ゼルダの伝説 ティアーズ オブ ザ キングダムは/
+super-mario-odyssey /スーパーマリオ オデッセイ/
+super-mario-odysseyno /スーパーマリオ オデッセイの/
+super-mario-odysseywo /スーパーマリオ オデッセイを/
+super-mario-odysseyga /スーパーマリオ オデッセイが/
+super-mario-odysseyha /スーパーマリオ オデッセイは/
+super-mario-wonder /スーパーマリオブラザーズ ワンダー/
+super-mario-wonderno /スーパーマリオブラザーズ ワンダーの/
+super-mario-wonderwo /スーパーマリオブラザーズ ワンダーを/
+super-mario-wonderga /スーパーマリオブラザーズ ワンダーが/
+super-mario-wonderha /スーパーマリオブラザーズ ワンダーは/
+smash-bros-ultimate /大乱闘スマッシュブラザーズ SPECIAL/
+smash-bros-ultimateno /大乱闘スマッシュブラザーズ SPECIALの/
+smash-bros-ultimatewo /大乱闘スマッシュブラザーズ SPECIALを/
+smash-bros-ultimatega /大乱闘スマッシュブラザーズ SPECIALが/
+smash-bros-ultimateha /大乱闘スマッシュブラザーズ SPECIALは/
+atsumori /あつまれ どうぶつの森/
+atsumorino /あつまれ どうぶつの森の/
+atsumoriwo /あつまれ どうぶつの森を/
+atsumoriga /あつまれ どうぶつの森が/
+atsumoriha /あつまれ どうぶつの森は/
+splatoon2 /スプラトゥーン2/
+splatoon2no /スプラトゥーン2の/
+splatoon2wo /スプラトゥーン2を/
+splatoon2ga /スプラトゥーン2が/
+splatoon2ha /スプラトゥーン2は/
+splatoon3 /スプラトゥーン3/
+splatoon3no /スプラトゥーン3の/
+splatoon3wo /スプラトゥーン3を/
+splatoon3ga /スプラトゥーン3が/
+splatoon3ha /スプラトゥーン3は/
+pokemon-scarlet-violet /ポケットモンスター スカーレット・バイオレット/
+pokemon-scarlet-violetno /ポケットモンスター スカーレット・バイオレットの/
+pokemon-scarlet-violetwo /ポケットモンスター スカーレット・バイオレットを/
+pokemon-scarlet-violetga /ポケットモンスター スカーレット・バイオレットが/
+pokemon-scarlet-violetha /ポケットモンスター スカーレット・バイオレットは/
+pokemon-legends-arceus /Pokémon LEGENDS アルセウス/
+pokemon-legends-arceusno /Pokémon LEGENDS アルセウスの/
+pokemon-legends-arceuswo /Pokémon LEGENDS アルセウスを/
+pokemon-legends-arceusga /Pokémon LEGENDS アルセウスが/
+pokemon-legends-arceusha /Pokémon LEGENDS アルセウスは/
+pokemon-legends-za /Pokémon LEGENDS Z-A/
+pokemon-legends-zano /Pokémon LEGENDS Z-Aの/
+pokemon-legends-zawo /Pokémon LEGENDS Z-Aを/
+pokemon-legends-zaga /Pokémon LEGENDS Z-Aが/
+pokemon-legends-zaha /Pokémon LEGENDS Z-Aは/
+fire-emblem-three-houses /ファイアーエムブレム 風花雪月/
+fire-emblem-three-housesno /ファイアーエムブレム 風花雪月の/
+fire-emblem-three-houseswo /ファイアーエムブレム 風花雪月を/
+fire-emblem-three-housesga /ファイアーエムブレム 風花雪月が/
+fire-emblem-three-housesha /ファイアーエムブレム 風花雪月は/
+fire-emblem-engage /ファイアーエムブレム エンゲージ/
+fire-emblem-engageno /ファイアーエムブレム エンゲージの/
+fire-emblem-engagewo /ファイアーエムブレム エンゲージを/
+fire-emblem-engagega /ファイアーエムブレム エンゲージが/
+fire-emblem-engageha /ファイアーエムブレム エンゲージは/
+xenoblade2 /ゼノブレイド2/
+xenoblade2no /ゼノブレイド2の/
+xenoblade2wo /ゼノブレイド2を/
+xenoblade2ga /ゼノブレイド2が/
+xenoblade2ha /ゼノブレイド2は/
+xenoblade3 /ゼノブレイド3/
+xenoblade3no /ゼノブレイド3の/
+xenoblade3wo /ゼノブレイド3を/
+xenoblade3ga /ゼノブレイド3が/
+xenoblade3ha /ゼノブレイド3は/
+pikmin4 /ピクミン4/
+pikmin4no /ピクミン4の/
+pikmin4wo /ピクミン4を/
+pikmin4ga /ピクミン4が/
+pikmin4ha /ピクミン4は/
+metroid-dread /メトロイド ドレッド/
+metroid-dreadno /メトロイド ドレッドの/
+metroid-dreadwo /メトロイド ドレッドを/
+metroid-dreadga /メトロイド ドレッドが/
+metroid-dreadha /メトロイド ドレッドは/
+metroid-prime4 /メトロイドプライム4 ビヨンド/
+metroid-prime4no /メトロイドプライム4 ビヨンドの/
+metroid-prime4wo /メトロイドプライム4 ビヨンドを/
+metroid-prime4ga /メトロイドプライム4 ビヨンドが/
+metroid-prime4ha /メトロイドプライム4 ビヨンドは/
+kirby-discovery /星のカービィ ディスカバリー/
+kirby-discoveryno /星のカービィ ディスカバリーの/
+kirby-discoverywo /星のカービィ ディスカバリーを/
+kirby-discoveryga /星のカービィ ディスカバリーが/
+kirby-discoveryha /星のカービィ ディスカバリーは/
+ring-fit-adventure /リングフィット アドベンチャー/
+ring-fit-adventureno /リングフィット アドベンチャーの/
+ring-fit-adventurewo /リングフィット アドベンチャーを/
+ring-fit-adventurega /リングフィット アドベンチャーが/
+ring-fit-adventureha /リングフィット アドベンチャーは/
+arms /ARMS/
+armsno /ARMSの/
+armswo /ARMSを/
+armsga /ARMSが/
+armsha /ARMSは/
+mario-kart-world /マリオカート ワールド/
+mario-kart-worldno /マリオカート ワールドの/
+mario-kart-worldwo /マリオカート ワールドを/
+mario-kart-worldga /マリオカート ワールドが/
+mario-kart-worldha /マリオカート ワールドは/
+donkey-kong-bananza /ドンキーコング バナンザ/
+donkey-kong-bananzano /ドンキーコング バナンザの/
+donkey-kong-bananzawo /ドンキーコング バナンザを/
+donkey-kong-bananzaga /ドンキーコング バナンザが/
+donkey-kong-bananzaha /ドンキーコング バナンザは/
+kirby-air-riders /カービィのエアライダー/
+kirby-air-ridersno /カービィのエアライダーの/
+kirby-air-riderswo /カービィのエアライダーを/
+kirby-air-ridersga /カービィのエアライダーが/
+kirby-air-ridersha /カービィのエアライダーは/
+mario-tennis-fever /マリオテニス フィーバー/
+mario-tennis-feverno /マリオテニス フィーバーの/
+mario-tennis-feverwo /マリオテニス フィーバーを/
+mario-tennis-feverga /マリオテニス フィーバーが/
+mario-tennis-feverha /マリオテニス フィーバーは/
+splatoon-raiders /スプラトゥーン レイダース/
+splatoon-raidersno /スプラトゥーン レイダースの/
+splatoon-raiderswo /スプラトゥーン レイダースを/
+splatoon-raidersga /スプラトゥーン レイダースが/
+splatoon-raidersha /スプラトゥーン レイダースは/
+rhythm-heaven-groove /リズム天国 グルーヴ/
+rhythm-heaven-grooveno /リズム天国 グルーヴの/
+rhythm-heaven-groovewo /リズム天国 グルーヴを/
+rhythm-heaven-groovega /リズム天国 グルーヴが/
+rhythm-heaven-grooveha /リズム天国 グルーヴは/
+fire-emblem-fortunes-weave /ファイアーエムブレム 万紫千紅/
+fire-emblem-fortunes-weaveno /ファイアーエムブレム 万紫千紅の/
+fire-emblem-fortunes-weavewo /ファイアーエムブレム 万紫千紅を/
+fire-emblem-fortunes-weavega /ファイアーエムブレム 万紫千紅が/
+fire-emblem-fortunes-weaveha /ファイアーエムブレム 万紫千紅は/
+the-duskbloods /The Duskbloods/
+the-duskbloodsno /The Duskbloodsの/
+the-duskbloodswo /The Duskbloodsを/
+the-duskbloodsga /The Duskbloodsが/
+the-duskbloodsha /The Duskbloodsは/
+hades /Hades/
+hadesno /Hadesの/
+hadeswo /Hadesを/
+hadesga /Hadesが/
+hadesha /Hadesは/
+hollow-knight /Hollow Knight/
+hollow-knightno /Hollow Knightの/
+hollow-knightwo /Hollow Knightを/
+hollow-knightga /Hollow Knightが/
+hollow-knightha /Hollow Knightは/
+silksong /Hollow Knight: Silksong/
+silksongno /Hollow Knight: Silksongの/
+silksongwo /Hollow Knight: Silksongを/
+silksongga /Hollow Knight: Silksongが/
+silksongha /Hollow Knight: Silksongは/
+celeste /Celeste/
+celesteno /Celesteの/
+celestewo /Celesteを/
+celestega /Celesteが/
+celesteha /Celesteは/
+undertale /UNDERTALE/
+undertaleno /UNDERTALEの/
+undertalewo /UNDERTALEを/
+undertalega /UNDERTALEが/
+undertaleha /UNDERTALEは/
+deltarune /DELTARUNE/
+deltaruneno /DELTARUNEの/
+deltarunewo /DELTARUNEを/
+deltarunega /DELTARUNEが/
+deltaruneha /DELTARUNEは/
+stardew-valley /Stardew Valley/
+stardew-valleyno /Stardew Valleyの/
+stardew-valleywo /Stardew Valleyを/
+stardew-valleyga /Stardew Valleyが/
+stardew-valleyha /Stardew Valleyは/
+vampire-survivors /Vampire Survivors/
+vampire-survivorsno /Vampire Survivorsの/
+vampire-survivorswo /Vampire Survivorsを/
+vampire-survivorsga /Vampire Survivorsが/
+vampire-survivorsha /Vampire Survivorsは/
+balatro /Balatro/
+balatrono /Balatroの/
+balatrowo /Balatroを/
+balatroga /Balatroが/
+balatroha /Balatroは/
+among-us /Among Us/
+among-usno /Among Usの/
+among-uswo /Among Usを/
+among-usga /Among Usが/
+among-usha /Among Usは/
+apex-legends /Apex Legends/
+apex-legendsno /Apex Legendsの/
+apex-legendswo /Apex Legendsを/
+apex-legendsga /Apex Legendsが/
+apex-legendsha /Apex Legendsは/
+valorant /VALORANT/
+valorantno /VALORANTの/
+valorantwo /VALORANTを/
+valorantga /VALORANTが/
+valorantha /VALORANTは/
+overwatch2 /Overwatch 2/
+overwatch2no /Overwatch 2の/
+overwatch2wo /Overwatch 2を/
+overwatch2ga /Overwatch 2が/
+overwatch2ha /Overwatch 2は/
+fortnite-game /フォートナイト/
+fortnite-gameno /フォートナイトの/
+fortnite-gamewo /フォートナイトを/
+fortnite-gamega /フォートナイトが/
+fortnite-gameha /フォートナイトは/
+genshin /原神/
+genshinno /原神の/
+genshinwo /原神を/
+genshinga /原神が/
+genshinha /原神は/
+honkai-star-rail /崩壊：スターレイル/
+honkai-star-railno /崩壊：スターレイルの/
+honkai-star-railwo /崩壊：スターレイルを/
+honkai-star-railga /崩壊：スターレイルが/
+honkai-star-railha /崩壊：スターレイルは/
+zenless-zone-zero /ゼンレスゾーンゼロ/
+zenless-zone-zerono /ゼンレスゾーンゼロの/
+zenless-zone-zerowo /ゼンレスゾーンゼロを/
+zenless-zone-zeroga /ゼンレスゾーンゼロが/
+zenless-zone-zeroha /ゼンレスゾーンゼロは/
+wuthering-waves /鳴潮/
+wuthering-wavesno /鳴潮の/
+wuthering-waveswo /鳴潮を/
+wuthering-wavesga /鳴潮が/
+wuthering-wavesha /鳴潮は/
+fate-grand-order /Fate／Grand Order/
+fate-grand-orderno /Fate／Grand Orderの/
+fate-grand-orderwo /Fate／Grand Orderを/
+fate-grand-orderga /Fate／Grand Orderが/
+fate-grand-orderha /Fate／Grand Orderは/
+arknights /アークナイツ/
+arknightsno /アークナイツの/
+arknightswo /アークナイツを/
+arknightsga /アークナイツが/
+arknightsha /アークナイツは/
+blue-archive /ブルーアーカイブ/
+blue-archiveno /ブルーアーカイブの/
+blue-archivewo /ブルーアーカイブを/
+blue-archivega /ブルーアーカイブが/
+blue-archiveha /ブルーアーカイブは/
+uma-musume /ウマ娘 プリティーダービー/
+uma-musumeno /ウマ娘 プリティーダービーの/
+uma-musumewo /ウマ娘 プリティーダービーを/
+uma-musumega /ウマ娘 プリティーダービーが/
+uma-musumeha /ウマ娘 プリティーダービーは/
+nikke /勝利の女神：NIKKE/
+nikkeno /勝利の女神：NIKKEの/
+nikkewo /勝利の女神：NIKKEを/
+nikkega /勝利の女神：NIKKEが/
+nikkeha /勝利の女神：NIKKEは/
+princess-connect /プリンセスコネクト！Re:Dive/
+princess-connectno /プリンセスコネクト！Re:Diveの/
+princess-connectwo /プリンセスコネクト！Re:Diveを/
+princess-connectga /プリンセスコネクト！Re:Diveが/
+princess-connectha /プリンセスコネクト！Re:Diveは/
+elden-ring /ELDEN RING/
+elden-ringno /ELDEN RINGの/
+elden-ringwo /ELDEN RINGを/
+elden-ringga /ELDEN RINGが/
+elden-ringha /ELDEN RINGは/
+shadow-of-the-erdtree /SHADOW OF THE ERDTREE/
+shadow-of-the-erdtreeno /SHADOW OF THE ERDTREEの/
+shadow-of-the-erdtreewo /SHADOW OF THE ERDTREEを/
+shadow-of-the-erdtreega /SHADOW OF THE ERDTREEが/
+shadow-of-the-erdtreeha /SHADOW OF THE ERDTREEは/
+sekiro /SEKIRO/
+sekirono /SEKIROの/
+sekirowo /SEKIROを/
+sekiroga /SEKIROが/
+sekiroha /SEKIROは/
+armored-core6 /ARMORED CORE VI/
+armored-core6no /ARMORED CORE VIの/
+armored-core6wo /ARMORED CORE VIを/
+armored-core6ga /ARMORED CORE VIが/
+armored-core6ha /ARMORED CORE VIは/
+death-stranding2 /DEATH STRANDING 2/
+death-stranding2no /DEATH STRANDING 2の/
+death-stranding2wo /DEATH STRANDING 2を/
+death-stranding2ga /DEATH STRANDING 2が/
+death-stranding2ha /DEATH STRANDING 2は/
+resident-evil7 /バイオハザード7/
+resident-evil7no /バイオハザード7の/
+resident-evil7wo /バイオハザード7を/
+resident-evil7ga /バイオハザード7が/
+resident-evil7ha /バイオハザード7は/
+resident-evil-village /バイオハザード ヴィレッジ/
+resident-evil-villageno /バイオハザード ヴィレッジの/
+resident-evil-villagewo /バイオハザード ヴィレッジを/
+resident-evil-villagega /バイオハザード ヴィレッジが/
+resident-evil-villageha /バイオハザード ヴィレッジは/
+resident-evil-requiem /バイオハザード レクイエム/
+resident-evil-requiemno /バイオハザード レクイエムの/
+resident-evil-requiemwo /バイオハザード レクイエムを/
+resident-evil-requiemga /バイオハザード レクイエムが/
+resident-evil-requiemha /バイオハザード レクイエムは/
+final-fantasy16 /ファイナルファンタジーXVI/
+final-fantasy16no /ファイナルファンタジーXVIの/
+final-fantasy16wo /ファイナルファンタジーXVIを/
+final-fantasy16ga /ファイナルファンタジーXVIが/
+final-fantasy16ha /ファイナルファンタジーXVIは/
+ff7-rebirth /FINAL FANTASY VII REBIRTH/
+ff7-rebirthno /FINAL FANTASY VII REBIRTHの/
+ff7-rebirthwo /FINAL FANTASY VII REBIRTHを/
+ff7-rebirthga /FINAL FANTASY VII REBIRTHが/
+ff7-rebirthha /FINAL FANTASY VII REBIRTHは/
+monster-hunter-world /モンスターハンター：ワールド/
+monster-hunter-worldno /モンスターハンター：ワールドの/
+monster-hunter-worldwo /モンスターハンター：ワールドを/
+monster-hunter-worldga /モンスターハンター：ワールドが/
+monster-hunter-worldha /モンスターハンター：ワールドは/
+monster-hunter-rise /モンスターハンターライズ/
+monster-hunter-riseno /モンスターハンターライズの/
+monster-hunter-risewo /モンスターハンターライズを/
+monster-hunter-risega /モンスターハンターライズが/
+monster-hunter-riseha /モンスターハンターライズは/
+monster-hunter-wilds /モンスターハンターワイルズ/
+monster-hunter-wildsno /モンスターハンターワイルズの/
+monster-hunter-wildswo /モンスターハンターワイルズを/
+monster-hunter-wildsga /モンスターハンターワイルズが/
+monster-hunter-wildsha /モンスターハンターワイルズは/
+street-fighter6 /ストリートファイター6/
+street-fighter6no /ストリートファイター6の/
+street-fighter6wo /ストリートファイター6を/
+street-fighter6ga /ストリートファイター6が/
+street-fighter6ha /ストリートファイター6は/
+tekken8 /鉄拳8/
+tekken8no /鉄拳8の/
+tekken8wo /鉄拳8を/
+tekken8ga /鉄拳8が/
+tekken8ha /鉄拳8は/
+dbz-fighterz /ドラゴンボール ファイターズ/
+dbz-fighterzno /ドラゴンボール ファイターズの/
+dbz-fighterzwo /ドラゴンボール ファイターズを/
+dbz-fighterzga /ドラゴンボール ファイターズが/
+dbz-fighterzha /ドラゴンボール ファイターズは/
+persona5 /ペルソナ5/
+persona5no /ペルソナ5の/
+persona5wo /ペルソナ5を/
+persona5ga /ペルソナ5が/
+persona5ha /ペルソナ5は/
+metaphor-refantazio /メタファー：リファンタジオ/
+metaphor-refantaziono /メタファー：リファンタジオの/
+metaphor-refantaziowo /メタファー：リファンタジオを/
+metaphor-refantazioga /メタファー：リファンタジオが/
+metaphor-refantazioha /メタファー：リファンタジオは/
+ryu-ga-gotoku8 /龍が如く8/
+ryu-ga-gotoku8no /龍が如く8の/
+ryu-ga-gotoku8wo /龍が如く8を/
+ryu-ga-gotoku8ga /龍が如く8が/
+ryu-ga-gotoku8ha /龍が如く8は/
+ghost-of-tsushima /Ghost of Tsushima/
+ghost-of-tsushimano /Ghost of Tsushimaの/
+ghost-of-tsushimawo /Ghost of Tsushimaを/
+ghost-of-tsushimaga /Ghost of Tsushimaが/
+ghost-of-tsushimaha /Ghost of Tsushimaは/
+ghost-of-yotei /Ghost of Yōtei/
+ghost-of-yoteino /Ghost of Yōteiの/
+ghost-of-yoteiwo /Ghost of Yōteiを/
+ghost-of-yoteiga /Ghost of Yōteiが/
+ghost-of-yoteiha /Ghost of Yōteiは/
+god-of-war-ragnarok /God of War Ragnarök/
+god-of-war-ragnarokno /God of War Ragnarökの/
+god-of-war-ragnarokwo /God of War Ragnarökを/
+god-of-war-ragnarokga /God of War Ragnarökが/
+god-of-war-ragnarokha /God of War Ragnarökは/
+horizon-forbidden-west /Horizon Forbidden West/
+horizon-forbidden-westno /Horizon Forbidden Westの/
+horizon-forbidden-westwo /Horizon Forbidden Westを/
+horizon-forbidden-westga /Horizon Forbidden Westが/
+horizon-forbidden-westha /Horizon Forbidden Westは/
+the-last-of-us2 /The Last of Us Part II/
+the-last-of-us2no /The Last of Us Part IIの/
+the-last-of-us2wo /The Last of Us Part IIを/
+the-last-of-us2ga /The Last of Us Part IIが/
+the-last-of-us2ha /The Last of Us Part IIは/
+marvel-spider-man2 /Marvel's Spider-Man 2/
+marvel-spider-man2no /Marvel's Spider-Man 2の/
+marvel-spider-man2wo /Marvel's Spider-Man 2を/
+marvel-spider-man2ga /Marvel's Spider-Man 2が/
+marvel-spider-man2ha /Marvel's Spider-Man 2は/
+marvel-wolverine /Marvel's Wolverine/
+marvel-wolverineno /Marvel's Wolverineの/
+marvel-wolverinewo /Marvel's Wolverineを/
+marvel-wolverinega /Marvel's Wolverineが/
+marvel-wolverineha /Marvel's Wolverineは/
+cyberpunk2077 /サイバーパンク2077/
+cyberpunk2077no /サイバーパンク2077の/
+cyberpunk2077wo /サイバーパンク2077を/
+cyberpunk2077ga /サイバーパンク2077が/
+cyberpunk2077ha /サイバーパンク2077は/
+the-witcher3 /ウィッチャー3 ワイルドハント/
+the-witcher3no /ウィッチャー3 ワイルドハントの/
+the-witcher3wo /ウィッチャー3 ワイルドハントを/
+the-witcher3ga /ウィッチャー3 ワイルドハントが/
+the-witcher3ha /ウィッチャー3 ワイルドハントは/
+baldurs-gate3 /Baldur's Gate 3/
+baldurs-gate3no /Baldur's Gate 3の/
+baldurs-gate3wo /Baldur's Gate 3を/
+baldurs-gate3ga /Baldur's Gate 3が/
+baldurs-gate3ha /Baldur's Gate 3は/
+starfield /Starfield/
+starfieldno /Starfieldの/
+starfieldwo /Starfieldを/
+starfieldga /Starfieldが/
+starfieldha /Starfieldは/
+helldivers2 /HELLDIVERS 2/
+helldivers2no /HELLDIVERS 2の/
+helldivers2wo /HELLDIVERS 2を/
+helldivers2ga /HELLDIVERS 2が/
+helldivers2ha /HELLDIVERS 2は/
+palworld /パルワールド/
+palworldno /パルワールドの/
+palworldwo /パルワールドを/
+palworldga /パルワールドが/
+palworldha /パルワールドは/
+black-myth-wukong /黒神話：悟空/
+black-myth-wukongno /黒神話：悟空の/
+black-myth-wukongwo /黒神話：悟空を/
+black-myth-wukongga /黒神話：悟空が/
+black-myth-wukongha /黒神話：悟空は/
+clair-obscur33 /Clair Obscur: Expedition 33/
+clair-obscur33no /Clair Obscur: Expedition 33の/
+clair-obscur33wo /Clair Obscur: Expedition 33を/
+clair-obscur33ga /Clair Obscur: Expedition 33が/
+clair-obscur33ha /Clair Obscur: Expedition 33は/
+astro-bot /アストロボット/
+astro-botno /アストロボットの/
+astro-botwo /アストロボットを/
+astro-botga /アストロボットが/
+astro-botha /アストロボットは/
+disco-elysium /Disco Elysium/
+disco-elysiumno /Disco Elysiumの/
+disco-elysiumwo /Disco Elysiumを/
+disco-elysiumga /Disco Elysiumが/
+disco-elysiumha /Disco Elysiumは/
+gta6 /Grand Theft Auto VI/
+gta6no /Grand Theft Auto VIの/
+gta6wo /Grand Theft Auto VIを/
+gta6ga /Grand Theft Auto VIが/
+gta6ha /Grand Theft Auto VIは/
+minecraft-game /マインクラフト/
+minecraft-gameno /マインクラフトの/
+minecraft-gamewo /マインクラフトを/
+minecraft-gamega /マインクラフトが/
+minecraft-gameha /マインクラフトは/
+roblox-game /Roblox/
+roblox-gameno /Robloxの/
+roblox-gamewo /Robloxを/
+roblox-gamega /Robloxが/
+roblox-gameha /Robloxは/
+star-fox-2026 /スターフォックス/
+star-fox-2026no /スターフォックスの/
+star-fox-2026wo /スターフォックスを/
+star-fox-2026ga /スターフォックスが/
+star-fox-2026ha /スターフォックスは/
+pokemon-pokopia /ぽこ あ ポケモン/
+pokemon-pokopiano /ぽこ あ ポケモンの/
+pokemon-pokopiawo /ぽこ あ ポケモンを/
+pokemon-pokopiaga /ぽこ あ ポケモンが/
+pokemon-pokopiaha /ぽこ あ ポケモンは/
+god-of-war-laufey /God of War Laufey/
+god-of-war-laufeyno /God of War Laufeyの/
+god-of-war-laufeywo /God of War Laufeyを/
+god-of-war-laufeyga /God of War Laufeyが/
+god-of-war-laufeyha /God of War Laufeyは/
+until-dawn2 /Until Dawn 2/
+until-dawn2no /Until Dawn 2の/
+until-dawn2wo /Until Dawn 2を/
+until-dawn2ga /Until Dawn 2が/
+until-dawn2ha /Until Dawn 2は/
+control-resonant /CONTROL Resonant/
+control-resonantno /CONTROL Resonantの/
+control-resonantwo /CONTROL Resonantを/
+control-resonantga /CONTROL Resonantが/
+control-resonantha /CONTROL Resonantは/
+onimusha-way-of-the-sword /鬼武者 Way of the Sword/
+onimusha-way-of-the-swordno /鬼武者 Way of the Swordの/
+onimusha-way-of-the-swordwo /鬼武者 Way of the Swordを/
+onimusha-way-of-the-swordga /鬼武者 Way of the Swordが/
+onimusha-way-of-the-swordha /鬼武者 Way of the Swordは/
+silent-hill-downfall /SILENT HILL: Downfall/
+silent-hill-downfallno /SILENT HILL: Downfallの/
+silent-hill-downfallwo /SILENT HILL: Downfallを/
+silent-hill-downfallga /SILENT HILL: Downfallが/
+silent-hill-downfallha /SILENT HILL: Downfallは/
+alien-isolation2 /Alien: Isolation 2/
+alien-isolation2no /Alien: Isolation 2の/
+alien-isolation2wo /Alien: Isolation 2を/
+alien-isolation2ga /Alien: Isolation 2が/
+alien-isolation2ha /Alien: Isolation 2は/
+oppenheimer /オッペンハイマー/
+oppenheimerno /オッペンハイマーの/
+oppenheimerwo /オッペンハイマーを/
+oppenheimerga /オッペンハイマーが/
+oppenheimerha /オッペンハイマーは/
+barbie /バービー/
+barbieno /バービーの/
+barbiewo /バービーを/
+barbiega /バービーが/
+barbieha /バービーは/
+parasite /パラサイト 半地下の家族/
+parasiteno /パラサイト 半地下の家族の/
+parasitewo /パラサイト 半地下の家族を/
+parasitega /パラサイト 半地下の家族が/
+parasiteha /パラサイト 半地下の家族は/
+everything-everywhere /エブリシング・エブリウェア・オール・アット・ワンス/
+everything-everywhereno /エブリシング・エブリウェア・オール・アット・ワンスの/
+everything-everywherewo /エブリシング・エブリウェア・オール・アット・ワンスを/
+everything-everywherega /エブリシング・エブリウェア・オール・アット・ワンスが/
+everything-everywhereha /エブリシング・エブリウェア・オール・アット・ワンスは/
+top-gun-maverick /トップガン マーヴェリック/
+top-gun-maverickno /トップガン マーヴェリックの/
+top-gun-maverickwo /トップガン マーヴェリックを/
+top-gun-maverickga /トップガン マーヴェリックが/
+top-gun-maverickha /トップガン マーヴェリックは/
+spider-verse /スパイダーマン：スパイダーバース/
+spider-verseno /スパイダーマン：スパイダーバースの/
+spider-versewo /スパイダーマン：スパイダーバースを/
+spider-versega /スパイダーマン：スパイダーバースが/
+spider-verseha /スパイダーマン：スパイダーバースは/
+across-the-spider-verse /スパイダーマン：アクロス・ザ・スパイダーバース/
+across-the-spider-verseno /スパイダーマン：アクロス・ザ・スパイダーバースの/
+across-the-spider-versewo /スパイダーマン：アクロス・ザ・スパイダーバースを/
+across-the-spider-versega /スパイダーマン：アクロス・ザ・スパイダーバースが/
+across-the-spider-verseha /スパイダーマン：アクロス・ザ・スパイダーバースは/
+avengers-endgame /アベンジャーズ／エンドゲーム/
+avengers-endgameno /アベンジャーズ／エンドゲームの/
+avengers-endgamewo /アベンジャーズ／エンドゲームを/
+avengers-endgamega /アベンジャーズ／エンドゲームが/
+avengers-endgameha /アベンジャーズ／エンドゲームは/
+joker /ジョーカー/
+jokerno /ジョーカーの/
+jokerwo /ジョーカーを/
+jokerga /ジョーカーが/
+jokerha /ジョーカーは/
+the-batman /THE BATMAN－ザ・バットマン－/
+the-batmanno /THE BATMAN－ザ・バットマン－の/
+the-batmanwo /THE BATMAN－ザ・バットマン－を/
+the-batmanga /THE BATMAN－ザ・バットマン－が/
+the-batmanha /THE BATMAN－ザ・バットマン－は/
+godzilla-minus-one /ゴジラ-1.0/
+godzilla-minus-oneno /ゴジラ-1.0の/
+godzilla-minus-onewo /ゴジラ-1.0を/
+godzilla-minus-onega /ゴジラ-1.0が/
+godzilla-minus-oneha /ゴジラ-1.0は/
+shin-godzilla /シン・ゴジラ/
+shin-godzillano /シン・ゴジラの/
+shin-godzillawo /シン・ゴジラを/
+shin-godzillaga /シン・ゴジラが/
+shin-godzillaha /シン・ゴジラは/
+shin-ultraman /シン・ウルトラマン/
+shin-ultramanno /シン・ウルトラマンの/
+shin-ultramanwo /シン・ウルトラマンを/
+shin-ultramanga /シン・ウルトラマンが/
+shin-ultramanha /シン・ウルトラマンは/
+drive-my-car /ドライブ・マイ・カー/
+drive-my-carno /ドライブ・マイ・カーの/
+drive-my-carwo /ドライブ・マイ・カーを/
+drive-my-carga /ドライブ・マイ・カーが/
+drive-my-carha /ドライブ・マイ・カーは/
+perfect-days /PERFECT DAYS/
+perfect-daysno /PERFECT DAYSの/
+perfect-dayswo /PERFECT DAYSを/
+perfect-daysga /PERFECT DAYSが/
+perfect-daysha /PERFECT DAYSは/
+nope /NOPE／ノープ/
+nopeno /NOPE／ノープの/
+nopewo /NOPE／ノープを/
+nopega /NOPE／ノープが/
+nopeha /NOPE／ノープは/
+knives-out /ナイブズ・アウト/
+knives-outno /ナイブズ・アウトの/
+knives-outwo /ナイブズ・アウトを/
+knives-outga /ナイブズ・アウトが/
+knives-outha /ナイブズ・アウトは/
+dune-part2 /デューン 砂の惑星PART2/
+dune-part2no /デューン 砂の惑星PART2の/
+dune-part2wo /デューン 砂の惑星PART2を/
+dune-part2ga /デューン 砂の惑星PART2が/
+dune-part2ha /デューン 砂の惑星PART2は/
+inside-out2 /インサイド・ヘッド2/
+inside-out2no /インサイド・ヘッド2の/
+inside-out2wo /インサイド・ヘッド2を/
+inside-out2ga /インサイド・ヘッド2が/
+inside-out2ha /インサイド・ヘッド2は/
+mario-movie /ザ・スーパーマリオブラザーズ・ムービー/
+mario-movieno /ザ・スーパーマリオブラザーズ・ムービーの/
+mario-moviewo /ザ・スーパーマリオブラザーズ・ムービーを/
+mario-moviega /ザ・スーパーマリオブラザーズ・ムービーが/
+mario-movieha /ザ・スーパーマリオブラザーズ・ムービーは/
+yoasobi /YOASOBI/
+yoasobino /YOASOBIの/
+yoasobiwo /YOASOBIを/
+yoasobiga /YOASOBIが/
+yoasobiha /YOASOBIは/
+ado /Ado/
+adono /Adoの/
+adowo /Adoを/
+adoga /Adoが/
+adoha /Adoは/
+yonezu-kenshi /米津玄師/
+yonezu-kenshino /米津玄師の/
+yonezu-kenshiwo /米津玄師を/
+yonezu-kenshiga /米津玄師が/
+yonezu-kenshiha /米津玄師は/
+vaundy /Vaundy/
+vaundyno /Vaundyの/
+vaundywo /Vaundyを/
+vaundyga /Vaundyが/
+vaundyha /Vaundyは/
+fujii-kaze /藤井風/
+fujii-kazeno /藤井風の/
+fujii-kazewo /藤井風を/
+fujii-kazega /藤井風が/
+fujii-kazeha /藤井風は/
+king-gnu /King Gnu/
+king-gnuno /King Gnuの/
+king-gnuwo /King Gnuを/
+king-gnuga /King Gnuが/
+king-gnuha /King Gnuは/
+official-hige-dandism /Official髭男dism/
+official-hige-dandismno /Official髭男dismの/
+official-hige-dandismwo /Official髭男dismを/
+official-hige-dandismga /Official髭男dismが/
+official-hige-dandismha /Official髭男dismは/
+mrs-green-apple /Mrs. GREEN APPLE/
+mrs-green-appleno /Mrs. GREEN APPLEの/
+mrs-green-applewo /Mrs. GREEN APPLEを/
+mrs-green-applega /Mrs. GREEN APPLEが/
+mrs-green-appleha /Mrs. GREEN APPLEは/
+creepy-nuts /Creepy Nuts/
+creepy-nutsno /Creepy Nutsの/
+creepy-nutswo /Creepy Nutsを/
+creepy-nutsga /Creepy Nutsが/
+creepy-nutsha /Creepy Nutsは/
+aimyon /あいみょん/
+aimyonno /あいみょんの/
+aimyonwo /あいみょんを/
+aimyonga /あいみょんが/
+aimyonha /あいみょんは/
+lisa /LiSA/
+lisano /LiSAの/
+lisawo /LiSAを/
+lisaga /LiSAが/
+lisaha /LiSAは/
+zutomayo /ずっと真夜中でいいのに。/
+zutomayono /ずっと真夜中でいいのに。の/
+zutomayowo /ずっと真夜中でいいのに。を/
+zutomayoga /ずっと真夜中でいいのに。が/
+zutomayoha /ずっと真夜中でいいのに。は/
+yorushika /ヨルシカ/
+yorushikano /ヨルシカの/
+yorushikawo /ヨルシカを/
+yorushikaga /ヨルシカが/
+yorushikaha /ヨルシカは/
+atarashii-gakko /新しい学校のリーダーズ/
+atarashii-gakkono /新しい学校のリーダーズの/
+atarashii-gakkowo /新しい学校のリーダーズを/
+atarashii-gakkoga /新しい学校のリーダーズが/
+atarashii-gakkoha /新しい学校のリーダーズは/
+number-i /Number_i/
+number-ino /Number_iの/
+number-iwo /Number_iを/
+number-iga /Number_iが/
+number-iha /Number_iは/
+be-first /BE:FIRST/
+be-firstno /BE:FIRSTの/
+be-firstwo /BE:FIRSTを/
+be-firstga /BE:FIRSTが/
+be-firstha /BE:FIRSTは/
+xg /XG/
+xgno /XGの/
+xgwo /XGを/
+xgga /XGが/
+xgha /XGは/
+back-number /back number/
+back-numberno /back numberの/
+back-numberwo /back numberを/
+back-numberga /back numberが/
+back-numberha /back numberは/
+hoshimachi-suisei /星街すいせい/
+hoshimachi-suiseino /星街すいせいの/
+hoshimachi-suiseiwo /星街すいせいを/
+hoshimachi-suiseiga /星街すいせいが/
+hoshimachi-suiseiha /星街すいせいは/
+taylor-swift /Taylor Swift/
+taylor-swiftno /Taylor Swiftの/
+taylor-swiftwo /Taylor Swiftを/
+taylor-swiftga /Taylor Swiftが/
+taylor-swiftha /Taylor Swiftは/
+billie-eilish /Billie Eilish/
+billie-eilishno /Billie Eilishの/
+billie-eilishwo /Billie Eilishを/
+billie-eilishga /Billie Eilishが/
+billie-eilishha /Billie Eilishは/
+olivia-rodrigo /Olivia Rodrigo/
+olivia-rodrigono /Olivia Rodrigoの/
+olivia-rodrigowo /Olivia Rodrigoを/
+olivia-rodrigoga /Olivia Rodrigoが/
+olivia-rodrigoha /Olivia Rodrigoは/
+kendrick-lamar /Kendrick Lamar/
+kendrick-lamarno /Kendrick Lamarの/
+kendrick-lamarwo /Kendrick Lamarを/
+kendrick-lamarga /Kendrick Lamarが/
+kendrick-lamarha /Kendrick Lamarは/
+bts /BTS/
+btsno /BTSの/
+btswo /BTSを/
+btsga /BTSが/
+btsha /BTSは/
+blackpink /BLACKPINK/
+blackpinkno /BLACKPINKの/
+blackpinkwo /BLACKPINKを/
+blackpinkga /BLACKPINKが/
+blackpinkha /BLACKPINKは/
+newjeans /NewJeans/
+newjeansno /NewJeansの/
+newjeanswo /NewJeansを/
+newjeansga /NewJeansが/
+newjeansha /NewJeansは/
+le-sserafim /LE SSERAFIM/
+le-sserafimno /LE SSERAFIMの/
+le-sserafimwo /LE SSERAFIMを/
+le-sserafimga /LE SSERAFIMが/
+le-sserafimha /LE SSERAFIMは/
+aespa /aespa/
+aespano /aespaの/
+aespawo /aespaを/
+aespaga /aespaが/
+aespaha /aespaは/
+seventeen /SEVENTEEN/
+seventeenno /SEVENTEENの/
+seventeenwo /SEVENTEENを/
+seventeenga /SEVENTEENが/
+seventeenha /SEVENTEENは/
+convenience-store-woman /コンビニ人間/
+convenience-store-womanno /コンビニ人間の/
+convenience-store-womanwo /コンビニ人間を/
+convenience-store-womanga /コンビニ人間が/
+convenience-store-womanha /コンビニ人間は/
+klara-and-the-sun /クララとお日さま/
+klara-and-the-sunno /クララとお日さまの/
+klara-and-the-sunwo /クララとお日さまを/
+klara-and-the-sunga /クララとお日さまが/
+klara-and-the-sunha /クララとお日さまは/
+project-hail-mary /プロジェクト・ヘイル・メアリー/
+project-hail-maryno /プロジェクト・ヘイル・メアリーの/
+project-hail-marywo /プロジェクト・ヘイル・メアリーを/
+project-hail-maryga /プロジェクト・ヘイル・メアリーが/
+project-hail-maryha /プロジェクト・ヘイル・メアリーは/
+three-body-problem /三体/
+three-body-problemno /三体の/
+three-body-problemwo /三体を/
+three-body-problemga /三体が/
+three-body-problemha /三体は/
+sam-altman /サム・アルトマン/
+sam-altmanno /サム・アルトマンの/
+sam-altmanwo /サム・アルトマンを/
+sam-altmanga /サム・アルトマンが/
+sam-altmanha /サム・アルトマンは/
+elon-musk /イーロン・マスク/
+elon-muskno /イーロン・マスクの/
+elon-muskwo /イーロン・マスクを/
+elon-muskga /イーロン・マスクが/
+elon-muskha /イーロン・マスクは/
+satya-nadella /サティア・ナデラ/
+satya-nadellano /サティア・ナデラの/
+satya-nadellawo /サティア・ナデラを/
+satya-nadellaga /サティア・ナデラが/
+satya-nadellaha /サティア・ナデラは/
+sundar-pichai /スンダー・ピチャイ/
+sundar-pichaino /スンダー・ピチャイの/
+sundar-pichaiwo /スンダー・ピチャイを/
+sundar-pichaiga /スンダー・ピチャイが/
+sundar-pichaiha /スンダー・ピチャイは/
+demis-hassabis /デミス・ハサビス/
+demis-hassabisno /デミス・ハサビスの/
+demis-hassabiswo /デミス・ハサビスを/
+demis-hassabisga /デミス・ハサビスが/
+demis-hassabisha /デミス・ハサビスは/
+dario-amodei /ダリオ・アモデイ/
+dario-amodeino /ダリオ・アモデイの/
+dario-amodeiwo /ダリオ・アモデイを/
+dario-amodeiga /ダリオ・アモデイが/
+dario-amodeiha /ダリオ・アモデイは/
+daniela-amodei /ダニエラ・アモデイ/
+daniela-amodeino /ダニエラ・アモデイの/
+daniela-amodeiwo /ダニエラ・アモデイを/
+daniela-amodeiga /ダニエラ・アモデイが/
+daniela-amodeiha /ダニエラ・アモデイは/
+jensen-huang /ジェンスン・フアン/
+jensen-huangno /ジェンスン・フアンの/
+jensen-huangwo /ジェンスン・フアンを/
+jensen-huangga /ジェンスン・フアンが/
+jensen-huangha /ジェンスン・フアンは/
+mark-zuckerberg /マーク・ザッカーバーグ/
+mark-zuckerbergno /マーク・ザッカーバーグの/
+mark-zuckerbergwo /マーク・ザッカーバーグを/
+mark-zuckerbergga /マーク・ザッカーバーグが/
+mark-zuckerbergha /マーク・ザッカーバーグは/
+tim-cook /ティム・クック/
+tim-cookno /ティム・クックの/
+tim-cookwo /ティム・クックを/
+tim-cookga /ティム・クックが/
+tim-cookha /ティム・クックは/
+lisa-su /リサ・スー/
+lisa-suno /リサ・スーの/
+lisa-suwo /リサ・スーを/
+lisa-suga /リサ・スーが/
+lisa-suha /リサ・スーは/
+yann-lecun /ヤン・ルカン/
+yann-lecunno /ヤン・ルカンの/
+yann-lecunwo /ヤン・ルカンを/
+yann-lecunga /ヤン・ルカンが/
+yann-lecunha /ヤン・ルカンは/
+geoffrey-hinton /ジェフリー・ヒントン/
+geoffrey-hintonno /ジェフリー・ヒントンの/
+geoffrey-hintonwo /ジェフリー・ヒントンを/
+geoffrey-hintonga /ジェフリー・ヒントンが/
+geoffrey-hintonha /ジェフリー・ヒントンは/
+yoshua-bengio /ヨシュア・ベンジオ/
+yoshua-bengiono /ヨシュア・ベンジオの/
+yoshua-bengiowo /ヨシュア・ベンジオを/
+yoshua-bengioga /ヨシュア・ベンジオが/
+yoshua-bengioha /ヨシュア・ベンジオは/
+ilya-sutskever /イリヤ・サツケバー/
+ilya-sutskeverno /イリヤ・サツケバーの/
+ilya-sutskeverwo /イリヤ・サツケバーを/
+ilya-sutskeverga /イリヤ・サツケバーが/
+ilya-sutskeverha /イリヤ・サツケバーは/
+andrej-karpathy /アンドレイ・カルパシー/
+andrej-karpathyno /アンドレイ・カルパシーの/
+andrej-karpathywo /アンドレイ・カルパシーを/
+andrej-karpathyga /アンドレイ・カルパシーが/
+andrej-karpathyha /アンドレイ・カルパシーは/
+feifei-li /フェイフェイ・リー/
+feifei-lino /フェイフェイ・リーの/
+feifei-liwo /フェイフェイ・リーを/
+feifei-liga /フェイフェイ・リーが/
+feifei-liha /フェイフェイ・リーは/
+andrew-ng /アンドリュー・ン/
+andrew-ngno /アンドリュー・ンの/
+andrew-ngwo /アンドリュー・ンを/
+andrew-ngga /アンドリュー・ンが/
+andrew-ngha /アンドリュー・ンは/
+mira-murati /ミラ・ムラティ/
+mira-muratino /ミラ・ムラティの/
+mira-muratiwo /ミラ・ムラティを/
+mira-muratiga /ミラ・ムラティが/
+mira-muratiha /ミラ・ムラティは/
+kojima-hideo /小島秀夫/
+kojima-hideono /小島秀夫の/
+kojima-hideowo /小島秀夫を/
+kojima-hideoga /小島秀夫が/
+kojima-hideoha /小島秀夫は/
+shinkai-makoto /新海誠/
+shinkai-makotono /新海誠の/
+shinkai-makotowo /新海誠を/
+shinkai-makotoga /新海誠が/
+shinkai-makotoha /新海誠は/
+fujimoto-tatsuki /藤本タツキ/
+fujimoto-tatsukino /藤本タツキの/
+fujimoto-tatsukiwo /藤本タツキを/
+fujimoto-tatsukiga /藤本タツキが/
+fujimoto-tatsukiha /藤本タツキは/
+akutami-gege /芥見下々/
+akutami-gegeno /芥見下々の/
+akutami-gegewo /芥見下々を/
+akutami-gegega /芥見下々が/
+akutami-gegeha /芥見下々は/
+gotoge-koyoharu /吾峠呼世晴/
+gotoge-koyoharuno /吾峠呼世晴の/
+gotoge-koyoharuwo /吾峠呼世晴を/
+gotoge-koyoharuga /吾峠呼世晴が/
+gotoge-koyoharuha /吾峠呼世晴は/
+oda-eiichiro /尾田栄一郎/
+oda-eiichirono /尾田栄一郎の/
+oda-eiichirowo /尾田栄一郎を/
+oda-eiichiroga /尾田栄一郎が/
+oda-eiichiroha /尾田栄一郎は/
+isayama-hajime /諫山創/
+isayama-hajimeno /諫山創の/
+isayama-hajimewo /諫山創を/
+isayama-hajimega /諫山創が/
+isayama-hajimeha /諫山創は/
+miyazaki-hidetaka /宮崎英高/
+miyazaki-hidetakano /宮崎英高の/
+miyazaki-hidetakawo /宮崎英高を/
+miyazaki-hidetakaga /宮崎英高が/
+miyazaki-hidetakaha /宮崎英高は/
+yoshida-naoki /吉田直樹/
+yoshida-naokino /吉田直樹の/
+yoshida-naokiwo /吉田直樹を/
+yoshida-naokiga /吉田直樹が/
+yoshida-naokiha /吉田直樹は/
+otani-shohei /大谷翔平/
+otani-shoheino /大谷翔平の/
+otani-shoheiwo /大谷翔平を/
+otani-shoheiga /大谷翔平が/
+otani-shoheiha /大谷翔平は/
+fujii-sota /藤井聡太/
+fujii-sotano /藤井聡太の/
+fujii-sotawo /藤井聡太を/
+fujii-sotaga /藤井聡太が/
+fujii-sotaha /藤井聡太は/
+covid19 /COVID-19/
+covid19no /COVID-19の/
+covid19wo /COVID-19を/
+covid19de /COVID-19で/
+covid19ni /COVID-19に/
+shingata-korona /新型コロナウイルス/
+shingata-koronano /新型コロナウイルスの/
+shingata-koronawo /新型コロナウイルスを/
+shingata-koronade /新型コロナウイルスで/
+shingata-koronani /新型コロナウイルスに/
+pandemic /パンデミック/
+pandemicno /パンデミックの/
+pandemicwo /パンデミックを/
+pandemicde /パンデミックで/
+pandemicni /パンデミックに/
+lockdown /ロックダウン/
+lockdownno /ロックダウンの/
+lockdownwo /ロックダウンを/
+lockdownde /ロックダウンで/
+lockdownni /ロックダウンに/
+social-distancing /ソーシャルディスタンス/
+social-distancingno /ソーシャルディスタンスの/
+social-distancingwo /ソーシャルディスタンスを/
+social-distancingde /ソーシャルディスタンスで/
+social-distancingni /ソーシャルディスタンスに/
+mrna-vaccine /mRNAワクチン/
+mrna-vaccineno /mRNAワクチンの/
+mrna-vaccinewo /mRNAワクチンを/
+mrna-vaccinede /mRNAワクチンで/
+mrna-vaccineni /mRNAワクチンに/
+remote-work /リモートワーク/
+remote-workno /リモートワークの/
+remote-workwo /リモートワークを/
+remote-workde /リモートワークで/
+remote-workni /リモートワークに/
+telework /テレワーク/
+teleworkno /テレワークの/
+teleworkwo /テレワークを/
+teleworkde /テレワークで/
+teleworkni /テレワークに/
+hybrid-work /ハイブリッドワーク/
+hybrid-workno /ハイブリッドワークの/
+hybrid-workwo /ハイブリッドワークを/
+hybrid-workde /ハイブリッドワークで/
+hybrid-workni /ハイブリッドワークに/
+new-normal /ニューノーマル/
+new-normalno /ニューノーマルの/
+new-normalwo /ニューノーマルを/
+new-normalde /ニューノーマルで/
+new-normalni /ニューノーマルに/
+gig-economy /ギグエコノミー/
+gig-economyno /ギグエコノミーの/
+gig-economywo /ギグエコノミーを/
+gig-economyde /ギグエコノミーで/
+gig-economyni /ギグエコノミーに/
+creator-economy /クリエイターエコノミー/
+creator-economyno /クリエイターエコノミーの/
+creator-economywo /クリエイターエコノミーを/
+creator-economyde /クリエイターエコノミーで/
+creator-economyni /クリエイターエコノミーに/
+influencer /インフルエンサー/
+influencerno /インフルエンサーの/
+influencerwo /インフルエンサーを/
+influencerde /インフルエンサーで/
+influencerni /インフルエンサーに/
+vtuber /VTuber/
+vtuberno /VTuberの/
+vtuberwo /VTuberを/
+vtuberde /VTuberで/
+vtuberni /VTuberに/
+short-video /ショート動画/
+short-videono /ショート動画の/
+short-videowo /ショート動画を/
+short-videode /ショート動画で/
+short-videoni /ショート動画に/
+metaverse /メタバース/
+metaverseno /メタバースの/
+metaversewo /メタバースを/
+metaversede /メタバースで/
+metaverseni /メタバースに/
+web3 /Web3/
+web3no /Web3の/
+web3wo /Web3を/
+web3de /Web3で/
+web3ni /Web3に/
+nft /NFT/
+nftno /NFTの/
+nftwo /NFTを/
+nftde /NFTで/
+nftni /NFTに/
+crypto-asset /暗号資産/
+crypto-assetno /暗号資産の/
+crypto-assetwo /暗号資産を/
+crypto-assetde /暗号資産で/
+crypto-assetni /暗号資産に/
+bitcoin /ビットコイン/
+bitcoinno /ビットコインの/
+bitcoinwo /ビットコインを/
+bitcoinde /ビットコインで/
+bitcoinni /ビットコインに/
+blockchain /ブロックチェーン/
+blockchainno /ブロックチェーンの/
+blockchainwo /ブロックチェーンを/
+blockchainde /ブロックチェーンで/
+blockchainni /ブロックチェーンに/
+defi /DeFi/
+defino /DeFiの/
+defiwo /DeFiを/
+defide /DeFiで/
+defini /DeFiに/
+smart-contract /スマートコントラクト/
+smart-contractno /スマートコントラクトの/
+smart-contractwo /スマートコントラクトを/
+smart-contractde /スマートコントラクトで/
+smart-contractni /スマートコントラクトに/
+spatial-computing /空間コンピューティング/
+spatial-computingno /空間コンピューティングの/
+spatial-computingwo /空間コンピューティングを/
+spatial-computingde /空間コンピューティングで/
+spatial-computingni /空間コンピューティングに/
+dx /DX/
+dxno /DXの/
+dxwo /DXを/
+dxde /DXで/
+dxni /DXに/
+reskilling /リスキリング/
+reskillingno /リスキリングの/
+reskillingwo /リスキリングを/
+reskillingde /リスキリングで/
+reskillingni /リスキリングに/
+side-job /副業/
+side-jobno /副業の/
+side-jobwo /副業を/
+side-jobde /副業で/
+side-jobni /副業に/
+quiet-quitting /静かな退職/
+quiet-quittingno /静かな退職の/
+quiet-quittingwo /静かな退職を/
+quiet-quittingde /静かな退職で/
+quiet-quittingni /静かな退職に/
+ai-boom /AIブーム/
+ai-boomno /AIブームの/
+ai-boomwo /AIブームを/
+ai-boomde /AIブームで/
+ai-boomni /AIブームに/
+deepfake /ディープフェイク/
+deepfakeno /ディープフェイクの/
+deepfakewo /ディープフェイクを/
+deepfakede /ディープフェイクで/
+deepfakeni /ディープフェイクに/
+misinformation /誤情報/
+misinformationno /誤情報の/
+misinformationwo /誤情報を/
+misinformationde /誤情報で/
+misinformationni /誤情報に/
+fact-check /ファクトチェック/
+fact-checkno /ファクトチェックの/
+fact-checkwo /ファクトチェックを/
+fact-checkde /ファクトチェックで/
+fact-checkni /ファクトチェックに/
+flaming /炎上/
+flamingno /炎上の/
+flamingwo /炎上を/
+flamingde /炎上で/
+flamingni /炎上に/
+echo-chamber /エコーチェンバー/
+echo-chamberno /エコーチェンバーの/
+echo-chamberwo /エコーチェンバーを/
+echo-chamberde /エコーチェンバーで/
+echo-chamberni /エコーチェンバーに/
+doomscrolling /ドゥームスクローリング/
+doomscrollingno /ドゥームスクローリングの/
+doomscrollingwo /ドゥームスクローリングを/
+doomscrollingde /ドゥームスクローリングで/
+doomscrollingni /ドゥームスクローリングに/
+oshi-katsu /推し活/
+oshi-katsuno /推し活の/
+oshi-katsuwo /推し活を/
+oshi-katsude /推し活で/
+oshi-katsuni /推し活に/
+gacha /ガチャ/
+gachano /ガチャの/
+gachawo /ガチャを/
+gachade /ガチャで/
+gachani /ガチャに/
+esports /eスポーツ/
+esportsno /eスポーツの/
+esportswo /eスポーツを/
+esportsde /eスポーツで/
+esportsni /eスポーツに/
+paris-agreement /パリ協定/
+paris-agreementno /パリ協定の/
+paris-agreementwo /パリ協定を/
+paris-agreementde /パリ協定で/
+paris-agreementni /パリ協定に/
+brexit /ブレグジット/
+brexitno /ブレグジットの/
+brexitwo /ブレグジットを/
+brexitde /ブレグジットで/
+brexitni /ブレグジットに/
+metoo /#MeToo/
+metoono /#MeTooの/
+metoowo /#MeTooを/
+metoode /#MeTooで/
+metooni /#MeTooに/
+gdpr /GDPR/
+gdprno /GDPRの/
+gdprwo /GDPRを/
+gdprde /GDPRで/
+gdprni /GDPRに/
+reiwa /令和/
+reiwano /令和の/
+reiwawo /令和を/
+reiwade /令和で/
+reiwani /令和に/
+tokyo2020 /東京2020オリンピック/
+tokyo2020no /東京2020オリンピックの/
+tokyo2020wo /東京2020オリンピックを/
+tokyo2020de /東京2020オリンピックで/
+tokyo2020ni /東京2020オリンピックに/
+ukraine-invasion /ウクライナ侵攻/
+ukraine-invasionno /ウクライナ侵攻の/
+ukraine-invasionwo /ウクライナ侵攻を/
+ukraine-invasionde /ウクライナ侵攻で/
+ukraine-invasionni /ウクライナ侵攻に/
+noto-earthquake /能登半島地震/
+noto-earthquakeno /能登半島地震の/
+noto-earthquakewo /能登半島地震を/
+noto-earthquakede /能登半島地震で/
+noto-earthquakeni /能登半島地震に/
+paris2024 /パリ2024オリンピック/
+paris2024no /パリ2024オリンピックの/
+paris2024wo /パリ2024オリンピックを/
+paris2024de /パリ2024オリンピックで/
+paris2024ni /パリ2024オリンピックに/
+osaka-kansai-expo /大阪・関西万博/
+osaka-kansai-expono /大阪・関西万博の/
+osaka-kansai-expowo /大阪・関西万博を/
+osaka-kansai-expode /大阪・関西万博で/
+osaka-kansai-exponi /大阪・関西万博に/
+myakumyaku /ミャクミャク/
+myakumyakuno /ミャクミャクの/
+myakumyakuwo /ミャクミャクを/
+myakumyakude /ミャクミャクで/
+myakumyakuni /ミャクミャクに/
+generative-ai-boom /生成AIブーム/
+generative-ai-boomno /生成AIブームの/
+generative-ai-boomwo /生成AIブームを/
+generative-ai-boomde /生成AIブームで/
+generative-ai-boomni /生成AIブームに/

@@ -11,3 +11,5 @@ reports/
 runs/
 *.elc
 .idea
+data/private.skk
+
