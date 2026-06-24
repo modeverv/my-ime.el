@@ -269,7 +269,7 @@ C-c j 2   live2-mode の切り替え
 漢字候補へ上書きするまでの idle 時間は変更できます。
 
 ```elisp
-(setq my-ime-live2-convert-idle-delay 0.12)
+(setq my-ime-live2-convert-idle-delay 0.60)
 ```
 
 ## 辞書

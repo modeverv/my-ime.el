@@ -12,4 +12,4 @@ runs/
 *.elc
 .idea
 data/private.skk
-
+data/me.skk
