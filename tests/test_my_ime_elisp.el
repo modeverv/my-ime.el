@@ -105,7 +105,7 @@
       (my-ime-eager-mode 1)
       (my-ime-live-mode 1)
       (should (equal (substring-no-properties (my-ime--mode-line-segment))
-                     "[mj-live] "))
+                     "[mj-l] "))
       (my-ime-live-mode -1)
       (should (equal (substring-no-properties (my-ime--mode-line-segment))
                      "[mj] "))
@@ -120,7 +120,7 @@
       (my-ime-eager-mode 1)
       (my-ime-live2-mode 1)
       (should (equal (substring-no-properties (my-ime--mode-line-segment))
-                     "[mj-live2] "))
+                     "[mj-l2] "))
       (my-ime-live2-mode -1)
       (should (equal (substring-no-properties (my-ime--mode-line-segment))
                      "[mj] "))
@@ -172,6 +172,20 @@
                                    'face 'my-ime-live-preview-face)))
         (should (equal (alist-get 'converted my-ime--live-state) "今日は"))
         (should (equal (alist-get 'original my-ime--live-state) "kyou ha"))))))
+
+(ert-deftest my-ime-live2-does-not-preview-previous-line-at-newline ()
+  (with-temp-buffer
+    (insert "確定済みの文\n")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          (request-called nil))
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (&rest _args)
+                   (setq request-called t))))
+        (setq my-ime--live-sequence 1)
+        (should-not (my-ime--live2-refresh-preedit 1))
+        (should-not request-called)
+        (should-not (overlayp my-ime--live-overlay))))))
 
 (ert-deftest my-ime-live2-late-preedit-does-not-overwrite-convert ()
   (with-temp-buffer

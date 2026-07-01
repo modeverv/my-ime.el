@@ -122,7 +122,7 @@ kana-only preview."
                  (const :tag "Kana preedit" "/preedit"))
   :group 'my-ime)
 
-(defcustom my-ime-live2-convert-idle-delay 0.12
+(defcustom my-ime-live2-convert-idle-delay 0.60
   "Idle seconds before `my-ime-live2-mode' upgrades kana preview to kanji."
   :type 'number
   :group 'my-ime)
@@ -1429,7 +1429,7 @@ LABEL is used for minibuffer status messages."
 (defun my-ime--last-sentence-bounds ()
   "Return bounds for the sentence before point."
   (let ((end (save-excursion
-               (skip-chars-backward " \t\n")
+               (skip-chars-backward " \t")
                (point)))
         beg
         line-beg)
