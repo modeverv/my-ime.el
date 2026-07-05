@@ -225,6 +225,59 @@
         (should-not my-ime--live-state)
         (should (equal (buffer-string) "kyou ha!"))))))
 
+(ert-deftest my-ime-live2-keeps-overlay-while-typing-more-romaji ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          callbacks)
+      (add-hook 'after-change-functions #'my-ime--live-after-change nil t)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (text callback _errback &optional _metadata endpoint)
+                   (push (list endpoint text callback) callbacks))))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-preedit 1))
+        (funcall (nth 2 (assoc "/preedit" callbacks)) "きょうは")
+        (should (overlayp my-ime--live-overlay))
+        (goto-char (point-max))
+        (insert "k")
+        ;; The previous preview must stay visible while the next preedit
+        ;; is in flight, and must not swallow the newly typed character.
+        (should (overlayp my-ime--live-overlay))
+        (should (= (overlay-end my-ime--live-overlay) (1- (point-max))))
+        (should (equal (overlay-get my-ime--live-overlay 'display)
+                       (propertize "きょうは"
+                                   'face 'my-ime-live-preview-face)))
+        (let ((entry (car callbacks)))
+          (should (equal (nth 0 entry) "/preedit"))
+          (should (equal (nth 1 entry) "kyou hak"))
+          (funcall (nth 2 entry) "きょうはk")
+          (should (equal (overlay-get my-ime--live-overlay 'display)
+                         (propertize "きょうはk"
+                                     'face 'my-ime-live-preview-face))))
+        (my-ime--live-cancel-timer)))))
+
+(ert-deftest my-ime-live2-clears-held-overlay-when-refresh-not-scheduled ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          callbacks)
+      (add-hook 'after-change-functions #'my-ime--live-after-change nil t)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (text callback _errback &optional _metadata endpoint)
+                   (push (list endpoint text callback) callbacks))))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-preedit 1))
+        (funcall (nth 2 (assoc "/preedit" callbacks)) "きょうは")
+        (should (overlayp my-ime--live-overlay))
+        ;; Wiping the romaji leaves nothing to preview, so the held
+        ;; overlay must be dropped instead of lingering.
+        (delete-region (point-min) (point-max))
+        (should-not (overlayp my-ime--live-overlay))
+        (should-not my-ime--live-state)
+        (my-ime--live-cancel-timer)))))
+
 (ert-deftest my-ime-live2-candidate-selection-uses-original-source ()
   (with-temp-buffer
     (insert "kyou ha")
