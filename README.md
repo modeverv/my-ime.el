@@ -67,7 +67,7 @@ serverwo cachede   -> サーバーをキャッシュで
   C-o の候補選択用
   辞書語に複数候補がある場合は単語ごとに 2-3 個取り出す
   それらをデカルト積で文候補にして返す
-  Emacs 側で company または minibuffer から選択
+  Emacs 側で CAPF と同じ補完 UI から選択
 ```
 
 `preedit` は入力中の視認性を上げるための処理です。`convert` は最終的な日本語文に寄せる処理です。`candidates` は通常の確定変換を壊さず、明示的に候補を見たい時だけ使う処理です。
@@ -180,10 +180,28 @@ C-o       候補一覧から選んで変換
 C-c j e   eager-mode の切り替え
 ```
 
-`C-o` は `my-ime-select-candidate-dwim` を呼び、複数候補がある場合は候補一覧から選んで置換します。`company` が利用可能な環境では company の候補 UI を使い、なければ minibuffer 選択にフォールバックします。company は任意依存で、`company-backends` は変更しません。
+`C-o` は `my-ime-select-candidate-dwim` を呼び、複数候補がある場合は `completion-in-region` から選んで置換します。Corfu が有効なら普段と同じ Corfu の一覧を使います。Company の自動読み込みは行いません。
 候補はkkc の n-best から取ってきます。辞書語に複数候補がある場合は、単語ごとに 2-3 個取り出してデカルト積で文候補を作ります。候補数は `MY_IME_CANDIDATE_PER_WORD_LIMIT` と `MY_IME_CANDIDATE_MAX` で調整できます。
 
 `C-o` で候補を確定した直後の次の `RET` は、eager-mode の再変換を抑止して改行だけを入れます。選んだ候補を確定してすぐ改行したい時に、同じ行がもう一度変換されないようにするためです。
+
+### Corfu / Cape の自動補完に混ぜる
+
+既存の CAPF を `my-ime-capf-wrap` で包むと、変換候補と dabbrev やスニペットの候補が一つの一覧に出ます。有効な my-ime mode がない buffer では元の CAPF をそのまま使います。
+
+```elisp
+(defun my/text-capf-setup ()
+  (setq-local completion-at-point-functions
+              (list
+               (my-ime-capf-wrap
+                (cape-capf-super #'yasnippet-capf #'cape-dabbrev #'cape-dict))
+               #'cape-file #'cape-elisp-block)))
+(add-hook 'text-mode-hook #'my/text-capf-setup)
+```
+
+`F8` などで `my-ime-live2-mode` を有効にして入力すると、Corfu の自動補完に `変換` と付いた文候補が加わります。変換候補はローカル worker から非同期に取得します。入力が変わった古い応答は捨て、worker が使えない時も通常の補完は続けます。
+
+文全体の変換と最後の単語の補完では置換範囲が違うため、wrapper が範囲を揃えてから一覧へ渡します。通常の候補の絞り込みは既存の Orderless などを使い、スニペットなどの確定処理も元の CAPF へ渡します。変換候補の確定後は再変換せず、次の `RET` で改行できます。`my-ime-completion-at-point` を単独の CAPF として使うこともできます。
 
 トリガー文字は変更できます。
 
@@ -259,7 +277,7 @@ C-c j l   live-mode の切り替え
 主なキー:
 
 ```text
-RET       見えている live2 候補を確定して改行
+RET       見えている live2 候補を確定（未確定候補がない時は改行）
 C-o       元のローマ字範囲から候補選択
 C-c j RET 見えている live2 候補を確定
 C-c j l   live2-mode の切り替え

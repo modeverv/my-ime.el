@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from functools import lru_cache
 import re
 import time
 from typing import Any
@@ -323,6 +324,8 @@ ROMAN_REPLACEMENTS: tuple[tuple[str, str], ...] = tuple(
             "mo": "も",
             "ya": "や",
             "node": "ので",
+            "jibunyou": "自分用",
+            "jibun": "自分",
         }.items(),
         key=lambda item: len(item[0]),
         reverse=True,
@@ -473,18 +476,31 @@ def preedit(text: str, metadata: dict[str, Any] | None = None) -> ConvertResult:
     )
 
 
-def _preedit_dictionary() -> tuple[tuple[str, str], ...]:
-    """Return dictionary entries that are useful before final kanji commit."""
+_KATAKANA_RE = re.compile(r"[ァ-ンー]")
+_OUTER_WS_RE = re.compile(r"^(\s*)(.*?)(\s*)$", flags=re.DOTALL)
+_TECH_PARTICLE_SPACE_RE = re.compile(r"(<TECH_\d+>)\s+([をでにのがはと])")
+_TECH_STRIP_RE = re.compile(r"<TECH_\d+>")
 
+
+@lru_cache(maxsize=16)
+def _preedit_dictionary_for(
+    entries: tuple[tuple[str, str], ...],
+) -> tuple[tuple[str, str], ...]:
     return tuple(
         (source, target)
-        for source, target in configured_dictionary()
-        if re.search(r"[ァ-ンー]", target)
+        for source, target in entries
+        if _KATAKANA_RE.search(target)
     )
 
 
+def _preedit_dictionary() -> tuple[tuple[str, str], ...]:
+    """Return dictionary entries that are useful before final kanji commit."""
+
+    return _preedit_dictionary_for(configured_dictionary())
+
+
 def _split_outer_whitespace(text: str) -> tuple[str, str, str]:
-    match = re.match(r"^(\s*)(.*?)(\s*)$", text, flags=re.DOTALL)
+    match = _OUTER_WS_RE.match(text)
     if match is None:
         return "", text, ""
     return match.group(1), match.group(2), match.group(3)
@@ -507,7 +523,7 @@ def kkc_convert(text: str) -> str:
     candidates = convert_hiragana_candidates_with_kkc(hiragana, nbest=_kkc_nbest())
     converted = _select_kkc_candidate(candidates)
     converted = _postprocess_kkc_output(converted)
-    return re.sub(r"(<TECH_\d+>)\s+([をでにのがはと])", r"\1\2", converted)
+    return _TECH_PARTICLE_SPACE_RE.sub(r"\1\2", converted)
 
 
 def _backend_convert_candidates(backend: str, text: str) -> tuple[str, ...]:
@@ -533,7 +549,7 @@ def kkc_convert_candidates(text: str) -> list[str]:
     converted: list[str] = []
     for _index, candidate in ranked:
         candidate = _postprocess_kkc_output(candidate)
-        candidate = re.sub(r"(<TECH_\d+>)\s+([をでにのがはと])", r"\1\2", candidate)
+        candidate = _TECH_PARTICLE_SPACE_RE.sub(r"\1\2", candidate)
         converted.append(candidate)
     return _dedupe_texts(converted)
 
@@ -547,7 +563,7 @@ def _restore_transient_kkc_spans(text: str, spans: tuple[tuple[str, str], ...]) 
 
 
 def _kkc_needs_decoder(text: str) -> bool:
-    plain = re.sub(r"<TECH_\d+>", "", text)
+    plain = _TECH_STRIP_RE.sub("", text)
     plain = plain.strip(" \t\r\n.,!?。、！？")
     return bool(plain)
 
@@ -617,6 +633,7 @@ def _kkc_candidate_score(text: str) -> int:
         "良い": 2,
         "感じ": 4,
         "感じにいける": 4,
+        "自分用": 4,
     }
     penalties = {
         "卿": 8,
@@ -975,10 +992,22 @@ _ASCII_IDENTITY_WORDS.update(
 )
 
 
+_TECH_SPLIT_RE = re.compile(r"(<TECH_\d+>)")
+_IDENT_TOKEN_RE = re.compile(r"[A-Za-z][A-Za-z0-9_+.-]*")
+_PATH_EQ_TOKEN_RE = re.compile(r"[A-Za-z0-9_./+=-]+")
+_TECH_PHRASE_PATTERNS: tuple[tuple[re.Pattern[str], str], ...] = tuple(
+    (re.compile(rf"\b{re.escape(source)}\b", flags=re.IGNORECASE), replacement)
+    for source, replacement in TECH_PHRASE_REPLACEMENTS
+)
+_ROMAN_REPLACEMENTS_BY_CHAR: dict[str, tuple[tuple[str, str], ...]] = {}
+for _r, _j in ROMAN_REPLACEMENTS:
+    _ROMAN_REPLACEMENTS_BY_CHAR[_r[0]] = _ROMAN_REPLACEMENTS_BY_CHAR.get(_r[0], ()) + ((_r, _j),)
+
+
 def dummy_convert(text: str) -> str:
     """A deterministic local baseline useful before a model is connected."""
 
-    parts = re.split(r"(<TECH_\d+>)", text)
+    parts = _TECH_SPLIT_RE.split(text)
     converted_parts = []
     for part in parts:
         if part.startswith("<TECH_") or part.isspace():
@@ -986,15 +1015,13 @@ def dummy_convert(text: str) -> str:
         else:
             converted_parts.append(_dummy_convert_plain(part))
     converted = "".join(converted_parts)
-    return re.sub(r"(<TECH_\d+>)\s+([をでにのがはと])", r"\1\2", converted)
+    return _TECH_PARTICLE_SPACE_RE.sub(r"\1\2", converted)
 
 
 def _dummy_convert_plain(text: str) -> str:
     if not text:
         return text
-    leading = re.match(r"^\s*", text).group(0)
-    trailing = re.search(r"\s*$", text).group(0)
-    core = text.strip()
+    leading, core, trailing = _split_outer_whitespace(text)
     if not core:
         return text
     normalized = re.sub(r"\s+", " ", core)
@@ -1009,7 +1036,7 @@ def _convert_compact_roman(text: str) -> str:
     exact = _identity_ascii_token(text)
     if exact is not None:
         return exact
-    if re.fullmatch(r"[A-Za-z0-9_./+=-]+", text) and ("/" in text or "=" in text):
+    if ("/" in text or "=" in text) and _PATH_EQ_TOKEN_RE.fullmatch(text):
         return text
     if _looks_like_ascii_identity_word(text):
         return text
@@ -1017,7 +1044,7 @@ def _convert_compact_roman(text: str) -> str:
     cursor = 0
     lower = text.lower()
     while cursor < len(text):
-        for roman, japanese in ROMAN_REPLACEMENTS:
+        for roman, japanese in _ROMAN_REPLACEMENTS_BY_CHAR.get(lower[cursor], ()):
             if lower.startswith(roman, cursor):
                 original = text[cursor : cursor + len(roman)]
                 if japanese.isascii() and original.isupper():
@@ -1033,7 +1060,7 @@ def _convert_compact_roman(text: str) -> str:
 
 
 def _identity_ascii_token(text: str) -> str | None:
-    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_+.-]*", text):
+    if not _IDENT_TOKEN_RE.fullmatch(text):
         return None
     canonical = _ASCII_IDENTITY_WORDS.get(text.lower(), "")
     if canonical == "":
@@ -1042,34 +1069,37 @@ def _identity_ascii_token(text: str) -> str | None:
 
 
 def _normalize_technical_phrases(text: str) -> str:
-    for source, replacement in TECH_PHRASE_REPLACEMENTS:
-        text = re.sub(rf"\b{re.escape(source)}\b", replacement, text, flags=re.IGNORECASE)
+    for pattern, replacement in _TECH_PHRASE_PATTERNS:
+        text = pattern.sub(replacement, text)
     return text
 
 
+_ENGLISH_SUFFIX_RE = re.compile(
+    r"(tion|sion|ment|ness|able|ible|ance|ence|ity|ive|ing|ed|er|or|al)$"
+)
+_CONSONANT_RUN_RE = re.compile(r"[bcdfghjklmnpqrstvwxyz]{3,}")
+_CONSONANT_PAIR_RE = re.compile(
+    r"(ck|ct|ff|ft|ld|lk|lp|lt|mp|nd|nk|nt|pt|rd|rk|rl|rn|rt|rv|sk|st|tr|wr)"
+)
+
+
 def _looks_like_ascii_identity_word(text: str) -> bool:
-    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_+.-]*", text):
+    if not _IDENT_TOKEN_RE.fullmatch(text):
         return False
     if len(text) > 24:
         return False
     lower = text.lower()
     if lower in _ROMAN_REPLACEMENT_KEYS:
         return False
-    if re.search(r"[._+-]", text):
+    if any(ch in text for ch in "._+-"):
         return True
     if "q" in lower or "x" in lower:
         return True
-    if re.search(r"(tion|sion|ment|ness|able|ible|ance|ence|ity|ive|ing|ed|er|or|al)$", lower):
+    if _ENGLISH_SUFFIX_RE.search(lower):
         return True
-    consonants = "bcdfghjklmnpqrstvwxyz"
-    if re.search(f"[{consonants}]{{3,}}", lower):
+    if _CONSONANT_RUN_RE.search(lower):
         return True
-    return bool(
-        re.search(
-            r"(ck|ct|ff|ft|ld|lk|lp|lt|mp|nd|nk|nt|pt|rd|rk|rl|rn|rt|rv|sk|st|tr|wr)",
-            lower,
-        )
-    )
+    return bool(_CONSONANT_PAIR_RE.search(lower))
 
 
 def _cleanup_spacing(text: str) -> str:

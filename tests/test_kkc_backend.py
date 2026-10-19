@@ -101,6 +101,14 @@ class KkcBackendTests(unittest.TestCase):
         self.assertEqual(first.text, "きょうはとてもたのしい")
         self.assertEqual(committed.text, "今日はとても楽しい。")
 
+    @unittest.skipUnless(kkc_available(), "kkc command is not available")
+    def test_convert_jibunyou_to_jibunyou_kanji(self) -> None:
+        with mock.patch.dict(os.environ, {"MY_IME_BACKEND": "kkc", "MY_IME_KKC_NBEST": "3"}, clear=False):
+            preview = preedit("jibunyou")
+            result = convert("jibunyou")
+        self.assertEqual(preview.text, "じぶんよう")
+        self.assertEqual(result.text, "自分用")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,12 +2,13 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from functools import lru_cache
 from itertools import product
 import json
 from pathlib import Path
 import re
-from typing import Iterable
+from typing import Any, Iterable
 
 from .config import env
 
@@ -39,10 +40,26 @@ class DictionaryError(RuntimeError):
     """Raised when a personal dictionary cannot be loaded."""
 
 
-@lru_cache(maxsize=16)
-def load_dictionary(source: str) -> tuple[tuple[str, str], ...]:
-    """Load dictionary entries from JSON text or a file path."""
+@dataclass(frozen=True)
+class _DictionaryIndex:
+    other_non_ascii: tuple[tuple[str, str], ...]
+    hyphen_by_sig: dict[str, tuple[tuple[int, str, str], ...]]
+    has_ascii_entries: bool
+    trie_root: dict[str, object]
+    passthrough_by_char: dict[str, tuple[str, ...]]
 
+
+@dataclass(frozen=True)
+class _CandidateDictionaryIndex:
+    other_non_ascii: tuple[tuple[str, tuple[str, ...]], ...]
+    hyphen_by_sig: dict[str, tuple[tuple[int, str, tuple[str, ...]], ...]]
+    has_ascii_entries: bool
+    trie_root: dict[str, object]
+    passthrough_by_char: dict[str, tuple[str, ...]]
+
+
+@lru_cache(maxsize=32)
+def _load_dictionary_impl(source: str) -> tuple[tuple[str, str], ...]:
     if not source:
         return ()
     path = Path(source).expanduser()
@@ -54,14 +71,21 @@ def load_dictionary(source: str) -> tuple[tuple[str, str], ...]:
     return tuple(sorted(entries, key=lambda item: len(item[0]), reverse=True))
 
 
-def configured_dictionary() -> tuple[tuple[str, str], ...]:
-    """Return entries from environment configuration."""
+def load_dictionary(source: str) -> tuple[tuple[str, str], ...]:
+    """Load dictionary entries from JSON text or a file path."""
 
-    inline = env("DICTIONARY")
-    path = env("DICTIONARY_PATH")
+    return _load_dictionary_impl(source)
+
+
+@lru_cache(maxsize=16)
+def _configured_dictionary_cached(
+    inline: str,
+    path: str,
+    default_paths: tuple[str, ...],
+) -> tuple[tuple[str, str], ...]:
     entries: list[tuple[str, str]] = []
-    for default_path in _default_dictionary_paths():
-        entries.extend(load_dictionary(str(default_path)))
+    for default_path in default_paths:
+        entries.extend(load_dictionary(default_path))
     if inline:
         entries.extend(load_dictionary(inline))
     if path:
@@ -69,10 +93,17 @@ def configured_dictionary() -> tuple[tuple[str, str], ...]:
     return tuple(sorted(_dedupe(entries), key=lambda item: len(item[0]), reverse=True))
 
 
-@lru_cache(maxsize=16)
-def load_dictionary_candidates(source: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
-    """Load dictionary entries preserving multiple candidates for each input."""
+def configured_dictionary() -> tuple[tuple[str, str], ...]:
+    """Return entries from environment configuration."""
 
+    inline = env("DICTIONARY")
+    path = env("DICTIONARY_PATH")
+    default_paths = _default_dictionary_paths_cached(str(Path.cwd()))
+    return _configured_dictionary_cached(inline, path, default_paths)
+
+
+@lru_cache(maxsize=32)
+def _load_dictionary_candidates_impl(source: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
     if not source:
         return ()
     path = Path(source).expanduser()
@@ -84,14 +115,21 @@ def load_dictionary_candidates(source: str) -> tuple[tuple[str, tuple[str, ...]]
     return tuple(sorted(entries, key=lambda item: len(item[0]), reverse=True))
 
 
-def configured_dictionary_candidates() -> tuple[tuple[str, tuple[str, ...]], ...]:
-    """Return entries from environment configuration with alternatives intact."""
+def load_dictionary_candidates(source: str) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Load dictionary entries preserving multiple candidates for each input."""
 
-    inline = env("DICTIONARY")
-    path = env("DICTIONARY_PATH")
+    return _load_dictionary_candidates_impl(source)
+
+
+@lru_cache(maxsize=16)
+def _configured_dictionary_candidates_cached(
+    inline: str,
+    path: str,
+    default_paths: tuple[str, ...],
+) -> tuple[tuple[str, tuple[str, ...]], ...]:
     entries: list[tuple[str, tuple[str, ...]]] = []
-    for default_path in _default_dictionary_paths():
-        entries.extend(load_dictionary_candidates(str(default_path)))
+    for default_path in default_paths:
+        entries.extend(load_dictionary_candidates(default_path))
     if inline:
         entries.extend(load_dictionary_candidates(inline))
     if path:
@@ -101,12 +139,22 @@ def configured_dictionary_candidates() -> tuple[tuple[str, tuple[str, ...]], ...
     )
 
 
-def _default_dictionary_paths() -> list[Path]:
+def configured_dictionary_candidates() -> tuple[tuple[str, tuple[str, ...]], ...]:
+    """Return entries from environment configuration with alternatives intact."""
+
+    inline = env("DICTIONARY")
+    path = env("DICTIONARY_PATH")
+    default_paths = _default_dictionary_paths_cached(str(Path.cwd()))
+    return _configured_dictionary_candidates_cached(inline, path, default_paths)
+
+
+@lru_cache(maxsize=8)
+def _default_dictionary_paths_cached(cwd_str: str) -> tuple[str, ...]:
     candidates = [
-        Path.cwd() / "data",
+        Path(cwd_str) / "data",
         Path(__file__).resolve().parents[1] / "data",
     ]
-    paths: list[Path] = []
+    paths: list[str] = []
     seen: set[Path] = set()
     for directory in candidates:
         if not directory.exists():
@@ -115,23 +163,66 @@ def _default_dictionary_paths() -> list[Path]:
             resolved = path.resolve()
             if resolved not in seen:
                 seen.add(resolved)
-                paths.append(path)
-    return paths
+                paths.append(str(path))
+    return tuple(paths)
+
+
+def _default_dictionary_paths() -> list[Path]:
+    return [Path(p) for p in _default_dictionary_paths_cached(str(Path.cwd()))]
+
+
+def _clear_dictionary_caches() -> None:
+    _load_dictionary_impl.cache_clear()
+    _configured_dictionary_cached.cache_clear()
+    _default_dictionary_paths_cached.cache_clear()
+    _build_dictionary_index.cache_clear()
+
+
+def _clear_dictionary_candidate_caches() -> None:
+    _load_dictionary_candidates_impl.cache_clear()
+    _configured_dictionary_candidates_cached.cache_clear()
+    _default_dictionary_paths_cached.cache_clear()
+    _build_candidate_dictionary_index.cache_clear()
+
+
+load_dictionary.cache_clear = _clear_dictionary_caches  # type: ignore[attr-defined]
+load_dictionary_candidates.cache_clear = _clear_dictionary_candidate_caches  # type: ignore[attr-defined]
+
+
+def _ensure_entries_tuple(
+    entries: Iterable[tuple[str, str]] | None,
+) -> tuple[tuple[str, str], ...]:
+    if entries is None:
+        return configured_dictionary()
+    if isinstance(entries, tuple):
+        return entries
+    return tuple(entries)
+
+
+def _ensure_candidate_entries_tuple(
+    entries: Iterable[tuple[str, tuple[str, ...]]] | None,
+) -> tuple[tuple[str, tuple[str, ...]], ...]:
+    if entries is None:
+        return configured_dictionary_candidates()
+    if isinstance(entries, tuple):
+        return entries
+    return tuple(entries)
 
 
 def apply_dictionary(text: str, entries: Iterable[tuple[str, str]] | None = None) -> str:
     """Apply personal dictionary entries outside protected placeholders."""
 
-    entries = tuple(entries if entries is not None else configured_dictionary())
-    if not entries:
+    entries_tuple = _ensure_entries_tuple(entries)
+    if not entries_tuple:
         return text
+    index = _build_dictionary_index(entries_tuple)
     parts = PLACEHOLDER_SPLIT_RE.split(text)
     converted: list[str] = []
     for part in parts:
         if PLACEHOLDER_SPLIT_RE.fullmatch(part):
             converted.append(part)
         else:
-            converted.append(_apply_entries_to_plain_text(part, entries))
+            converted.append(_apply_index_to_plain_text(part, index))
     return "".join(converted)
 
 
@@ -146,9 +237,10 @@ def apply_dictionary_with_placeholders(
     keep dictionary-confirmed Japanese out of a later kana-kanji pass.
     """
 
-    entries = tuple(entries if entries is not None else configured_dictionary())
-    if not entries:
+    entries_tuple = _ensure_entries_tuple(entries)
+    if not entries_tuple:
         return text, ()
+    index = _build_dictionary_index(entries_tuple)
 
     parts = PLACEHOLDER_SPLIT_RE.split(text)
     converted: list[str] = []
@@ -158,9 +250,9 @@ def apply_dictionary_with_placeholders(
         if PLACEHOLDER_SPLIT_RE.fullmatch(part):
             converted.append(part)
             continue
-        converted_part, part_spans, next_index = _apply_entries_as_placeholders_to_plain_text(
+        converted_part, part_spans, next_index = _apply_index_as_placeholders_to_plain_text(
             part,
-            entries,
+            index,
             next_index,
         )
         converted.append(converted_part)
@@ -177,9 +269,10 @@ def apply_dictionary_candidate_sets_with_placeholders(
 ) -> list[tuple[str, tuple[tuple[str, str], ...]]]:
     """Apply dictionary alternatives and return protected sentence candidates."""
 
-    entries = tuple(entries if entries is not None else configured_dictionary_candidates())
-    if not entries:
+    entries_tuple = _ensure_candidate_entries_tuple(entries)
+    if not entries_tuple:
         return [(text, ())]
+    index = _build_candidate_dictionary_index(entries_tuple)
     per_word_limit = max(1, per_word_limit)
     max_candidates = max(1, max_candidates)
     parts = PLACEHOLDER_SPLIT_RE.split(text)
@@ -193,9 +286,9 @@ def apply_dictionary_candidate_sets_with_placeholders(
             ]
         else:
             for prefix, spans, next_index in states:
-                for converted, part_spans, new_next_index in _plain_text_candidate_variants(
+                for converted, part_spans, new_next_index in _plain_text_candidate_variants_indexed(
                     part,
-                    entries,
+                    index,
                     next_index,
                     per_word_limit,
                     max_candidates,
@@ -376,67 +469,206 @@ def _dedupe_candidate_entries(
     return [(source, tuple(targets)) for source, targets in merged.items()]
 
 
-def _apply_entries_to_plain_text(text: str, entries: Iterable[tuple[str, str]]) -> str:
-    result = text
-    ascii_entries: list[tuple[str, str]] = []
-    for source, target in entries:
-        if re.fullmatch(r"[A-Za-z0-9_]+", source):
-            ascii_entries.append((source, target))
+def _hyphen_sig(source: str) -> str:
+    idx = source.find("-")
+    if idx > 0 and idx + 1 < len(source):
+        return source[idx - 1 : idx + 2]
+    return "-"
+
+
+@lru_cache(maxsize=64)
+def _build_dictionary_index(entries: tuple[tuple[str, str], ...]) -> _DictionaryIndex:
+    other_non_ascii: list[tuple[str, str]] = []
+    hyphen_buckets: dict[str, list[tuple[int, str, str]]] = {}
+    trie_root: dict[str, Any] = {}
+    entry_keys: set[str] = set()
+    has_ascii_entries = False
+
+    for order_idx, (source, target) in enumerate(entries):
+        if ASCII_RUN_RE.fullmatch(source):
+            has_ascii_entries = True
+            if source not in entry_keys:
+                entry_keys.add(source)
+                node = trie_root
+                for ch in source:
+                    child = node.get(ch)
+                    if child is None:
+                        child = {}
+                        node[ch] = child
+                    node = child
+                node[""] = (source, target)
+        elif "-" in source:
+            sig = _hyphen_sig(source)
+            hyphen_buckets.setdefault(sig, []).append((order_idx, source, target))
         else:
+            other_non_ascii.append((source, target))
+
+    passthrough_by_char: dict[str, list[str]] = {}
+    for token in PASSTHROUGH_ROMAJI_TOKENS:
+        if token not in entry_keys:
+            passthrough_by_char.setdefault(token[0], []).append(token)
+
+    return _DictionaryIndex(
+        other_non_ascii=tuple(other_non_ascii),
+        hyphen_by_sig={k: tuple(v) for k, v in hyphen_buckets.items()},
+        has_ascii_entries=has_ascii_entries,
+        trie_root=trie_root,
+        passthrough_by_char={k: tuple(v) for k, v in passthrough_by_char.items()},
+    )
+
+
+@lru_cache(maxsize=64)
+def _build_candidate_dictionary_index(
+    entries: tuple[tuple[str, tuple[str, ...]], ...],
+) -> _CandidateDictionaryIndex:
+    other_non_ascii: list[tuple[str, tuple[str, ...]]] = []
+    hyphen_buckets: dict[str, list[tuple[int, str, tuple[str, ...]]]] = {}
+    trie_root: dict[str, Any] = {}
+    entry_keys: set[str] = set()
+    has_ascii_entries = False
+
+    for order_idx, (source, targets) in enumerate(entries):
+        if ASCII_RUN_RE.fullmatch(source):
+            has_ascii_entries = True
+            if source not in entry_keys:
+                entry_keys.add(source)
+                node = trie_root
+                for ch in source:
+                    child = node.get(ch)
+                    if child is None:
+                        child = {}
+                        node[ch] = child
+                    node = child
+                node[""] = (source, targets)
+        elif "-" in source:
+            sig = _hyphen_sig(source)
+            hyphen_buckets.setdefault(sig, []).append((order_idx, source, targets))
+        else:
+            other_non_ascii.append((source, targets))
+
+    passthrough_by_char: dict[str, list[str]] = {}
+    for token in PASSTHROUGH_ROMAJI_TOKENS:
+        if token not in entry_keys:
+            passthrough_by_char.setdefault(token[0], []).append(token)
+
+    return _CandidateDictionaryIndex(
+        other_non_ascii=tuple(other_non_ascii),
+        hyphen_by_sig={k: tuple(v) for k, v in hyphen_buckets.items()},
+        has_ascii_entries=has_ascii_entries,
+        trie_root=trie_root,
+        passthrough_by_char={k: tuple(v) for k, v in passthrough_by_char.items()},
+    )
+
+
+def _apply_non_ascii_from_index(text: str, index: _DictionaryIndex) -> str:
+    result = text
+    for source, target in index.other_non_ascii:
+        if source in result:
             result = result.replace(source, target)
-    if ascii_entries:
+    if "-" in result and index.hyphen_by_sig:
+        sigs: list[str] = []
+        pos = result.find("-")
+        while pos != -1:
+            if pos > 0 and pos + 1 < len(result):
+                sig = result[pos - 1 : pos + 2]
+                if sig not in sigs:
+                    sigs.append(sig)
+            pos = result.find("-", pos + 1)
+        if "-" in index.hyphen_by_sig:
+            sigs.append("-")
+        if len(sigs) == 1:
+            for _ord, source, target in index.hyphen_by_sig.get(sigs[0], ()):
+                if source in result:
+                    result = result.replace(source, target)
+        elif len(sigs) > 1:
+            candidates: list[tuple[int, str, str]] = []
+            for sig in sigs:
+                candidates.extend(index.hyphen_by_sig.get(sig, ()))
+            candidates.sort(key=lambda item: item[0])
+            for _ord, source, target in candidates:
+                if source in result:
+                    result = result.replace(source, target)
+    return result
+
+
+def _apply_non_ascii_from_candidate_index(text: str, index: _CandidateDictionaryIndex) -> str:
+    result = text
+    for source, targets in index.other_non_ascii:
+        if source in result:
+            result = result.replace(source, targets[0])
+    if "-" in result and index.hyphen_by_sig:
+        sigs: list[str] = []
+        pos = result.find("-")
+        while pos != -1:
+            if pos > 0 and pos + 1 < len(result):
+                sig = result[pos - 1 : pos + 2]
+                if sig not in sigs:
+                    sigs.append(sig)
+            pos = result.find("-", pos + 1)
+        if "-" in index.hyphen_by_sig:
+            sigs.append("-")
+        if len(sigs) == 1:
+            for _ord, source, targets in index.hyphen_by_sig.get(sigs[0], ()):
+                if source in result:
+                    result = result.replace(source, targets[0])
+        elif len(sigs) > 1:
+            candidates: list[tuple[int, str, tuple[str, ...]]] = []
+            for sig in sigs:
+                candidates.extend(index.hyphen_by_sig.get(sig, ()))
+            candidates.sort(key=lambda item: item[0])
+            for _ord, source, targets in candidates:
+                if source in result:
+                    result = result.replace(source, targets[0])
+    return result
+
+
+def _apply_index_to_plain_text(text: str, index: _DictionaryIndex) -> str:
+    result = _apply_non_ascii_from_index(text, index)
+    if index.has_ascii_entries:
         result = ASCII_RUN_RE.sub(
-            lambda match: _replace_ascii_run(match.group(0), ascii_entries),
+            lambda match: _replace_ascii_run_indexed(match.group(0), index),
             result,
         )
     return result
 
 
-def _apply_entries_as_placeholders_to_plain_text(
+def _apply_index_as_placeholders_to_plain_text(
     text: str,
-    entries: Iterable[tuple[str, str]],
+    index: _DictionaryIndex,
     placeholder_start: int,
 ) -> tuple[str, list[tuple[str, str]], int]:
-    result = text
+    result = _apply_non_ascii_from_index(text, index)
     spans: list[tuple[str, str]] = []
     next_index = placeholder_start
-    ascii_entries: list[tuple[str, str]] = []
-    for source, target in entries:
-        if re.fullmatch(r"[A-Za-z0-9_]+", source):
-            ascii_entries.append((source, target))
-        else:
-            result = result.replace(source, target)
 
     def replace(match: re.Match[str]) -> str:
         nonlocal next_index
-        replaced, run_spans, next_index = _replace_ascii_run_with_placeholders(
+        replaced, run_spans, next_index = _replace_ascii_run_with_placeholders_indexed(
             match.group(0),
-            ascii_entries,
+            index,
             next_index,
         )
         spans.extend(run_spans)
         return replaced
 
-    if ascii_entries:
+    if index.has_ascii_entries:
         result = ASCII_RUN_RE.sub(replace, result)
     return result, spans, next_index
 
 
-def _replace_ascii_run(text: str, entries: Iterable[tuple[str, str]]) -> str:
-    """Convert an ASCII run only when dictionary segmentation reaches the end."""
-
-    tokens = _segment_ascii_run(text, entries)
+def _replace_ascii_run_indexed(text: str, index: _DictionaryIndex) -> str:
+    tokens = _segment_ascii_run_indexed(text, index)
     if tokens is None:
         return text
     return "".join(target for _source, target, converted in tokens if converted or target)
 
 
-def _replace_ascii_run_with_placeholders(
+def _replace_ascii_run_with_placeholders_indexed(
     text: str,
-    entries: Iterable[tuple[str, str]],
+    index: _DictionaryIndex,
     placeholder_start: int,
 ) -> tuple[str, list[tuple[str, str]], int]:
-    tokens = _segment_ascii_run(text, entries)
+    tokens = _segment_ascii_run_indexed(text, index)
     if tokens is None:
         return text, [], placeholder_start
 
@@ -454,20 +686,16 @@ def _replace_ascii_run_with_placeholders(
     return "".join(result), spans, next_index
 
 
-def _plain_text_candidate_variants(
+def _plain_text_candidate_variants_indexed(
     text: str,
-    entries: Iterable[tuple[str, tuple[str, ...]]],
+    index: _CandidateDictionaryIndex,
     placeholder_start: int,
     per_word_limit: int,
     max_candidates: int,
 ) -> list[tuple[str, list[tuple[str, str]], int]]:
-    result = text
-    ascii_entries: list[tuple[str, tuple[str, ...]]] = []
-    for source, targets in entries:
-        if re.fullmatch(r"[A-Za-z0-9_]+", source):
-            ascii_entries.append((source, targets))
-        else:
-            result = result.replace(source, targets[0])
+    result = _apply_non_ascii_from_candidate_index(text, index)
+    if not index.has_ascii_entries:
+        return [(result, [], placeholder_start)]
 
     states: list[tuple[str, list[tuple[str, str]], int]] = [("", [], placeholder_start)]
     cursor = 0
@@ -477,9 +705,9 @@ def _plain_text_candidate_variants(
             states = [(prefix + literal, spans, next_index) for prefix, spans, next_index in states]
         next_states: list[tuple[str, list[tuple[str, str]], int]] = []
         for prefix, spans, next_index in states:
-            for converted, run_spans, new_next_index in _ascii_run_candidate_variants(
+            for converted, run_spans, new_next_index in _ascii_run_candidate_variants_indexed(
                 match.group(0),
-                ascii_entries,
+                index,
                 next_index,
                 per_word_limit,
                 max_candidates,
@@ -497,14 +725,14 @@ def _plain_text_candidate_variants(
     return states[:max_candidates]
 
 
-def _ascii_run_candidate_variants(
+def _ascii_run_candidate_variants_indexed(
     text: str,
-    entries: Iterable[tuple[str, tuple[str, ...]]],
+    index: _CandidateDictionaryIndex,
     placeholder_start: int,
     per_word_limit: int,
     max_candidates: int,
 ) -> list[tuple[str, list[tuple[str, str]], int]]:
-    tokens = _segment_ascii_run_candidates(text, entries)
+    tokens = _segment_ascii_run_candidates_indexed(text, index)
     if tokens is None:
         return [(text, [], placeholder_start)]
 
@@ -536,33 +764,38 @@ def _ascii_run_candidate_variants(
     return variants
 
 
-def _segment_ascii_run_candidates(
+def _segment_ascii_run_candidates_indexed(
     text: str,
-    entries: Iterable[tuple[str, tuple[str, ...]]],
+    index: _CandidateDictionaryIndex,
 ) -> tuple[tuple[str, tuple[str, ...], bool], ...] | None:
     """Return dictionary segmentation with candidate targets for TEXT."""
 
-    entry_map = {source: targets for source, targets in entries}
-    starts: dict[str, list[tuple[str, tuple[str, ...]]]] = {}
-    for source, targets in entries:
-        starts.setdefault(source[0], []).append((source, targets))
-    for candidates in starts.values():
-        candidates.sort(key=lambda item: len(item[0]), reverse=True)
+    trie_root = index.trie_root
+    passthrough_by_char = index.passthrough_by_char
+    text_len = len(text)
 
     best: dict[
         int,
         tuple[int, int, tuple[tuple[str, tuple[str, ...], bool], ...]] | None,
-    ] = {len(text): (0, 0, ())}
+    ] = {text_len: (0, 0, ())}
 
-    def solve(index: int) -> tuple[int, int, tuple[tuple[str, tuple[str, ...], bool], ...]] | None:
-        if index in best:
-            return best[index]
+    def solve(pos: int) -> tuple[int, int, tuple[tuple[str, tuple[str, ...], bool], ...]] | None:
+        if pos in best:
+            return best[pos]
         result: tuple[int, int, tuple[tuple[str, tuple[str, ...], bool], ...]] | None = None
 
-        for source, targets in starts.get(text[index], []):
-            if not text.startswith(source, index):
-                continue
-            tail = solve(index + len(source))
+        node: dict[str, Any] | None = trie_root
+        matches: list[tuple[str, tuple[str, ...]]] = []
+        for cursor in range(pos, text_len):
+            node = node.get(text[cursor])
+            if node is None:
+                break
+            hit = node.get("")
+            if hit is not None:
+                matches.append(hit)
+
+        for source, targets in reversed(matches):
+            tail = solve(pos + len(source))
             if tail is None:
                 continue
             converted_chars, segments, suffix = tail
@@ -573,10 +806,10 @@ def _segment_ascii_run_candidates(
             )
             result = _prefer_ascii_candidate_segmentation(result, candidate)
 
-        for token in PASSTHROUGH_ROMAJI_TOKENS:
-            if token in entry_map or not text.startswith(token, index):
+        for token in passthrough_by_char.get(text[pos], ()):
+            if not text.startswith(token, pos):
                 continue
-            tail = solve(index + len(token))
+            tail = solve(pos + len(token))
             if tail is None:
                 continue
             converted_chars, segments, suffix = tail
@@ -587,7 +820,7 @@ def _segment_ascii_run_candidates(
             )
             result = _prefer_ascii_candidate_segmentation(result, candidate)
 
-        best[index] = result
+        best[pos] = result
         return result
 
     solved = solve(0)
@@ -611,32 +844,37 @@ def _prefer_ascii_candidate_segmentation(
     return candidate if candidate_length < current_length else current
 
 
-def _segment_ascii_run(
+def _segment_ascii_run_indexed(
     text: str,
-    entries: Iterable[tuple[str, str]],
+    index: _DictionaryIndex,
 ) -> tuple[tuple[str, str, bool], ...] | None:
     """Return dictionary segmentation for TEXT, or nil when not fully consumed."""
 
-    entry_map = {source: target for source, target in entries}
-    starts: dict[str, list[tuple[str, str]]] = {}
-    for source, target in entries:
-        starts.setdefault(source[0], []).append((source, target))
-    for candidates in starts.values():
-        candidates.sort(key=lambda item: len(item[0]), reverse=True)
+    trie_root = index.trie_root
+    passthrough_by_char = index.passthrough_by_char
+    text_len = len(text)
 
     best: dict[int, tuple[int, int, tuple[tuple[str, str, bool], ...]] | None] = {
-        len(text): (0, 0, ())
+        text_len: (0, 0, ())
     }
 
-    def solve(index: int) -> tuple[int, int, tuple[tuple[str, str, bool], ...]] | None:
-        if index in best:
-            return best[index]
+    def solve(pos: int) -> tuple[int, int, tuple[tuple[str, str, bool], ...]] | None:
+        if pos in best:
+            return best[pos]
         result: tuple[int, int, tuple[tuple[str, str, bool], ...]] | None = None
 
-        for source, target in starts.get(text[index], []):
-            if not text.startswith(source, index):
-                continue
-            tail = solve(index + len(source))
+        node: dict[str, Any] | None = trie_root
+        matches: list[tuple[str, str]] = []
+        for cursor in range(pos, text_len):
+            node = node.get(text[cursor])
+            if node is None:
+                break
+            hit = node.get("")
+            if hit is not None:
+                matches.append(hit)
+
+        for source, target in reversed(matches):
+            tail = solve(pos + len(source))
             if tail is None:
                 continue
             converted_chars, segments, suffix = tail
@@ -647,10 +885,10 @@ def _segment_ascii_run(
             )
             result = _prefer_ascii_segmentation(result, candidate)
 
-        for token in PASSTHROUGH_ROMAJI_TOKENS:
-            if token in entry_map or not text.startswith(token, index):
+        for token in passthrough_by_char.get(text[pos], ()):
+            if not text.startswith(token, pos):
                 continue
-            tail = solve(index + len(token))
+            tail = solve(pos + len(token))
             if tail is None:
                 continue
             converted_chars, segments, suffix = tail
@@ -661,13 +899,22 @@ def _segment_ascii_run(
             )
             result = _prefer_ascii_segmentation(result, candidate)
 
-        best[index] = result
+        best[pos] = result
         return result
 
     solved = solve(0)
     if solved is None or solved[0] == 0:
         return None
     return solved[2]
+
+
+def _segment_ascii_run(
+    text: str,
+    entries: Iterable[tuple[str, str]],
+) -> tuple[tuple[str, str, bool], ...] | None:
+    """Return dictionary segmentation for TEXT, or nil when not fully consumed."""
+
+    return _segment_ascii_run_indexed(text, _build_dictionary_index(_ensure_entries_tuple(entries)))
 
 
 def _prefer_ascii_segmentation(

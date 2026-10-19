@@ -240,11 +240,23 @@ def _split_identifier_candidate(value: str, absolute_start: int) -> list[tuple[i
     return spans
 
 
+_UPPER_CONST_RE = re.compile(r"[A-Z][A-Z0-9_]+")
+_NEXT_IDENT_RE = re.compile(r"[A-Za-z][A-Za-z0-9]*[-_]")
+SHORT_ROMAJI_SEGMENTS_WITH_PARTICLES: frozenset[str] = frozenset(
+    SHORT_ROMAJI_SEGMENTS
+    | {
+        segment + particle
+        for segment in SHORT_ROMAJI_SEGMENTS
+        for particle in PARTICLES
+    }
+)
+
+
 def _append_identifier_span(
     spans: list[tuple[int, int]], value: str, absolute_start: int, start: int, end: int
 ) -> None:
     candidate = value[start:end]
-    if re.fullmatch(r"[A-Z][A-Z0-9_]+", candidate):
+    if _UPPER_CONST_RE.fullmatch(candidate):
         return
     if _looks_like_short_hyphenated_romaji(candidate):
         return
@@ -264,13 +276,7 @@ def _looks_like_short_hyphenated_romaji(value: str) -> bool:
 
 
 def _short_romaji_segment_with_optional_particle_p(value: str) -> bool:
-    if value in SHORT_ROMAJI_SEGMENTS:
-        return True
-    return any(
-        value == segment + particle
-        for segment in SHORT_ROMAJI_SEGMENTS
-        for particle in PARTICLES
-    )
+    return value in SHORT_ROMAJI_SEGMENTS_WITH_PARTICLES
 
 
 def _find_join_to_next_identifier(value: str, start: int) -> tuple[int, int] | None:
@@ -284,7 +290,7 @@ def _find_join_to_next_identifier(value: str, start: int) -> tuple[int, int] | N
                 continue
             if prefix.endswith(("-", "_")):
                 continue
-            if re.match(r"[A-Za-z][A-Za-z0-9]*[-_]", suffix):
+            if _NEXT_IDENT_RE.match(suffix):
                 return (index, index + len(particle))
     return None
 

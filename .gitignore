@@ -13,3 +13,4 @@ runs/
 .idea
 data/private.skk
 data/me.skk
+target/
