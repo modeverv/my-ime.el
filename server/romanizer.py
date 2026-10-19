@@ -75,10 +75,15 @@ def _plain_romaji_to_hiragana(text: str) -> str:
     return "".join(result)
 
 
+_DOUBLE_N_RE = re.compile(r"nn(?=[bcdfghjklmpqrstvwxyz])", flags=re.IGNORECASE)
+_JIBUN_N_RE = re.compile(r"((?:ji|zi|じ)bun|じぶn)(?=[aeiouy])", flags=re.IGNORECASE)
+
+
 def normalize_romaji(text: str) -> str:
     """Normalize common compact-input slips before kana conversion."""
 
-    return re.sub(r"nn(?=[bcdfghjklmpqrstvwxyz])", "n", text, flags=re.IGNORECASE)
+    text = _DOUBLE_N_RE.sub("n", text)
+    return _JIBUN_N_RE.sub(r"\1'", text)
 
 
 ROMAJI_TABLE: dict[str, str] = {

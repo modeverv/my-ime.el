@@ -1,0 +1,19 @@
+[package]
+name = "my-ime-rs"
+version = "0.1.0"
+edition = "2021"
+description = "Rust implementation of the my-ime local conversion stdio worker"
+license = "MIT"
+
+[lib]
+name = "my_ime_rs"
+path = "rust/src/lib.rs"
+
+[[bin]]
+name = "my-ime-stdio"
+path = "rust/src/main.rs"
+
+[profile.release]
+opt-level = 3
+lto = "thin"
+codegen-units = 1

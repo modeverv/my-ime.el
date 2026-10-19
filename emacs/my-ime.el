@@ -18,6 +18,24 @@
 
 (declare-function company-begin-backend "company")
 (declare-function company-mode "company")
+(declare-function corfu--exhibit "corfu")
+
+;; Forward declarations for modes defined below their shared UI helpers.
+(defvar my-ime-eager-mode)
+(defvar my-ime-live-mode)
+(defvar my-ime-live2-mode)
+(defvar corfu-mode)
+(defvar corfu-auto)
+(defvar corfu--index)
+
+(defvar-local my-ime--completion-cache nil
+  "Last asynchronous conversion candidates, keyed by source bounds and text.")
+
+(defvar-local my-ime--completion-pending nil
+  "Source key of the outstanding completion request.")
+
+(defvar-local my-ime--completion-manual nil
+  "Non-nil while an explicit candidate selection owns the completion UI.")
 
 (defgroup my-ime nil
   "IME conversion commands."
@@ -122,7 +140,7 @@ kana-only preview."
                  (const :tag "Kana preedit" "/preedit"))
   :group 'my-ime)
 
-(defcustom my-ime-live2-convert-idle-delay 0.60
+(defcustom my-ime-live2-convert-idle-delay 0.2
   "Idle seconds before `my-ime-live2-mode' upgrades kana preview to kanji."
   :type 'number
   :group 'my-ime)
@@ -210,6 +228,9 @@ buffer name, time, and metadata.")
 (defvar-local my-ime--live-inhibit-after-change nil
   "When non-nil, live-mode after-change handling is suppressed.")
 
+(defvar-local my-ime--live-committed-end-marker nil
+  "Marker tracking the end of the last committed live conversion on a line.")
+
 (defvar-local my-ime--mode-line-mule-info-saved nil
   "Saved `mode-line-mule-info' before installing the my-ime indicator.")
 
@@ -284,7 +305,7 @@ buffer name, time, and metadata.")
 
 (defvar my-ime-live2-mode-map
   (let ((map (make-sparse-keymap)))
-    (define-key map (kbd "RET") #'my-ime-live-commit-and-newline)
+    (define-key map (kbd "RET") #'my-ime-live-commit-or-newline)
     (define-key map (kbd "C-o") #'my-ime-live-select-candidate)
     (define-key map (kbd "C-c j RET") #'my-ime-live-commit)
     (define-key map (kbd "C-c j l") #'my-ime-live2-mode)
@@ -387,7 +408,8 @@ buffer name, time, and metadata.")
         (my-ime--live-schedule-refresh))
     (remove-hook 'after-change-functions #'my-ime--live-after-change t)
     (my-ime--live-cancel-timer)
-    (my-ime--live-clear))
+    (my-ime--live-clear)
+    (my-ime--live-clear-committed-end))
   (my-ime--mode-line-refresh))
 
 ;;;###autoload
@@ -403,7 +425,8 @@ buffer name, time, and metadata.")
         (my-ime--live2-schedule-refresh))
     (remove-hook 'after-change-functions #'my-ime--live-after-change t)
     (my-ime--live-cancel-timer)
-    (my-ime--live-clear))
+    (my-ime--live-clear)
+    (my-ime--live-clear-committed-end))
   (my-ime--mode-line-refresh))
 
 (defun my-ime--metadata ()
@@ -678,16 +701,20 @@ buffer name, time, and metadata.")
 (defun my-ime--request-async (text callback errback &optional extra-metadata endpoint-path)
   "Asynchronously convert TEXT through the configured transport.
 CALLBACK receives converted text.  ERRBACK receives an error string."
+  (my-ime--request-payload-async
+   text
+   (lambda (payload)
+     (condition-case err
+         (funcall callback (my-ime--payload-text payload))
+       (error (funcall errback (error-message-string err)))))
+   errback extra-metadata endpoint-path))
+
+(defun my-ime--request-payload-async
+    (text callback errback &optional extra-metadata endpoint-path)
+  "Asynchronously request TEXT; CALLBACK receives the decoded payload."
   (if (eq my-ime-transport 'stdio)
       (my-ime--stdio-request-payload-async
-       text
-       (lambda (payload)
-         (condition-case err
-             (funcall callback (my-ime--payload-text payload))
-           (error (funcall errback (error-message-string err)))))
-       errback
-       extra-metadata
-       endpoint-path)
+       text callback errback extra-metadata endpoint-path)
     (let* ((url-request-method "POST")
            (url-request-extra-headers '(("Content-Type" . "application/json; charset=utf-8")))
            (metadata (append (my-ime--metadata) extra-metadata))
@@ -711,9 +738,9 @@ CALLBACK receives converted text.  ERRBACK receives an error string."
               (cancel-timer timeout-timer))
             (unwind-protect
                 (condition-case err
-                    (if-let ((url-error (plist-get status :error)))
+                    (if-let* ((url-error (plist-get status :error)))
                         (funcall errback (format "%s" url-error))
-                      (funcall callback (my-ime--parse-response-current-buffer)))
+                      (funcall callback (my-ime--parse-response-payload-current-buffer)))
                   (error (funcall errback (error-message-string err))))
               (when (buffer-live-p (current-buffer))
                 (kill-buffer (current-buffer))))))
@@ -863,19 +890,11 @@ LABEL is used for minibuffer status messages."
         (let ((converted (car candidates)))
           (let ((my-ime--live-inhibit-after-change t))
             (my-ime--replace-region-preserve-point beg end converted))
-          (my-ime--record-history original converted label metadata)
-          (my-ime--suppress-next-ret-after-candidate-selection)
+          (my-ime--completion-finish original converted label metadata)
           (message "my-ime: selected %s" label)))
-       ((my-ime--select-candidate-with-company
-         beg end label metadata original candidates)
-        nil)
        (t
-       (let ((converted (my-ime--select-candidate candidates label)))
-          (let ((my-ime--live-inhibit-after-change t))
-            (my-ime--replace-region-preserve-point beg end converted))
-          (my-ime--record-history original converted label metadata)
-          (my-ime--suppress-next-ret-after-candidate-selection)
-          (message "my-ime: selected %s" label)))))))
+        (my-ime--select-candidate-in-region
+         beg end label metadata original candidates))))))
 
 (defun my-ime--payload-candidates (payload)
   "Return string candidates from a /candidates response PAYLOAD."
@@ -901,6 +920,232 @@ LABEL is used for minibuffer status messages."
       (completing-read
        (format "my-ime %s: " label)
        candidates nil t nil nil (car candidates))))))
+
+(defun my-ime--complete-candidates (str pred action candidates)
+  "Complete STR against conversion CANDIDATES with PRED and ACTION.
+Never expand romanized input to the empty common prefix of mixed scripts."
+  (let ((completion-regexp-list nil))
+    (if (null action)
+        (when (all-completions "" candidates pred)
+          (if (and (null (cdr candidates)) (equal str (car candidates))) t str))
+      (complete-with-action action candidates (if (eq action t) "" str) pred))))
+
+(defun my-ime--candidate-table (candidates)
+  "Return a completion table translating source text to CANDIDATES.
+Conversion candidates need not share a prefix with the romanized input."
+  (lambda (str pred action)
+    (pcase action
+      ('metadata '(metadata (category . my-ime)
+                            (display-sort-function . identity)
+                            (cycle-sort-function . identity)))
+      (`(boundaries . ,_) nil)
+      (_ (my-ime--complete-candidates str pred action candidates)))))
+
+(defun my-ime--completion-finish (original candidate label metadata)
+  "Record an accepted conversion from ORIGINAL to CANDIDATE."
+  (my-ime--record-history original (substring-no-properties candidate) label metadata)
+  (my-ime--suppress-next-ret-after-candidate-selection)
+  (when (my-ime--live-active-p)
+    (my-ime--live-mark-committed-end (point))))
+
+(defun my-ime--select-candidate-in-region
+    (beg end label metadata original candidates)
+  "Select CANDIDATES through the configured completion UI at BEG END."
+  (my-ime--live-invalidate)
+  (add-hook 'completion-in-region-mode-hook #'my-ime--completion-mode-change nil t)
+  (goto-char end)
+  (let ((completion-extra-properties
+         (list :annotation-function (lambda (_) "  変換")
+               :exit-function
+               (lambda (candidate status)
+                 (when (memq status '(finished exact))
+                   (my-ime--completion-finish original candidate label metadata))))))
+    (prog1 (completion-in-region beg end (my-ime--candidate-table candidates))
+      (setq my-ime--completion-manual
+            (bound-and-true-p completion-in-region-mode)))))
+
+(defun my-ime--completion-mode-change ()
+  "Keep live overlays out of completion previews, resuming after cancellation."
+  (if (bound-and-true-p completion-in-region-mode)
+      (my-ime--live-invalidate)
+    (setq my-ime--completion-manual nil)
+    (let ((buffer (current-buffer)))
+      (run-at-time
+       0 nil
+       (lambda ()
+         (when (buffer-live-p buffer)
+           (with-current-buffer buffer
+             (unless (or (bound-and-true-p completion-in-region-mode)
+                         my-ime--suppress-next-ret-conversion)
+               (cond (my-ime-live2-mode (my-ime--live2-schedule-refresh))
+                     (my-ime-live-mode (my-ime--live-schedule-refresh)))))))))))
+
+(defun my-ime--completion-key ()
+  "Return bounds and source for completion in an active my-ime buffer."
+  (when (and (or my-ime-mode my-ime-eager-mode (my-ime--live-active-p))
+             (not (minibufferp)) (not buffer-read-only) (not (use-region-p)))
+    (let* ((raw (my-ime--last-sentence-bounds))
+           (bounds (if (my-ime--live-active-p)
+                       (my-ime--live-bounds)
+                     (my-ime--auto-conversion-bounds (car raw) (cdr raw)))))
+      (when bounds
+        (let ((source (buffer-substring-no-properties (car bounds) (cdr bounds))))
+          (when (and (>= (length (string-trim source)) my-ime-live-min-chars)
+                     (my-ime--auto-convertible-text-p source))
+            (list (car bounds) (cdr bounds) source)))))))
+
+(defun my-ime--completion-fetch (key)
+  "Fetch candidates for KEY without blocking Emacs input."
+  (unless (or (equal key (car my-ime--completion-cache))
+              (equal key my-ime--completion-pending))
+    (setq my-ime--completion-pending key)
+    (let ((buffer (current-buffer)))
+      (condition-case nil
+          (my-ime--request-payload-async
+           (nth 2 key)
+           (lambda (payload)
+             (when (buffer-live-p buffer)
+               (with-current-buffer buffer
+                 (when (equal key my-ime--completion-pending)
+                   (setq my-ime--completion-pending nil)
+                   (when (equal key (my-ime--completion-key))
+                     (setq my-ime--completion-cache
+                           (cons key (delete (nth 2 key)
+                                             (delete-dups (my-ime--payload-candidates payload)))))
+                     ;; Re-enter CAPF so Corfu also sees candidates which arrived
+                     ;; after its initial automatic completion.  Leave a user's
+                     ;; existing selection alone.
+                     (run-at-time 0 nil #'my-ime--completion-refresh buffer key))))))
+           (lambda (_error)
+             (when (buffer-live-p buffer)
+               (with-current-buffer buffer
+                 (when (equal key my-ime--completion-pending)
+                   (setq my-ime--completion-pending nil
+                         my-ime--completion-cache (list key))))))
+           '((trigger . "completion")) "/candidates")
+        (error (setq my-ime--completion-pending nil
+                     my-ime--completion-cache (list key)))))))
+
+(defun my-ime--completion-refresh (buffer key)
+  "Refresh automatic completion in BUFFER if KEY still matches."
+  (when (and (buffer-live-p buffer)
+             (eq buffer (window-buffer (selected-window)))
+             (not (input-pending-p)))
+    (with-current-buffer buffer
+      (when (and (bound-and-true-p corfu-mode)
+                 (bound-and-true-p corfu-auto)
+                 (not my-ime--completion-manual)
+                 (or (not (bound-and-true-p completion-in-region-mode))
+                     (not (boundp 'corfu--index)) (< corfu--index 0))
+                 (equal key (my-ime--completion-key)))
+        (completion-at-point)
+        ;; A process/timer callback has no post-command phase.  Ask Corfu to
+        ;; render the refreshed candidates now, without waiting for another key.
+        (when (and (bound-and-true-p completion-in-region-mode)
+                   (fboundp 'corfu--exhibit))
+          (corfu--exhibit))))))
+
+;;;###autoload
+(defun my-ime-completion-at-point ()
+  "Provide asynchronous sentence conversion candidates through CAPF.
+Use `my-ime-capf-wrap' to merge these with ordinary completion providers."
+  (when-let* ((key (my-ime--completion-key)))
+    (my-ime--completion-fetch key)
+    (when (and (equal key (car my-ime--completion-cache))
+               (cdr my-ime--completion-cache))
+      (add-hook 'completion-in-region-mode-hook #'my-ime--completion-mode-change nil t)
+      (list (nth 0 key) (nth 1 key)
+            (my-ime--candidate-table (cdr my-ime--completion-cache))
+            :exclusive 'no
+            :annotation-function (lambda (_) "  変換")
+            :exit-function
+            (lambda (candidate status)
+              (when (memq status '(finished exact))
+                (my-ime--completion-finish (nth 2 key) candidate "completion" nil)))))))
+
+;;;###autoload
+(defun my-ime-capf-wrap (capf)
+  "Return a CAPF merging CAPF with asynchronous my-ime conversions.
+Normalize word completions to sentence bounds so neither provider is dropped
+when their starting positions differ.  CAPF retains its matching styles,
+annotations and exit function."
+  (lambda ()
+    (let* ((native (funcall capf))
+           (key (my-ime--completion-key)))
+      (if (not key)
+          native
+        (add-hook 'completion-in-region-mode-hook #'my-ime--completion-mode-change nil t)
+        (my-ime--completion-fetch key)
+        (pcase-let* ((`(,nbeg ,nend ,ntable . ,nprops) native)
+                     (beg (min (car key) (or nbeg (car key))))
+                     (end (copy-marker (max (cadr key) (or nend (cadr key))) t))
+                     (native-end (and nend (copy-marker nend t)))
+                     (entries (make-hash-table :test #'equal))
+                     (lookup (lambda (candidate)
+                               (or (get-text-property 0 'my-ime--completion-source candidate)
+                                   (gethash candidate entries)))))
+          (list
+           beg end
+           (lambda (str pred action)
+             (pcase action
+               ('metadata '(metadata (category . my-ime)
+                                     (display-sort-function . identity)
+                                     (cycle-sort-function . identity)))
+               (`(boundaries . ,_) nil)
+               (_
+                (let* ((completion-regexp-list nil)
+                       (current (my-ime--completion-key))
+                       (candidates nil))
+                  (when (and current (= (car current) (car key)))
+                    (my-ime--completion-fetch current)
+                    (when (equal current (car my-ime--completion-cache))
+                      (dolist (candidate (cdr my-ime--completion-cache))
+                        (let* ((full (concat (buffer-substring-no-properties beg (car key))
+                                             candidate
+                                             (buffer-substring-no-properties (cadr current) end)))
+                               (ref (list 'ime candidate (nth 2 current))))
+                          (puthash full ref entries)
+                          (push (propertize full 'my-ime--completion-source ref) candidates)))))
+                  (when native
+                    (let* ((input (buffer-substring-no-properties nbeg native-end))
+                           (completion-extra-properties nprops)
+                           (md (completion-metadata input ntable (plist-get nprops :predicate)))
+                           (matches (completion-all-completions
+                                     input ntable (plist-get nprops :predicate) (- (point) nbeg) md))
+                           (base (or (cdr (last matches)) 0)))
+                      (when matches (setcdr (last matches) nil))
+                      (dolist (candidate matches)
+                        (let* ((raw (concat (substring input 0 base) candidate))
+                               (full (concat (buffer-substring-no-properties beg nbeg) raw
+                                             (buffer-substring-no-properties native-end end)))
+                               (ref (list 'native raw)))
+                          (puthash full ref entries)
+                          (push (propertize full 'my-ime--completion-source ref) candidates)))))
+                  (my-ime--complete-candidates str pred action (nreverse candidates))))))
+           :exclusive 'no
+           :annotation-function
+           (lambda (candidate)
+             (pcase (funcall lookup candidate)
+               (`(ime . ,_) "  変換")
+               (`(native ,raw)
+                (when-let* ((ann (plist-get nprops :annotation-function)))
+                  (funcall ann raw)))))
+           :exit-function
+           (lambda (candidate status)
+             (pcase (funcall lookup candidate)
+               (`(ime ,raw ,original)
+                (when (memq status '(finished exact))
+                  (my-ime--completion-finish original raw "completion" nil)))
+               (`(native ,raw)
+                (when-let* ((exit (plist-get nprops :exit-function)))
+                  (funcall exit raw status))
+                (when (memq status '(finished exact))
+                  ;; Accept the ordinary completion just as it was displayed;
+                  ;; live conversion must not rewrite the chosen English word.
+                  (my-ime--suppress-next-ret-after-candidate-selection)
+                  (when (my-ime--live-active-p)
+                    (my-ime--live-mark-committed-end end))))))
+           :company-prefix-length (plist-get nprops :company-prefix-length)))))))
 
 (defun my-ime--select-candidate-with-company
     (beg end label metadata original candidates)
@@ -1012,15 +1257,53 @@ LABEL is used for minibuffer status messages."
      metadata
      endpoint-path)))
 
-(defun my-ime--live-after-change (_beg _end _len)
+(defun my-ime--live-after-change (beg _end _len)
   "Refresh live conversion after a buffer change."
   (when (and (my-ime--live-active-p)
              (not my-ime--live-inhibit-after-change))
-    (my-ime--live-clear)
-    (unless (my-ime--company-selection-active-p)
-      (if my-ime-live2-mode
-          (my-ime--live2-schedule-refresh)
-        (my-ime--live-schedule-refresh)))))
+    (when (and (markerp my-ime--live-committed-end-marker)
+               (eq (marker-buffer my-ime--live-committed-end-marker)
+                   (current-buffer))
+               (marker-position my-ime--live-committed-end-marker)
+               (< beg (marker-position my-ime--live-committed-end-marker)))
+      (set-marker my-ime--live-committed-end-marker beg))
+    (cond
+     ((or (my-ime--company-selection-active-p)
+          (bound-and-true-p completion-in-region-mode))
+      (my-ime--live-invalidate))
+     (my-ime-live2-mode
+      ;; Keep the previous overlay visible while the next preview is in
+      ;; flight; clearing it here would briefly expose the raw romaji.
+      (my-ime--live2-hold-overlay beg)
+      (unless (my-ime--live2-schedule-refresh)
+        (my-ime--live-clear)))
+     (t
+      (my-ime--live-clear)
+      (my-ime--live-schedule-refresh)))))
+
+(defun my-ime--live2-hold-overlay (change-beg)
+  "Keep the live2 preview overlay across a buffer change at CHANGE-BEG.
+Text inserted at the overlay end is absorbed by its rear-advance
+marker and would be hidden by the `display' property, so shrink the
+overlay back to CHANGE-BEG to keep newly typed characters visible."
+  (when (overlayp my-ime--live-overlay)
+    (let ((start (overlay-start my-ime--live-overlay))
+          (end (overlay-end my-ime--live-overlay)))
+      (if (or (null start) (null end) (<= end start))
+          (my-ime--live-clear)
+        (when (and (> change-beg start) (< change-beg end))
+          (move-overlay my-ime--live-overlay start change-beg))))))
+
+(defun my-ime--live-mark-committed-end (pos)
+  "Record POS as the end of the last committed live conversion."
+  (my-ime--live-clear-committed-end)
+  (setq my-ime--live-committed-end-marker (copy-marker pos nil)))
+
+(defun my-ime--live-clear-committed-end ()
+  "Clear the marker tracking the last committed live conversion."
+  (when (markerp my-ime--live-committed-end-marker)
+    (set-marker my-ime--live-committed-end-marker nil))
+  (setq my-ime--live-committed-end-marker nil))
 
 (defun my-ime--live-cancel-timer ()
   "Cancel pending live refresh timers."
@@ -1068,7 +1351,8 @@ LABEL is used for minibuffer status messages."
    sequence my-ime-live-preview-endpoint "live-preview"))
 
 (defun my-ime--live2-schedule-refresh ()
-  "Schedule a two-phase live2 conversion refresh for the current buffer."
+  "Schedule a two-phase live2 conversion refresh for the current buffer.
+Return non-nil when a preedit request was actually sent."
   (when (and my-ime-live2-mode
              (not (minibufferp))
              (not buffer-read-only))
@@ -1217,6 +1501,19 @@ LABEL is used for minibuffer status messages."
            (bounds (and raw-bounds
                         (my-ime--auto-conversion-bounds
                          (car raw-bounds) (cdr raw-bounds)))))
+      (when (and bounds
+                 (markerp my-ime--live-committed-end-marker)
+                 (eq (marker-buffer my-ime--live-committed-end-marker)
+                     (current-buffer)))
+        (let ((committed-end (marker-position my-ime--live-committed-end-marker)))
+          (when (and committed-end
+                     (<= (car bounds) committed-end)
+                     (<= committed-end (cdr bounds)))
+            (while (and (< committed-end (cdr bounds))
+                        (memq (char-after committed-end) '(?\s ?\t)))
+              (setq committed-end (1+ committed-end)))
+            (setq bounds (and (< committed-end (cdr bounds))
+                              (cons committed-end (cdr bounds)))))))
       (when bounds
         (let ((text (buffer-substring-no-properties
                      (car bounds) (cdr bounds))))
@@ -1249,7 +1546,8 @@ LABEL is used for minibuffer status messages."
          (end (marker-position end-marker)))
     (let ((my-ime--live-inhibit-after-change t))
       (my-ime--live-clear)
-      (my-ime--replace-region-preserve-point beg end converted))
+      (my-ime--replace-region-preserve-point beg end converted)
+      (my-ime--live-mark-committed-end (+ beg (length converted))))
     (my-ime--record-history original converted "live" metadata)
     t))
 
@@ -1258,11 +1556,25 @@ LABEL is used for minibuffer status messages."
   "Commit the current live conversion preview."
   (interactive)
   (my-ime--live-cancel-timer)
+  (cl-incf my-ime--live-sequence)
   (or (let ((state (my-ime--live-valid-state)))
         (and state (my-ime--live-commit-state state)))
       (progn
         (my-ime--live-clear)
         nil)))
+
+;;;###autoload
+(defun my-ime-live-commit-or-newline ()
+  "Commit the current live conversion preview, or insert a newline if none."
+  (interactive)
+  (let ((my-ime--live-inhibit-after-change t))
+    (if (my-ime--consume-next-ret-conversion-suppression)
+        (progn
+          (my-ime--live-cancel-timer)
+          (my-ime--live-clear)
+          (newline-and-indent))
+      (unless (my-ime-live-commit)
+        (newline-and-indent)))))
 
 ;;;###autoload
 (defun my-ime-live-commit-and-newline ()
@@ -1504,8 +1816,13 @@ LABEL is used for minibuffer status messages."
              (not buffer-read-only)
              (not (my-ime--inside-manual-term-marker-p))
              (not (my-ime--org-todo-keyword-prefix-at-point-p)))
-    (if (eq last-command-event ?-)
-        (my-ime--restore-local-kana-before-hyphen)
+    (cond
+     ((eq last-command-event ?-)
+      (my-ime--restore-local-kana-before-hyphen))
+     ((and (memq last-command-event '(?n ?N))
+           (my-ime--finalize-jibun-n-before-point))
+      nil)
+     (t
       (let ((bounds (my-ime--romaji-suffix-bounds)))
         (when bounds
           (let* ((beg (car bounds))
@@ -1513,7 +1830,7 @@ LABEL is used for minibuffer status messages."
                  (source (buffer-substring-no-properties beg end))
                  (replacement (my-ime--romaji-suffix-to-kana source)))
             (when replacement
-              (my-ime--replace-local-kana-region beg end source replacement))))))))
+              (my-ime--replace-local-kana-region beg end source replacement)))))))))
 
 (defun my-ime--short-kana-post-self-insert ()
   "Convert a small lowercase romaji window before point to kana."
@@ -1526,8 +1843,13 @@ LABEL is used for minibuffer status messages."
              (not (memq last-command-event my-ime-eager-trigger-chars))
              (not (my-ime--inside-manual-term-marker-p))
              (not (my-ime--org-todo-keyword-prefix-at-point-p)))
-    (if (eq last-command-event ?-)
-        (my-ime--short-kana-finalize-before-hyphen)
+    (cond
+     ((eq last-command-event ?-)
+      (my-ime--short-kana-finalize-before-hyphen))
+     ((and (eq last-command-event ?n)
+           (my-ime--finalize-jibun-n-before-point))
+      nil)
+     (t
       (let ((bounds (my-ime--short-kana-bounds)))
         (when bounds
           (let* ((beg (car bounds))
@@ -1535,7 +1857,18 @@ LABEL is used for minibuffer status messages."
                  (source (buffer-substring-no-properties beg end))
                  (replacement (my-ime--plain-romaji-to-kana source)))
             (when replacement
-              (my-ime--replace-local-kana-region beg end source replacement))))))))
+              (my-ime--replace-local-kana-region beg end source replacement)))))))))
+
+(defun my-ime--finalize-jibun-n-before-point ()
+  "Convert a trailing `n' right after `じぶ' before point into `ん'."
+  (let ((end (point))
+        (beg (- (point) 3)))
+    (when (and (>= beg (line-beginning-position))
+               (string-equal (buffer-substring-no-properties beg (1- end)) "じぶ")
+               (memq (char-before end) '(?n ?N)))
+      (let ((source (buffer-substring-no-properties (1- end) end)))
+        (my-ime--replace-local-kana-region (1- end) end source "ん")
+        t))))
 
 (defun my-ime--short-kana-finalize-before-hyphen ()
   "Reconvert a partially kanaized romaji word before a trailing hyphen."
@@ -1729,19 +2062,29 @@ LABEL is used for minibuffer status messages."
         (result '()))
     (catch 'failed
       (while (< cursor (length lower))
-        (let ((converted nil))
-          (catch 'matched
-            (dolist (width '(3 2 1))
-              (let* ((end (min (length lower) (+ cursor width)))
-                     (chunk (substring lower cursor end))
-                     (kana (cdr (assoc chunk my-ime--romaji-kana-table))))
-                (when (and (= (- end cursor) width) kana)
-                  (push kana result)
-                  (setq cursor end
-                        converted t)
-                  (throw 'matched t)))))
-          (unless converted
-            (throw 'failed nil))))
+        (if (and (= (aref lower cursor) ?n)
+                 (equal (car result) "ぶ")
+                 (equal (cadr result) "じ")
+                 (or (= (1+ cursor) (length lower))
+                     (not (= (aref lower (1+ cursor)) ?n))
+                     (and (< (+ cursor 2) (length lower))
+                          (= (aref lower (+ cursor 2)) ?y))))
+            (progn
+              (push "ん" result)
+              (setq cursor (1+ cursor)))
+          (let ((converted nil))
+            (catch 'matched
+              (dolist (width '(3 2 1))
+                (let* ((end (min (length lower) (+ cursor width)))
+                       (chunk (substring lower cursor end))
+                       (kana (cdr (assoc chunk my-ime--romaji-kana-table))))
+                  (when (and (= (- end cursor) width) kana)
+                    (push kana result)
+                    (setq cursor end
+                          converted t)
+                    (throw 'matched t)))))
+            (unless converted
+              (throw 'failed nil)))))
       (mapconcat #'identity (nreverse result) ""))))
 
 (defun my-ime--auto-convertible-text-p (text)

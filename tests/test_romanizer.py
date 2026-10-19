@@ -21,6 +21,15 @@ class RomanizerTests(unittest.TestCase):
         self.assertEqual(romaji_to_hiragana("kannjiniikeru"), "かんじにいける")
         self.assertEqual(romaji_to_hiragana("konnichi"), "こんにち")
 
+    def test_treats_jibun_trailing_n_as_n_kana(self) -> None:
+        self.assertEqual(normalize_romaji("jibunyou"), "jibun'you")
+        self.assertEqual(romaji_to_hiragana("jibunyou"), "じぶんよう")
+        self.assertEqual(romaji_to_hiragana("jibunnyou"), "じぶんよう")
+        self.assertEqual(romaji_to_hiragana("zibunyou"), "じぶんよう")
+        self.assertEqual(romaji_to_hiragana("じぶnyou"), "じぶんよう")
+        self.assertEqual(romaji_to_hiragana("jibunno"), "じぶんの")
+        self.assertEqual(romaji_to_hiragana("jibunni"), "じぶんに")
+
 
 if __name__ == "__main__":
     unittest.main()

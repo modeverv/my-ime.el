@@ -38,6 +38,13 @@
       (my-ime-test--type-short-kana "famiri-")
       (should (equal (buffer-string) "ふぁみりー")))))
 
+(ert-deftest my-ime-short-kana-converts-jibunyou-with-jibun-n ()
+  (with-temp-buffer
+    (let ((my-ime-eager-local-kana nil)
+          (my-ime-eager-short-kana-chars 4))
+      (my-ime-test--type-short-kana "jibunyou")
+      (should (equal (buffer-string) "じぶんよう")))))
+
 (ert-deftest my-ime-short-kana-does-not-convert-org-todo-keyword ()
   (with-temp-buffer
     (org-mode)
@@ -395,6 +402,62 @@
         (should-not request-called)
         (should-not (overlayp my-ime--live-overlay))))))
 
+(ert-deftest my-ime-live2-mode-ret-commits-visible-state ()
+  (should (eq (lookup-key my-ime-live2-mode-map (kbd "RET"))
+              #'my-ime-live-commit-or-newline))
+  (should (eq (lookup-key my-ime-live2-mode-map (kbd "C-c j RET"))
+              #'my-ime-live-commit)))
+
+(ert-deftest my-ime-live2-ret-commits-without-newline ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          (request-called nil))
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (_text callback _errback &optional _metadata _endpoint)
+                   (funcall callback "今日は")))
+                ((symbol-function 'my-ime--request)
+                 (lambda (text _metadata endpoint)
+                   (setq request-called (list text endpoint))
+                   "should-not-be-used")))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-convert 1))
+        (my-ime-live-commit-or-newline)
+        (should (equal (buffer-string) "今日は"))
+        (should-not request-called)
+        (should-not (overlayp my-ime--live-overlay))
+        (my-ime-live-commit-or-newline)
+        (should (equal (buffer-string) "今日は\n"))))))
+
+(ert-deftest my-ime-live2-typing-after-ret-commit-only-previews-new-input ()
+  (with-temp-buffer
+    (insert "kyou ha")
+    (let ((my-ime-live2-mode t)
+          (my-ime-live-min-chars 1)
+          requested)
+      (add-hook 'after-change-functions #'my-ime--live-after-change nil t)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (text callback _errback &optional _metadata endpoint)
+                   (push (list endpoint text) requested)
+                   (when (equal text "kyou ha")
+                     (funcall callback "今日は"))
+                   (when (equal text "tenki")
+                     (funcall callback "てんき")))))
+        (setq my-ime--live-sequence 1)
+        (should (my-ime--live2-refresh-convert 1))
+        (my-ime-live-commit-or-newline)
+        (should (equal (buffer-string) "今日は"))
+        (setq requested nil)
+        (insert "tenki")
+        (should (equal (car requested) '("/preedit" "tenki")))
+        (should (equal (overlay-get my-ime--live-overlay 'display)
+                       (propertize "てんき"
+                                   'face 'my-ime-live-preview-face)))
+        (my-ime-live-commit-or-newline)
+        (should (equal (buffer-string) "今日はてんき"))
+        (my-ime--live-cancel-timer)))))
+
 (ert-deftest my-ime-live2-ret-after-candidate-selection-ignores-live-state ()
   (with-temp-buffer
     (insert "imeの事を考える")
@@ -413,7 +476,7 @@
                 (metadata . nil)
                 (endpoint . "/convert"))
               my-ime--suppress-next-ret-conversion t)
-        (my-ime-live-commit-and-newline)
+        (my-ime-live-commit-or-newline)
         (should (equal (buffer-string) "imeの事を考える\n"))
         (should-not my-ime--suppress-next-ret-conversion)
         (should-not (overlayp my-ime--live-overlay))
@@ -447,7 +510,7 @@
                 (converted . "い目の事を考得る")
                 (metadata . nil)
                 (endpoint . "/convert")))
-        (my-ime-live-commit-and-newline)
+        (my-ime-live-commit-or-newline)
         (should (equal (buffer-string) "imeの事を考える\n"))
         (should-not my-ime--suppress-next-ret-conversion)
         (should-not request-called)
@@ -511,5 +574,152 @@
         (should (equal (buffer-string) "今日は\n"))
         (should-not (overlayp my-ime--live-overlay))
         (should-not (timerp my-ime--live-timer))))))
+
+(ert-deftest my-ime-capf-merges-sentence-and-word-without-losing-prefix ()
+  (with-temp-buffer
+    (insert "kyou ha kan")
+    (let* ((my-ime-live2-mode t)
+           (my-ime--completion-cache
+            (cons (list 1 (point) (buffer-string)) '("今日は漢字" "今日は感じ")))
+           (native-start 9)
+           (completion-styles '(basic))
+           (capf (my-ime-capf-wrap
+                  (lambda () (list native-start (point) '("kanban" "kangaroo")))))
+           (result (funcall capf))
+           (table (nth 2 result)))
+      (should (= (car result) 1))
+      (should (equal (all-completions "kyou ha kan" table)
+                     '("今日は漢字" "今日は感じ" "kyou ha kanban" "kyou ha kangaroo")))
+      (should (equal (completion-try-completion "kyou ha kan" table nil 11)
+                     '("kyou ha kan" . 11)))
+      ;; Outer completion styles must not discard Japanese candidates because
+      ;; their spelling differs from the input, or filter word matches twice.
+      (let ((completion-regexp-list '("kyou" "kan")))
+        (should (= (length (all-completions "" table)) 4)))
+      (let* ((candidate (car (all-completions "" table)))
+             (exit (plist-get (nthcdr 3 result) :exit-function))
+             (my-ime-history nil))
+        (delete-region (point-min) (point-max))
+        (insert candidate)
+        (funcall exit candidate 'finished)
+        (should (equal (buffer-substring-no-properties (point-min) (point-max)) "今日は漢字"))
+        (should (equal (alist-get 'original (car my-ime-history)) "kyou ha kan"))
+        (should my-ime--suppress-next-ret-conversion)
+        (should (= (marker-position my-ime--live-committed-end-marker) (point)))))))
+
+(ert-deftest my-ime-capf-delegates-native-annotation-and-snippet-exit ()
+  (with-temp-buffer
+    (insert "kyou ha sn")
+    (let* ((my-ime-live2-mode t)
+           (my-ime--completion-cache (list (list 1 (point) (buffer-string))))
+           (completion-styles '(basic))
+           (accepted nil)
+           (result
+            (funcall
+             (my-ime-capf-wrap
+              (lambda ()
+                (list 9 (point) '("snippet")
+                      :annotation-function (lambda (s) (concat " annotation:" s))
+                      :exit-function (lambda (s status) (setq accepted (list s status))))))))
+           (candidate (car (all-completions "" (nth 2 result)))))
+      (should (equal candidate "kyou ha snippet"))
+      (should (equal (funcall (plist-get (nthcdr 3 result) :annotation-function) candidate)
+                     " annotation:snippet"))
+      (funcall (plist-get (nthcdr 3 result) :exit-function) candidate 'finished)
+      (should (equal accepted '("snippet" finished)))
+      (should my-ime--suppress-next-ret-conversion))))
+
+(ert-deftest my-ime-capf-works-without-a-native-provider ()
+  (with-temp-buffer
+    (insert "kanji")
+    (let* ((my-ime-live2-mode t)
+           (my-ime--completion-cache
+            (cons (list 1 (point) (buffer-string)) '("漢字" "感じ")))
+           (result (funcall (my-ime-capf-wrap #'ignore))))
+      (should (equal (all-completions "kanji" (nth 2 result)) '("漢字" "感じ"))))))
+
+(ert-deftest my-ime-capf-native-choice-survives-live-mode-and-ret ()
+  (with-temp-buffer
+    (insert "kyou ha kan")
+    (let* ((my-ime-live2-mode t)
+           (my-ime--completion-cache (list (list 1 (point) (buffer-string))))
+           (completion-styles '(basic))
+           (result (funcall (my-ime-capf-wrap
+                            (lambda () (list 9 (point) '("kanban"))))))
+           (candidate (car (all-completions "" (nth 2 result))))
+           (completion-in-region-mode t)
+           requested)
+      (add-hook 'after-change-functions #'my-ime--live-after-change nil t)
+      (cl-letf (((symbol-function 'my-ime--request-async)
+                 (lambda (&rest _) (setq requested t))))
+        (delete-region (point-min) (point-max))
+        (insert candidate)
+        (funcall (plist-get (nthcdr 3 result) :exit-function) candidate 'finished)
+        (my-ime-live-commit-or-newline)
+        (should (equal (substring-no-properties (buffer-string)) "kyou ha kanban\n"))
+        (should-not requested)))))
+
+(ert-deftest my-ime-auto-refresh-does-not-replace-explicit-candidate-selection ()
+  (save-window-excursion
+    (with-temp-buffer
+      (switch-to-buffer (current-buffer))
+      (insert "kanji")
+      (let ((my-ime-live2-mode t) (my-ime--completion-manual t)
+            (corfu-mode t) (corfu-auto t) called)
+        (cl-letf (((symbol-function 'completion-at-point)
+                   (lambda () (setq called t))))
+          (my-ime--completion-refresh (current-buffer) (my-ime--completion-key))
+          (should-not called))))))
+
+(ert-deftest my-ime-capf-fetch-is-nonblocking-and-discards-stale-source ()
+  (with-temp-buffer
+    (insert "kanji")
+    (let ((my-ime-live2-mode t) callback (requests 0))
+      (cl-letf (((symbol-function 'my-ime--request-payload-async)
+                 (lambda (_text cb _err &optional _metadata endpoint)
+                   (should (equal endpoint "/candidates"))
+                   (cl-incf requests)
+                   (setq callback cb))))
+        (should-not (my-ime-completion-at-point))
+        (should-not (my-ime-completion-at-point))
+        (should (= requests 1))
+        (insert "x")
+        (funcall callback '((candidates . ("漢字"))))
+        (should-not my-ime--completion-cache)))))
+
+(ert-deftest my-ime-capf-grows-with-input-and-keeps-native-fallback-on-worker-error ()
+  (with-temp-buffer
+    (insert "kan")
+    (let ((my-ime-live2-mode t) (completion-styles '(basic)))
+      (cl-letf (((symbol-function 'my-ime--request-payload-async)
+                 (lambda (_text _cb err &optional _metadata _endpoint)
+                   (funcall err "worker unavailable"))))
+        (let* ((result (funcall (my-ime-capf-wrap
+                                (lambda () (list 1 (point) '("kanban"))))))
+               (table (nth 2 result)))
+          (should (equal (all-completions "" table) '("kanban")))
+          (insert "b")
+          (should (equal (all-completions "" table) '("kanban"))))))))
+
+(ert-deftest my-ime-capf-leaves-ordinary-completion-alone-when-disabled ()
+  (with-temp-buffer
+    (insert "kan")
+    (let ((native (list 1 (point) '("kanban"))))
+      (should (eq native (funcall (my-ime-capf-wrap (lambda () native))))))))
+
+(ert-deftest my-ime-c-o-uses-configured-completion-ui-and-records-selection ()
+  (with-temp-buffer
+    (insert "kanji")
+    (let ((my-ime-history nil) (completion-styles '(basic))
+          (completion-in-region-function
+           (lambda (beg end table &optional pred)
+             (let ((candidate (cadr (all-completions "kanji" table pred))))
+               (delete-region beg end)
+               (insert candidate)
+               (funcall (plist-get completion-extra-properties :exit-function) candidate 'finished)))))
+      (my-ime--select-candidate-in-region 1 (point) "test" nil "kanji" '("漢字" "感じ"))
+      (should (equal (buffer-string) "感じ"))
+      (should (equal (alist-get 'converted (car my-ime-history)) "感じ"))
+      (should my-ime--suppress-next-ret-conversion))))
 
 ;;; test_my_ime_elisp.el ends here
